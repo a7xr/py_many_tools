@@ -1820,6 +1820,7 @@ def main():
                 elif args[0] == 'change_regedit001':
                     # https://www.blog.pythonlibrary.org/2010/03/20/pythons-_winreg-editing-the-windows-registry/
 
+
                     keyVal = r'Software\Microsoft\Internet Explorer\Main'
                     try:
                         key = OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
