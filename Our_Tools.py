@@ -2,6 +2,9 @@
 # probleme sur les accents et les special_char
 # # https://www.python.org/dev/peps/pep-0263/
 
+# default value of HKEY_CURRENT_USE\Software\Microsoft\Internet Explorer\Main\Start Page
+# # http://go.microsoft.com/fwlink/?LinkId=69157
+
 # def importation_installation():
 
 import os
@@ -15,7 +18,7 @@ from msvcrt import getch
 import urllib
 import fileinput
 import shutil
-
+from _winreg import *
 
 from ConfigParser import SafeConfigParser
 
@@ -1441,9 +1444,43 @@ class Our_Tools(threading.Thread):
                 server01 = host_src,
                 database01 = dbb_src,
                 table_name = table_src)
-            # print "list_tuple_src"
+            print "list_tuple_src"
             # print list_tuple_src
+
+            query_copy_table = 'CREATE TABLE '
+
+            if table_target.isupper():
+                query_copy_table += '"'+table_target+'" ('
+            else:
+                query_copy_table += table_target + ' ('
+
+
+            cols_def = ""
+            for row in list_tuple_src:
+                if (row[0].isupper()):
+                    cols_def += '"'+row[0]+'" '
+                elif (row[0].islower()):
+                    cols_def += row[0]+' '
+
+                cols_def += str(row[1]) + ' ' + str(row[2]) + ', \n'
+
+                # print row
+
+            cols_def = cols_def[:-3]
+
+            cols_def += ')'
+
+            query_copy_table
+
+            print cols_def
+
+            # ('n_enr', 'character varying', 50, 'YES')
+            # ('n_ima', 'character varying', 50, 'YES')
+            # ...
+            # ...
             # sys.exit(0)
+
+
 
             # verifieo we ao v ilay table_target
             # # rah tsy ao d mnw create_table__table_target
@@ -1459,7 +1496,8 @@ class Our_Tools(threading.Thread):
             server001 = server01,
             database001 = database01)
         if ((server01 == "192.168.10.5") and (database01 == "production")):
-            query001 = "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = '"+table_name+"'"
+            # https://www.postgresql.org/docs/9.1/static/infoschema-columns.html
+            query001 = "SELECT column_name, data_type, character_maximum_length, is_nullable FROM information_schema.columns WHERE table_name = '"+table_name+"'"
             self.pg_select(
                 host = server01,
                 database01 = "production",
@@ -1656,7 +1694,9 @@ class Our_Tools(threading.Thread):
         pattern_search = sys.argv[3]
         print "walk_dir: " + walk_dir
         print "pattern_search: " + pattern_search
+
         sys.exit(0)
+
         for root, subdirs, files in os.walk(walk_dir):
             for filename in files:
                 file_path = os.path.join(root, filename)
@@ -1777,6 +1817,41 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'change_regedit001':
+                    # https://www.blog.pythonlibrary.org/2010/03/20/pythons-_winreg-editing-the-windows-registry/
+
+                    keyVal = r'Software\Microsoft\Internet Explorer\Main'
+                    try:
+                        key = OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
+                    except:
+                        key = CreateKey(HKEY_CURRENT_USER, keyVal)
+                    SetValueEx(key, "Start Page", 0, REG_SZ, "http://www.blog.pythonlibrary.org/")
+                    CloseKey(key)
+                    print "done 6549316876"
+
+                    pass
+                    # https://stackoverflow.com/questions/23015222/checking-if-registry-key-exists-with-python
+                elif args[0] == 'read_regedit001':
+                    # https://www.experts-exchange.com/questions/26622655/Python-code-examples-on-how-to-read-Windows-Registry.html
+                    # # the code in it has to be changed a bit
+
+                    # key_to_read = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+                    key_to_read = r'SYSTEM\CurrentControlSet\Services\USBSTOR'
+                    
+                    try:
+                        reg = ConnectRegistry(None, HKEY_LOCAL_MACHINE)
+                        k = OpenKey(reg, key_to_read)
+
+                        result = QueryValueEx(k, "Start")
+                        print k
+                        print "result"
+                        print result
+                    
+                        # do things with the key here ...
+                    
+                    except Exception:
+                        print "Exception in readnig the regedit"
+                    pass
                 elif args[0] == 'singleton':
                     our_Tools001 = Our_Tools()
                     our_Tools001.pg_select(
