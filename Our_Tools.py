@@ -180,6 +180,13 @@ class Person:
 
 class Our_Tools(threading.Thread):
 
+
+    @staticmethod
+    def long_print(num = 10):
+        for i in range(num):
+            print
+        pass
+
     @staticmethod
     def read_file_line_by_line(path_file = "ti.txt"):
         res = ""
@@ -214,6 +221,29 @@ class Our_Tools(threading.Thread):
                 for src, target in replacements.iteritems():
                     line = line.replace(src, target)
                 outfile.write(line)
+        pass
+
+    @staticmethod
+    def manage_usb_store_w_regedit(state = 3):
+        # state = 3 > activated
+        # state = 4 > deactivated
+
+        keyVal = r'SYSTEM\CurrentControlSet\services\USBSTOR'
+        try:
+            key = OpenKey(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\services\USBSTOR', 
+                0
+                # , KEY_ALL_ACCESS      # this is going to create error... have to #dig more
+                )
+            # SetValueEx(key, "Start", 0, REG_DWORD, str(state))
+            # CloseKey(key)
+        except Exception:
+            Our_Tools.long_print()
+            Our_Tools.print_red ("there is error 9876568965654654")
+            sys.exit(0)
+            key = CreateKey(HKEY_CURRENT_USER, keyVal)
+        
+        print "done 6549316876"
+
         pass
 
     @staticmethod
@@ -1817,17 +1847,38 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'change_regedit002':
+                    Our_Tools.manage_usb_store_w_regedit()
+                    pass
+                elif args[0] == 'change_regedit003':
+                    keyVal = r'Software\Microsoft\Internet Explorer\Main'
+                    try:
+                        key = OpenKey(HKEY_CURRENT_USER, r'Software\Microsoft\Internet Explorer\Main', 
+                            0, KEY_ALL_ACCESS)
+                        SetValueEx(key, "Start Page", 0, REG_SZ, "http://www.google.com/")
+                        CloseKey(key)
+                    except:
+                        Our_Tools.print_red('Error qsdmfklqsdjmfkl  azemrjazemlrj  654654564')
+                        key = CreateKey(HKEY_CURRENT_USER, keyVal)
+                    
+                        pass
                 elif args[0] == 'change_regedit001':
                     # https://www.blog.pythonlibrary.org/2010/03/20/pythons-_winreg-editing-the-windows-registry/
 
 
                     keyVal = r'Software\Microsoft\Internet Explorer\Main'
+                    # keyVal = r'SYSTEM\CurrentControlSet\Services\USBSTOR'
                     try:
-                        key = OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
+                        # key = OpenKey(HKEY_CURRENT_USER, keyVal, 0, KEY_ALL_ACCESS)
+                        # key = OpenKey(HKEY_LOCAL_MACHINE, keyVal, 0, KEY_ALL_ACCESS)
+                        key = OpenKey(HKEY_LOCAL_MACHINE, r'Software\Microsoft\Internet Explorer\Main', 
+                            0, KEY_ALL_ACCESS)
+                        # SetValueEx(key, "Start Page", 0, REG_SZ, "http://google.com")
+                        # CloseKey(key)
                     except:
+                        Our_Tools.print_red("Error 6543216aaeer3qsdf564654")
                         key = CreateKey(HKEY_CURRENT_USER, keyVal)
-                    SetValueEx(key, "Start Page", 0, REG_SZ, "http://www.blog.pythonlibrary.org/")
-                    CloseKey(key)
+                    
                     print "done 6549316876"
 
                     pass
