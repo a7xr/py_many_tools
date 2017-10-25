@@ -228,12 +228,15 @@ class Our_Tools(threading.Thread):
         # state = 3 > activated
         # state = 4 > deactivated
 
+        # this has to be run as an administrator_account
+
         keyVal = r'SYSTEM\CurrentControlSet\services\USBSTOR'
+        key = OpenKey(HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\services\\USBSTOR', 
+            0
+            , KEY_ALL_ACCESS      # this is going to create error... have to #dig more
+            )
         try:
-            key = OpenKey(HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\services\USBSTOR', 
-                0
-                # , KEY_ALL_ACCESS      # this is going to create error... have to #dig more
-                )
+            pass
             # SetValueEx(key, "Start", 0, REG_DWORD, str(state))
             # CloseKey(key)
         except Exception:
