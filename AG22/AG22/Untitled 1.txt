@@ -1,0 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: cp1252  -*-
+
+from datetime import date
+
+dateNow = date.today()+1
+print str(dateNow)
