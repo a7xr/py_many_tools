@@ -19,6 +19,7 @@ import urllib
 import fileinput
 import shutil
 from _winreg import *
+import csv
 
 from ConfigParser import SafeConfigParser
 
@@ -229,23 +230,41 @@ class Our_Tools(threading.Thread):
         # state = 4 > deactivated
 
         # this has to be run as an administrator_account
-
         keyVal = r'SYSTEM\CurrentControlSet\services\USBSTOR'
-        key = OpenKey(HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\services\\USBSTOR', 
+
+        try:
+            key = OpenKey(HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\services\\USBSTOR', 
             0
             , KEY_ALL_ACCESS      # this is going to create error... have to #dig more
             )
-        try:
+
+            # print "key"
+            # print key
+#             
+            # result = QueryValueEx(key, "Start")
+# 
+            # print "result"
+            # print result
+
+            # SetValueEx(key, "Start Page", 0, REG_SZ, "http://www.google.com/")
+            SetValueEx(key, "Start", 0, REG_DWORD, state)
+
+            CloseKey(key)
+
             pass
             # SetValueEx(key, "Start", 0, REG_DWORD, str(state))
             # CloseKey(key)
+        except WindowsError:
+            Our_Tools.long_print()
+            Our_Tools.print_red('Vous devez executer cette commande en compte_Admin 654987312344566')
+            pass
         except Exception:
             Our_Tools.long_print()
             Our_Tools.print_red ("there is error 9876568965654654")
             sys.exit(0)
             key = CreateKey(HKEY_CURRENT_USER, keyVal)
         
-        print "done 6549316876"
+        # print "done 6549316876"
 
         pass
 
@@ -472,10 +491,22 @@ class Our_Tools(threading.Thread):
             print "tsisy nininn ao am lot_s aah"
             sys.exit(0)
 
-        all_lots = "','".join(datas)
-        all_lots = "'" + all_lots + "'"
+        all_lots = ""
+        for lot01 in datas:
+            if isinstance(lot01, float):
+                all_lots += "'" + '{:.0f}'.format(lot01) + "', "
+            elif (isinstance(lot01, unicode) or isinstance(lot01, str) ):
+                all_lots += "'" + str(lot01) + "', "
 
-        # print all_lots
+            # # 'BE_20170923_02_P_R','BE_20170923_03_P_R', ...
+            # # no tanjona
+
+
+        # all_lots = "','".join(datas)
+        # all_lots = "'" + all_lots + "'"
+        all_lots = all_lots[:-2]
+
+        print all_lots
         # sys.exit(0)
         # print all_lots
         # # 'BE_20170923_02_P_R','BE_20170923_03_P_R', ...
@@ -736,15 +767,61 @@ class Our_Tools(threading.Thread):
         print "- host, db, table, output"
         print "- ex: python script001.py -e 192.168.10.5 production RED001_S1 out.xlsx"
 
+        Our_Tools.long_print(num = 5)
+
+        print "Option: -T manage_usb_storage activate"
+        print "- To Activate the USB_storage"
+        print "Option: -T manage_usb_storage deactivate"
+        print "- To DeActivate the USB_storage"
+
+        Our_Tools.long_print(num = 5)
+
+
+    @staticmethod
+    def csv_test003():
+
+        
+        f = open('names.csv', 'ab')
+
+        with f:
+            
+            fnames = ['first_name', 'last_name']
+            writer = csv.DictWriter(f, fieldnames=fnames)    
+        
+            writer.writeheader()
+            writer.writerow({'first_name' : 'John', 'last_name': 'Smith'})
+            writer.writerow({'first_name' : 'Robert', 'last_name': 'Brown'})
+            writer.writerow({'first_name' : 'Julia', 'last_name': 'Griffin'})
+
+        pass
+
+    @staticmethod
+    def csv_test002():
+        csv.register_dialect("hashes", delimiter="#")
+
+        f = open('items3.csv', 'ab')
+        
+        with f:
+        
+            writer = csv.writer(f, dialect="hashes")
+            writer.writerow(("pens", 4)) 
+            writer.writerow(("plates", 2))
+            writer.writerow(("bottles", 4))
+            writer.writerow(("cups", 1))
+        pass
 
     @staticmethod
     def csv_test001():
-        print "methode csv_test001"
-        print "https://docs.python.org/2/library/csv.html"
+        # print "methode csv_test001"
+        # print "https://docs.python.org/2/library/csv.html"
+        # print "https://pythonspot.com/en/files-spreadsheets-csv/"
 
-
-
-        pass
+        with open('persons.csv', 'ab') as csvfile:
+            filewriter = csv.writer(csvfile, delimiter=',', quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            filewriter.writerow(['Name', 'Profession'])
+            filewriter.writerow(['Derek', 'Software Developer'])
+            filewriter.writerow(['Steve', 'Software Developer'])
+            filewriter.writerow(['Paul', 'Manager'])
 
     def pg_select(self, 
             host = "192.168.10.5",
@@ -1850,8 +1927,20 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
-                elif args[0] == 'change_regedit002':
-                    Our_Tools.manage_usb_store_w_regedit()
+                elif args[0] == 'manage_usb_storage':
+                    # print "sys.argv"
+                    # print sys.argv
+                    # # just remember, sys.argv is going to contain everything which is 
+                    # # # given to the prompt... even if the the name of the script
+                    # sys.exit(0)
+                    if (len(sys.argv) == 4) and sys.argv[3] == 'activate':
+                        Our_Tools.manage_usb_store_w_regedit(state = 3)
+                        Our_Tools.print_green('USB_storage Activated')
+                    elif (len(sys.argv) == 4) and sys.argv[3] == 'deactivate':
+                        Our_Tools.manage_usb_store_w_regedit(state = 4)
+                        Our_Tools.print_green('USB_storage DeActivated')
+                    else:
+                        Our_Tools.usage()
                     pass
                 elif args[0] == 'change_regedit003':
                     keyVal = r'Software\Microsoft\Internet Explorer\Main'
@@ -1905,7 +1994,7 @@ def main():
                         # do things with the key here ...
                     
                     except Exception:
-                        print "Exception in readnig the regedit"
+                        print "Exception in reading the regedit"
                     pass
                 elif args[0] == 'singleton':
                     our_Tools001 = Our_Tools()
@@ -1917,7 +2006,11 @@ def main():
                     for row in our_Tools001.rows_pg_10_5__sdsi:
                         print row
                     pass
-                elif args[0] == 'csv':
+                elif args[0] == 'csv_write003':
+                    Our_Tools.csv_test003()
+                elif args[0] == 'csv_write002':
+                    Our_Tools.csv_test002()
+                elif args[0] == 'csv_write001':
                     Our_Tools.csv_test001()
                     # print 'csv'
                     pass
