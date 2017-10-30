@@ -783,6 +783,25 @@ class Our_Tools(threading.Thread):
 
 
     @staticmethod
+    def csv_read():
+        with open('names.csv') as csv_read:
+            reader = csv.reader(csv_read)
+            for row in reader:
+                print row
+        pass
+
+    @staticmethod
+    def csv_to_list(path_file = 'names.csv'):
+        list_res = []
+        with open(path_file) as csv_read:
+            reader = csv.reader(csv_read)
+
+            for row in reader :
+                list_res.append(row)
+        return list_res
+
+
+    @staticmethod
     def csv_test003():
 
         
@@ -2011,6 +2030,12 @@ def main():
                     for row in our_Tools001.rows_pg_10_5__sdsi:
                         print row
                     pass
+                elif args[0] == 'csv_read001':
+                    our_tools = Our_Tools()
+                    l001 = our_tools.csv_to_list()
+                    print l001
+                elif args[0] == 'csv_read':
+                    Our_Tools.csv_read()
                 elif args[0] == 'csv_write003':
                     Our_Tools.csv_test003()
                 elif args[0] == 'csv_write002':
