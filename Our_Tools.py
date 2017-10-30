@@ -795,7 +795,6 @@ class Our_Tools(threading.Thread):
         list_res = []
         with open(path_file) as csv_read:
             reader = csv.reader(csv_read)
-
             for row in reader :
                 list_res.append(row)
         return list_res
@@ -947,7 +946,6 @@ class Our_Tools(threading.Thread):
         self.long_print()
         print "table_prod: " + self.table_prod001
 
-
         txt01 = 'Etes-vous sure que table_prod = ' + self.table_prod001 + ' [y/n]'
         confirm_table_prod = raw_input(txt01)
 
@@ -1092,6 +1090,7 @@ class Our_Tools(threading.Thread):
             # )
             # pass
 
+        raw_input("Creation de table("+self.table_prod001+"_s1)")
         self.create_table_prod(query_prod = content_s1_sql)
         
         
@@ -1105,6 +1104,7 @@ class Our_Tools(threading.Thread):
         # raw_input()
 
         content_c_sql = Our_Tools.read_file_line_by_line(self.c_sql_output)
+        raw_input("Creation de table(" + self.table_prod001 + "_c)")
         self.create_table_prod(query_prod = content_c_sql)
         # print content_c_sql
 
@@ -1112,6 +1112,7 @@ class Our_Tools(threading.Thread):
 
         content_q_sql = Our_Tools.read_file_line_by_line(self.q_sql_output)
         # print content_q_sql
+        raw_input("Creation de table(" + self.table_prod001 + "_q)")
         self.create_table_prod(query_prod = content_q_sql)
         
         txt001 = "Les tables "+self.table_prod001+"_s1, "+self.table_prod001+"_s1, "+self.table_prod001+"_s1"
@@ -1134,6 +1135,10 @@ class Our_Tools(threading.Thread):
             query_update_passe_c,
             query_update_passe_q
         ]
+
+        raw_input('')
+        for row in list_queries_upd_passe:
+            print row
 
         self.execute_list_queries_not_select(list_queries_upd_passe)
 
