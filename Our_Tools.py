@@ -53,8 +53,6 @@ except Exception:
 
 print "Toute les packets utils au bon fonctionnement du programme sont installees"
 
-
-
 # importation_installation()
 
 reload(sys)
@@ -700,15 +698,15 @@ class Our_Tools(threading.Thread):
 
         print "Usage: "
         print "Option: -h, --help"
-        print "> script001.py -h"
-        print "> script001.py --help"
+        print "> Our_Tools.py -h"
+        print "> Our_Tools.py --help"
         print "- - ces 2scripts font la meme chose"
         print "- - ils vont afficher cette Aide"
 
         Our_Tools.long_print(num = 5)
 
         print "Option: -L, --long-print"
-        print "> script001.py -L"
+        print "> Our_Tools.py -L"
         print "- - pour afficher 70lignes vides qui vont immiter 'cls' ou 'clear'"
         print "- - "
         print "- - pour effacer l_ecran"
@@ -720,15 +718,15 @@ class Our_Tools(threading.Thread):
         print 'dans cette programme, il va faire rien du tout'
         print '-'
         print '-'
-        print "> script001.py -c /path/folder001/ pattern_search001"
+        print "> Our_Tools.py -c /path/folder001/ pattern_search001"
         print "OU"
-        print "> script001.py --crawl /path/folder001/ pattern_search001"
+        print "> Our_Tools.py --crawl /path/folder001/ pattern_search001"
         print '- - cela va chercher "pattern_search001" dans le chemin(/path/folder001/)'
 
         Our_Tools.long_print(num = 5)
 
         print "Option: -d, --directory"
-        print "> script001.py -d"
+        print "> Our_Tools.py -d"
         print "- - pour chercher un repertoire dans un ordi"
         print "- - "
         print "- - C_est la meme que:"
@@ -737,7 +735,7 @@ class Our_Tools(threading.Thread):
         Our_Tools.long_print(num = 5)
 
         print "Option: -s, --suppression_gpao_unique"
-        print "> script001.py -s"
+        print "> Our_Tools.py -s"
         print "- - pour la suppression de gpao unique"
         print "- - "
         
@@ -747,7 +745,7 @@ class Our_Tools(threading.Thread):
         print "Option: -T, --all_tests"
         print "Pour faire des test que j_ai trouvee sur Internet"
         print
-        print "script001.py -T dl link01 file_save"
+        print "Our_Tools.py -T dl link01 file_save"
         print "Soyez en sure que link01 est de type(http://XXX/YYY.qsd"
 
 
@@ -757,15 +755,15 @@ class Our_Tools(threading.Thread):
         print "- Ceci est en cours de Developpement"
         print "- Finit mais pas encore testee"
         print "- Pour faire les traitements des Tickets SOGEC-SGC"
-        print "- ex: python script001.py -S"
-        print "- ex: python script001.py --sgc"
+        print "- ex: python Our_Tools.py -S"
+        print "- ex: python Our_Tools.py --sgc"
 
         Our_Tools.long_print(num = 5)
 
         print "Option: -e, --export_table"
         print "- Pour exporter le contenu de certain table dans du fichier_excel"
         print "- host, db, table, output"
-        print "- ex: python script001.py -e 192.168.10.5 production RED001_S1 out.xlsx"
+        print "- ex: python Our_Tools.py -e 192.168.10.5 production RED001_S1 out.xlsx"
 
         Our_Tools.long_print(num = 5)
 
