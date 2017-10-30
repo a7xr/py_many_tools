@@ -617,11 +617,12 @@ class Our_Tools(threading.Thread):
 
         i = 0
         txt001 = """
-# ################################################################
+##################################################################
 # Dans bdd(sdsi) pour la commande("""+cmd001+""")
-# ################################################################
+##################################################################
 # 
 # 
+
          """
         self.logging_n_print( 
             txt = txt001 ,
@@ -675,7 +676,8 @@ class Our_Tools(threading.Thread):
                 )
             self.cursor_pg_10_5__bdd_sdsi.execute(query01)
             self.connect_pg_10_5__prod.commit()
-        elif ( (host == "192.168.10.5") and (db == "production") ):
+        elif ( (host == "192.168.10.5")
+               and (db == "production") ):
             try: # de meme que sdsi@10.5
                 self.connect_pg_10_5__prod
             except AttributeError:
@@ -769,6 +771,7 @@ class Our_Tools(threading.Thread):
         Our_Tools.long_print(num = 5)
 
         print "Option: -T manage_usb_storage activate"
+        print '###########Ceci doit etre executee en tant que compte_Admin###########'
         print "- To Activate the USB_storage"
         print "Option: -T manage_usb_storage deactivate"
         print "- To DeActivate the USB_storage"
