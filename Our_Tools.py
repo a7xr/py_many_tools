@@ -300,6 +300,8 @@ class Our_Tools(threading.Thread):
                         self.connect_pg_10_5_sdsi.set_isolation_level(0)
                         self.cursor_pg_10_5__bdd_sdsi = self.connect_pg_10_5_sdsi.cursor()
                         print "Connection OK au pg10.5 bdd(sdsi)"
+
+
     
                 elif (database01 == parser.get('pg_10_5_production', 'database')):
                     self.connect_pg_10_5__prod = psycopg2.connect(
@@ -311,6 +313,21 @@ class Our_Tools(threading.Thread):
                     self.connect_pg_10_5__prod.set_isolation_level(0)
                     self.cursor_pg_10_5__bdd_prod = self.connect_pg_10_5__prod.cursor()
                     print "Connection OK au pg "+server01+" bdd("+database01+")"
+            elif(server01 == parser.get('pg_localhost_sdsi', 'ip_host')):
+                if (database01 == parser.get('pg_localhost_sdsi', 'database')):
+                    try:
+                        self.connect_pg_local_sdsi
+                    except AttributeError:
+                        self.connect_pg_local_sdsi = psycopg2.connect(
+                            "dbname=" + database01
+                            +" user=" + user01
+                            +" password=" + password01
+                            +" host=" + server01
+                        )
+                        self.connect_pg_local_sdsi.set_isolation_level(0)
+                        self.cursor_pg_local__bdd_sdsi = self.connect_pg_local_sdsi.cursor()
+                        print "Connection OK au pg_localhost bdd(sdsi_local)"
+                pass
         except(psycopg2.OperationalError):
             print ""
             print ""
@@ -387,6 +404,18 @@ class Our_Tools(threading.Thread):
         # print "parser.get('pg_10_5_production', 'ip_host')"
         # print parser.get('pg_10_5_production', 'ip_host')
         # sys.exit(0)
+
+        #ato
+        # self.connect_pg(
+            # server01 = parser.get('pg_localhost_sdsi', 'ip_host'),
+            # user01=parser.get('pg_localhost_sdsi', 'username'),
+            # password01=parser.get('pg_localhost_sdsi', 'password'),
+            # database01=parser.get('pg_localhost_sdsi', 'database')
+        # )
+# 
+# 
+        # sys.exit(0)
+
         self.connect_pg(
             server01 = parser.get('pg_10_5_production', 'ip_host'),
             user01=parser.get('pg_10_5_production', 'username'),
@@ -930,7 +959,7 @@ class Our_Tools(threading.Thread):
 
 
     def sgc001(self,
-        table_prod = "sgal75"):
+        table_prod = "sgal85"):
 
         self.table_prod001 = table_prod
 
@@ -963,7 +992,7 @@ class Our_Tools(threading.Thread):
         # connection to dbb
         self.connect_pg(
             server01 = parser.get('pg_10_5_production', 'ip_host'),
-            user01=parser.get('pg_10_5_production', 'username'),
+            user01 = parser.get('pg_10_5_production', 'username'),
             password01=parser.get('pg_10_5_production', 'password'),
             database01=parser.get('pg_10_5_production', 'database')
         )
@@ -973,9 +1002,6 @@ class Our_Tools(threading.Thread):
             password01=parser.get('pg_10_5_sdsi', 'password'),
             database01=parser.get('pg_10_5_sdsi', 'database')
         )
-
-
-
 
 
         # print "self.sous_dossier01: " + self.sous_dossier01
@@ -1136,9 +1162,10 @@ class Our_Tools(threading.Thread):
             query_update_passe_q
         ]
 
-        raw_input('')
+        raw_input('Voici les m_a_j de la table_passe')
         for row in list_queries_upd_passe:
             print row
+        raw_input("Va faire une m_a_j de table_passe")
 
         self.execute_list_queries_not_select(list_queries_upd_passe)
 
@@ -1751,6 +1778,27 @@ class Our_Tools(threading.Thread):
         print txt
         set_text_attr(default_colors)
 
+    def close_connection(
+            self,
+            host = '192.168.10.5',
+            database01 = 'sdsi'):
+        if(server01 == parser.get('pg_10_5_sdsi', 'ip_host')) and (database01 == parser.get('pg_10_5_sdsi', 'database')):
+            try:
+                self.connect_pg_10_5_sdsi
+                self.connect_pg_10_5_sdsi.close()
+            except AttributeError:
+                Our_Tools.print_red('Il semble que le programme n_est meme pas connectee')
+                sys.exit(0)
+        elif ((server01 == parser.get('pg_10_5_sdsi', 'ip_host') and (
+            database01 == parser.get('pg_10_5_sdsi', 'database')))  ):
+            try:
+                self.connect_pg_10_5_sdsi
+                self.connect_pg_10_5_sdsi.close()
+            except AttributeError:
+                Our_Tools.print_red('Il semble que le programme n_est meme pas connectee')
+                sys.exit(0)
+        pass
+
 
     @staticmethod
     def replace_accent(
@@ -1794,13 +1842,14 @@ class Our_Tools(threading.Thread):
         self,
         query_prod = ""
     ):
+        print "execute create table_prod"
+
+        self.pg_not_select(
+            query01=query_prod,
+            host="192.168.10.5",
+            db="production")
         try:
-            print "execute create table_prod"
-            
-            # self.pg_not_select(
-                    # query01 = query_prod,
-                    # host = "192.168.10.5",
-                    # db = "production")
+            pass
 
         except psycopg2.ProgrammingError:
             print "programming error"
@@ -1815,6 +1864,7 @@ class Our_Tools(threading.Thread):
             Our_Tools.print_green(
                 txt = txt002
             )
+
             sys.exit(0)
             pass
         pass
