@@ -21,6 +21,7 @@ import fileinput
 import shutil
 from _winreg import *
 import csv
+import ctypes
 
 from ConfigParser import SafeConfigParser
 
@@ -52,7 +53,7 @@ except Exception:
     raw_input()
     os.system("pip install xlsxwriter")
 
-print "Toute les packets utils au bon fonctionnement du programme sont installees"
+# print "Toute les packets utils au bon fonctionnement du programme sont installees"
 
 # importation_installation()
 
@@ -180,8 +181,17 @@ class Person:
 
 class Our_Tools(threading.Thread):
 
-    def copy_vdi(self):
-        pass
+    @staticmethod
+    def copy_dir_content(
+            path_src = 'E:\DISK_D\date',
+            path_target = 'E:\DISK_D\ASA\BLF') :
+        from distutils.dir_util import copy_tree
+
+        # copy subdirectory example
+        # fromDirectory = "/a/b/c"
+        # toDirectory = "/x/y/z"
+
+        copy_tree(path_src, path_target)
 
     @staticmethod
     def long_print(num = 10):
@@ -236,19 +246,42 @@ class Our_Tools(threading.Thread):
         try:
             key = OpenKey(HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\services\\USBSTOR', 
             0
-            , KEY_ALL_ACCESS      # this is going to create error... have to #dig more
+            , KEY_ALL_ACCESS      # this is going to create error if you ran the method without admin_account
             )
-
-            # print "key"
-            # print key
-#             
-            # result = QueryValueEx(key, "Start")
-# 
-            # print "result"
-            # print result
 
             # SetValueEx(key, "Start Page", 0, REG_SZ, "http://www.google.com/")
             SetValueEx(key, "Start", 0, REG_DWORD, state)
+
+            if state == 3:
+                Our_Tools.print_green(
+                    txt = 'USB_storage Activated',
+                    new_line = False)
+                pass
+
+                Our_Tools.popup(
+                    window_title = "USBSTOR",
+                    msg = "Veuillez ReConnecter votre USB pour l_Activee")
+
+            elif state == 4:
+                # Our_Tools.print_green(
+                    # txt = 'USB_storage DeActivated',
+                    # new_line = False)
+
+                Our_Tools.print_green(
+                    txt = 'USB_storage',
+                    new_line = False)
+                Our_Tools.print_red(
+                    txt = 'De',
+                    new_line = False)
+                Our_Tools.print_green(
+                    txt = 'Activated',
+                    new_line = False)
+
+                Our_Tools.popup(
+                    window_title = "USBSTOR",
+                    msg = "Veuillez ReConnecter votre USB pour le DesActivee")
+
+                pass
 
             CloseKey(key)
 
@@ -257,7 +290,10 @@ class Our_Tools(threading.Thread):
             # CloseKey(key)
         except WindowsError:
             Our_Tools.long_print()
-            Our_Tools.print_red('Vous devez executer cette commande en compte_Admin 654987312344566')
+            Our_Tools.print_red(
+                txt = 'Vous devez executer cette commande en compte_Admin 654987312344566',
+                new_line = False)
+            # print "this is a test"
             pass
         except Exception:
             Our_Tools.long_print()
@@ -927,31 +963,88 @@ class Our_Tools(threading.Thread):
         self.sec = sec
         pass
 
+
+    @staticmethod
+    def popup(
+                window_title = "Window Title",
+                msg = "Message to show"):
+        """
+        return 6 if you clicked yes
+        return 7 if you clicked nope
+        """
+
+        # print "This break message was sent on "+time.ctime()
+        messageBox = ctypes.windll.user32.MessageBoxA
+        returnValue = messageBox(None, 
+            msg, 
+            window_title, 
+            0x40 | 0x4)
+        return returnValue
+
+        # if returnValue == 6:
+            # messageBox = ctypes.windll.user32.MessageBoxA
+            # returnValue = messageBox(None, "TextRespondingToAnswerYes", "SWindowTitle", 0x40 | 0x0)
+        # elif returnValue == 7:
+            # messageBox = ctypes.windll.user32.MessageBoxA
+            # returnValue = messageBox(None, "TextRespondingToAnswerNo", "WindowTitle", 0x40 | 0x0)
+# 
+        # while (count < 4):
+            # time.sleep(60*60*2)
+            # print "This break message was sent on"+time.ctime()
+            # messageBox = ctypes.windll.user32.MessageBoxA
+            # returnValue = messageBox(None, "TextAskingToDoSomething", "WindowTitle", 0x40 | 0x4)
+            # if returnValue == 6:
+                # messageBox = ctypes.windll.user32.MessageBoxA
+                # returnValue = messageBox(None, "TextRespondingToAnswerYes", "WindowTitle", 0x40 | 0x0)
+            # elif returnValue == 7:
+                # messageBox = ctypes.windll.user32.MessageBoxA
+                # returnValue = messageBox(None, "TextRespondingToAnswerNo", "WindowTitle", 0x40 | 0x0)
+            # count = count + 1
+# 
+        # time.localtime()
+        pass
+
     def set_flag_copy_vdi(self, copy_vdi = True):
         self.copy_vdi = True
 
 
-    def test_thread001(self, test_thread001 = True):
-        if test_thread001:
-            start_time = time.time()
-            while True:
+    # this is going to run if there is D:\\vdi_debian9_64b
+    def process_copy_vdi_debian(
+            self, 
+            delay = 3):
+        
+        start_time = time.time()
+        while True:
+            # # print type(time.time() - start_time)
+            # # time.sleep(1)
+            # if (time.time.now() - start_time) == 25200: # 25200sec = 7h
+            if (time.time() - start_time) >= delay:
+                print "baaam"
+                # if (os.path.exists('D:\\vdi_debian9_64b')):
+                print "ao amle anovana copie"
+                # path_src = "C:\\Users\10477\\VirtualBox VMs\\Debian9_64bits"
+                path_src = "D:\efi"
+                path_target = "D:\\vdi_debian9_64b"
 
-                # # print type(time.time() - start_time)
-                # # time.sleep(1)
-                # if (time.time.now() - start_time) == 25200:
-                if (time.time() - start_time) >= 3:
-                    print "baaam"
-                    sys.exit(0)
-                else:
-                    print time.strftime("%H:%M:%S")
-                    time.sleep(1)
+                os.rmtree(path_target)
 
-
+                Our_Tools.copy_dir_content(path_src, path_target)
+                # else:
+                Our_Tools.popup(
+                    window_title = "Info Copie vdi_debian",
+                    msg = "D:\\vdi_debian9_64b est Absent")
+                print "Tsy Ao ilay target_copie vdi_debian"
+                sys.exit(0)
+            else:
                 # print time.strftime("%H:%M:%S")
-                # time.sleep(1)
-                # if (time.strftime("%H:%M:%S") == '15:57:55'):
-                    # print "checked"
-                    # sys.exit(0)
+                print '{:05.0f}'.format(delay - (time.time() - start_time))
+                time.sleep(1)
+            # print time.strftime("%H:%M:%S")
+            # time.sleep(1)
+            # if (time.strftime("%H:%M:%S") == '15:57:55'):
+                # print "checked"
+                # sys.exit(0)
+
 
     # in the class_Our_Tools
     def run(self):
@@ -964,9 +1057,17 @@ class Our_Tools(threading.Thread):
             try:
                 self.copy_vdi
                 if self.copy_vdi:
-                    print "aaaaa"
-                    self.test_thread001(test_thread001 = True)
-                    print "bbbbbbb"
+                    # print "aaaaa"
+                    if (os.path.exists('D:\\vdi_debian9_64b')):
+                        Our_Tools.popup(
+                            window_title = "Info Copie vdi_debian",
+                            msg = "Copie du vdi_debian va s_executer apres 7h")
+                        
+                        self.process_copy_vdi_debian(delay = 25200) # 25200 = 7h
+                    # print "bbbbbbb"
+                else:
+                    #todo
+                    pass
             except AttributeError:
                 pass
             
@@ -1848,39 +1949,67 @@ where idcommande ilike 'crh%'
 
         pass
 
+    @staticmethod
+    def print_yellow(
+            txt = "this is a test",
+            new_line = True):
+        default_colors = get_text_attr()
+        default_bg = default_colors & 0x0070
+        set_text_attr(
+            FOREGROUND_YELLOW | 
+            default_bg |
+            FOREGROUND_INTENSITY)
+        if new_line == True:
+            print txt
+        else:
+            print txt,
+        set_text_attr(default_colors)
 
     @staticmethod
-    def print_green(txt = "this is a test"):
+    def print_green(
+            txt = "this is a test",
+            new_line = True):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
             FOREGROUND_GREEN | 
             default_bg |
             FOREGROUND_INTENSITY)
-        print txt
+        if new_line == True:
+            print txt
+        else:
+            print txt,
         set_text_attr(default_colors)
 
     @staticmethod
-    def print_blue(txt = "this is a test"):
+    def print_blue(txt = "this is a test",
+            new_line = True):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
             FOREGROUND_BLUE | 
             default_bg |
             FOREGROUND_INTENSITY)
-        print txt
+        if new_line == True:
+            print txt
+        else:
+            print txt,
         set_text_attr(default_colors)
 
 
     @staticmethod
-    def print_red(txt = "this is a test"):
+    def print_red(txt = "this is a test",
+            new_line = True):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
             FOREGROUND_RED | 
             default_bg |
             FOREGROUND_INTENSITY)
-        print txt
+        if new_line == True:
+            print txt
+        else:
+            print txt,
         set_text_attr(default_colors)
 
     def close_connection(
@@ -1940,7 +2069,6 @@ where idcommande ilike 'crh%'
                         print "missing"
                 file_path = os.path.join(root, filename)
                 print "file_path: " + file_path
-
         pass
 
     def export_rows_pg_to_xl(self,
@@ -2130,7 +2258,13 @@ def main():
                 if args[0] == 'p':
                     p = Person()
 
-                elif args[0] == 'test_thread002':
+                elif args[0] == 'test_copy_dir':
+                    Our_Tools.copy_dir_content()
+                    pass
+                elif args[0] == 'test_pop_up':
+                    Our_Tools.popup()
+
+                elif args[0] == 'test_copy_vdi_debian':
                     our_tools = Our_Tools(is_thread = True)
                     our_tools.set_flag_copy_vdi()
                     our_tools.start()
@@ -2160,10 +2294,10 @@ def main():
                     # sys.exit(0)
                     if (len(sys.argv) == 4) and sys.argv[3] == 'activate':
                         Our_Tools.manage_usb_store_w_regedit(state = 3)
-                        Our_Tools.print_green('USB_storage Activated')
+                        # Our_Tools.print_green('USB_storage Activated')
                     elif (len(sys.argv) == 4) and sys.argv[3] == 'deactivate':
                         Our_Tools.manage_usb_store_w_regedit(state = 4)
-                        Our_Tools.print_green('USB_storage DeActivated')
+                        # Our_Tools.print_green('USB_storage DeActivated')
                     else:
                         Our_Tools.usage()
                     pass
