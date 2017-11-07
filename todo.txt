@@ -1,0 +1,13 @@
+create a thread which copies the vdi
+[done] - asio chp we thread
+[done] - mnw test anle time01
+- - mnw calcule we isakn apres 7h de demarrage machine dia 
+- - - alaina ilay date_deb
+- - - testena we (increment_time - date_deb) == 25200
+- - - - si oui: mnw copie anlay debian.vdi
+- - - - si non: r1 faire
+- - - 
+- - -
+- - - 
+- - atw any anaty startup ilay mnw anle copie_deb_vdi
+- - isaknle time01 dia mnw zvt

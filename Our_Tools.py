@@ -14,6 +14,7 @@ import getopt
 import logging
 import threading
 import time
+import datetime
 from msvcrt import getch
 import urllib
 import fileinput
@@ -179,6 +180,8 @@ class Person:
 
 class Our_Tools(threading.Thread):
 
+    def copy_vdi(self):
+        pass
 
     @staticmethod
     def long_print(num = 10):
@@ -279,13 +282,12 @@ class Our_Tools(threading.Thread):
         replacer = Our_Tools.replacer_factory(changmt)
         return re.sub(pattern, replacer, text)
 
-    def connect_pg(self, 
+    def connection_pg(self, 
             server01 = '127.0.0.1',
             user01='postgres',
             password01='123456',
             database01='saisie'):
         try:
-
             if(server01 == parser.get('pg_10_5_sdsi', 'ip_host')):
                 if (database01 == parser.get('pg_10_5_sdsi', 'database')):
                     try:
@@ -406,7 +408,7 @@ class Our_Tools(threading.Thread):
         # sys.exit(0)
 
         #ato
-        # self.connect_pg(
+        # self.connection_pg(
             # server01 = parser.get('pg_localhost_sdsi', 'ip_host'),
             # user01=parser.get('pg_localhost_sdsi', 'username'),
             # password01=parser.get('pg_localhost_sdsi', 'password'),
@@ -416,13 +418,13 @@ class Our_Tools(threading.Thread):
 # 
         # sys.exit(0)
 
-        self.connect_pg(
+        self.connection_pg(
             server01 = parser.get('pg_10_5_production', 'ip_host'),
             user01=parser.get('pg_10_5_production', 'username'),
             password01=parser.get('pg_10_5_production', 'password'),
             database01=parser.get('pg_10_5_production', 'database')
             )
-        self.connect_pg(
+        self.connection_pg(
             server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
             user01=parser.get('pg_10_5_sdsi', 'username'),
             password01=parser.get('pg_10_5_sdsi', 'password'),
@@ -696,7 +698,7 @@ class Our_Tools(threading.Thread):
             try:
                 self.connect_pg_10_5_sdsi
             except AttributeError:  
-                self.connect_pg(    # on fait une connection aa la base car elle est inexistant
+                self.connection_pg(    # on fait une connection aa la base car elle est inexistant
                     # cette methode va definir self.cursor_pg_10_5__bdd_sdsi
                     server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                     user01=parser.get('pg_10_5_sdsi', 'username'),
@@ -710,7 +712,7 @@ class Our_Tools(threading.Thread):
             try: # de meme que sdsi@10.5
                 self.connect_pg_10_5__prod
             except AttributeError:
-                self.connect_pg( # on fait une connection aa la base car elle est inexistant
+                self.connection_pg( # on fait une connection aa la base car elle est inexistant
                     server01 = parser.get('pg_10_5_production', 'ip_host'),
                     user01=parser.get('pg_10_5_production', 'username'),
                     password01=parser.get('pg_10_5_production', 'password'),
@@ -885,7 +887,7 @@ class Our_Tools(threading.Thread):
             try:
                 self.connect_pg_10_5_sdsi
             except AttributeError:  
-                self.connect_pg(    # on fait une connection aa la base car elle est inexistant
+                self.connection_pg(    # on fait une connection aa la base car elle est inexistant
                     server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                     user01=parser.get('pg_10_5_sdsi', 'username'),
                     password01=parser.get('pg_10_5_sdsi', 'password'),
@@ -897,7 +899,7 @@ class Our_Tools(threading.Thread):
             try: # de meme que sdsi@10.5
                 self.connect_pg_10_5__prod
             except AttributeError:
-                self.connect_pg( # on fait une connection aa la base car elle est inexistant
+                self.connection_pg( # on fait une connection aa la base car elle est inexistant
                     server01 = parser.get('pg_10_5_production', 'ip_host'),
                     user01=parser.get('pg_10_5_production', 'username'),
                     password01=parser.get('pg_10_5_production', 'password'),
@@ -908,40 +910,108 @@ class Our_Tools(threading.Thread):
             print ""
 
 
+    def set_moment(
+            self,
+            year,
+            month,
+            date,
+            hour,
+            min,
+            sec
+        ):
+        self.year = year
+        self.month = month
+        self.date = date
+        self.hour = hour
+        self.min = min
+        self.sec = sec
+        pass
+
+    def set_flag_copy_vdi(self, copy_vdi = True):
+        self.copy_vdi = True
+
+
+    def test_thread001(self, test_thread001 = True):
+        if test_thread001:
+            start_time = time.time()
+            while True:
+
+                # # print type(time.time() - start_time)
+                # # time.sleep(1)
+                # if (time.time.now() - start_time) == 25200:
+                if (time.time() - start_time) >= 3:
+                    print "baaam"
+                    sys.exit(0)
+                else:
+                    print time.strftime("%H:%M:%S")
+                    time.sleep(1)
+
+
+                # print time.strftime("%H:%M:%S")
+                # time.sleep(1)
+                # if (time.strftime("%H:%M:%S") == '15:57:55'):
+                    # print "checked"
+                    # sys.exit(0)
 
     # in the class_Our_Tools
     def run(self):
         # i = 0
-        try:
-            while True:
-                # if (i < 5):
-                    # print str(i) + " - this is a thread of class_our_tools\n",
-                    # time.sleep(self.time_test_connection)
-                    # i += 1
-                # else:
-                    # break
-                key = ord(getch())  # https://stackoverflow.com/questions/12175964/python-method-for-reading-keypress
-                print key
-                if key == 3:
-                    raise KeyboardInterrupt() # https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
-                elif key == 117:    # pressed__u
-                    self.pg_select(
-                        host = "192.168.10.5",
-                        database01 = "production",
-                        query = "SELECT 1"
-                    )
-                    if (self.rows_pg_10_5__prod[0][0] == 1):
-                        time.sleep(self.time_test_connection)
-                        print "connection ok"
-                        pass
-                    else:
-                        print "connection interrompue aa la bdd(production)"
-                
-                    
-        except KeyboardInterrupt:
-            print "<ctrl - c> est s_est executee"
 
-                    #tapaka#tampoka #connection#killed
+        
+        
+        if self.is_thread:
+
+            try:
+                self.copy_vdi
+                if self.copy_vdi:
+                    print "aaaaa"
+                    self.test_thread001(test_thread001 = True)
+                    print "bbbbbbb"
+            except AttributeError:
+                pass
+            
+                
+#                 
+            # for i in range(5):
+                # print i
+                # time.sleep(2)
+
+
+
+            test_conn_db = False
+            if (test_conn_db):
+                try:
+                    while True:
+                        # if (i < 5):
+                            # print str(i) + " - this is a thread of class_our_tools\n",
+                            # time.sleep(self.time_test_connection)
+                            # i += 1
+                        # else:
+                            # break
+                        key = ord(getch())  # https://stackoverflow.com/questions/12175964/python-method-for-reading-keypress
+                        print key
+                        if key == 3:
+                            raise KeyboardInterrupt() # https://stackoverflow.com/questions/2052390/manually-raising-throwing-an-exception-in-python
+                        elif key == 117:    # pressed__u
+                            self.pg_select(
+                                host = "192.168.10.5",
+                                database01 = "production",
+                                query = "SELECT 1"
+                            )
+                            if (self.rows_pg_10_5__prod[0][0] == 1):
+                                time.sleep(self.time_test_connection)
+                                print "connection ok"
+                                pass
+                            else:
+                                print "connection interrompue aa la bdd(production)"
+                        
+                            
+                except KeyboardInterrupt:
+                    print "<ctrl - c> est s_est executee"
+    
+                            #tapaka#tampoka #connection#killed
+        else:
+            Our_Tools.print_red('Vous avez Commencez le thread or que le programme n_est censee etre un thread')
 
 
     def execute_list_queries_not_select(
@@ -990,13 +1060,13 @@ class Our_Tools(threading.Thread):
         # # AL75
         
         # connection to dbb
-        self.connect_pg(
+        self.connection_pg(
             server01 = parser.get('pg_10_5_production', 'ip_host'),
             user01 = parser.get('pg_10_5_production', 'username'),
             password01=parser.get('pg_10_5_production', 'password'),
             database01=parser.get('pg_10_5_production', 'database')
         )
-        self.connect_pg(
+        self.connection_pg(
             server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
             user01=parser.get('pg_10_5_sdsi', 'username'),
             password01=parser.get('pg_10_5_sdsi', 'password'),
@@ -1162,10 +1232,37 @@ class Our_Tools(threading.Thread):
             query_update_passe_q
         ]
 
-        raw_input('Voici les m_a_j de la table_passe')
+        Our_Tools.long_print()
+        Our_Tools.print_green('Voici le requete de la m_a_j de la table_passe')
+        raw_input('')
+
         for row in list_queries_upd_passe:
             print row
-        raw_input("Va faire une m_a_j de table_passe")
+
+        Our_Tools.print_green('Voici les lignes qui vont etre modifiees dans table_passe@sdsi')
+
+        Our_Tools.long_print()
+        Our_Tools.print_green('Voici les requete pour verifier la table_passe')
+        raw_input('')
+        raw_input("")
+
+
+        
+        query_select_before_upd_passe_s1 = "select * from passe where idcommande like 'SGC%' and idsousdossier='SAISIE 1'"
+        query_select_before_upd_passe_c = "select * from passe where idcommande like 'SGC%' and idsousdossier='CONTROLE GROUPE'"
+        query_select_before_upd_passe_q = "select * from passe where idcommande like 'SGC%' and idsousdossier='ASSEMBLAGE/UNIFORMISATION'"
+
+        """
+        -- select * from passe where idcommande like 'SGC%' and idetape='SAISIE 1' and idcommande ilike ''
+
+-- select distinct idcommande from passe order by idcommande asc;
+
+select 
+-- distinct 
+idcommande, idsousdossier
+from passe 
+where idcommande ilike 'crh%' 
+-- and idcommande like '%crh%'"""
 
         self.execute_list_queries_not_select(list_queries_upd_passe)
 
@@ -1434,7 +1531,7 @@ class Our_Tools(threading.Thread):
             pass
 
         if ((server001 == "192.168.10.5") and (database001 == "production")):
-            self.connect_pg(
+            self.connection_pg(
                 server01 = parser.get('pg_10_5_production', 'ip_host'),
                 user01=parser.get('pg_10_5_production', 'username'),
                 password01=parser.get('pg_10_5_production', 'password'),
@@ -1446,29 +1543,36 @@ class Our_Tools(threading.Thread):
                 query = query01
             )
 
-            workbook_write = xlsxwriter.Workbook(xl_write)
-            sheet_write = workbook_write.add_worksheet('Contenu du '+table_name)
+            self.export_rows_pg_to_xl(
+                xl_write = xl_write,
+                table_name = table_name)
+            # workbook_write = xlsxwriter.Workbook(xl_write)
+            # sheet_write = workbook_write.add_worksheet('Contenu du '+table_name)
 
-            x = y = 0
-            for row in self.rows_pg_10_5__prod:
-                x = 0
-                for cell in row:
-                    # print str(cell) + ": [ "+str(x)+", " +str(y)+"]"
-                    sheet_write.write(y, x, str(cell))
-                    x = x + 1
-                print 
-                y += 1
-
-            workbook_write.close()
+            # x = y = 0
+            # for row in self.rows_pg_10_5__prod:
+                # x = 0
+                # for cell in row:
+                    # # print str(cell) + ": [ "+str(x)+", " +str(y)+"]"
+                    # sheet_write.write(y, x, str(cell))
+                    # x = x + 1
+                # print 
+                # y += 1
+# 
+            # workbook_write.close()
             pass
         elif((server001 == "192.168.10.5") and (database001 == "sdsi")):
-            self.connect_pg(
+            self.connection_pg(
                 server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                 user01=parser.get('pg_10_5_sdsi', 'username'),
                 password01=parser.get('pg_10_5_sdsi', 'password'),
                 database01=parser.get('pg_10_5_sdsi', 'database')
             )
-
+            self.pg_select(
+                host = "192.168.10.5",
+                database01 = "production",
+                query = query01
+            )
 
 
 
@@ -1478,10 +1582,11 @@ class Our_Tools(threading.Thread):
 
     # this is the constructor of class(Our_Tools)
     def __init__(self, 
+            is_thread = False,
             is_thread_connection001 = True,
             time_test_connection01 = 5):
 
-
+        self.is_thread = is_thread
         
         self.is_thread_connection = is_thread_connection001
         
@@ -1548,7 +1653,7 @@ class Our_Tools(threading.Thread):
                 
             else:
                 # print "not yet connected 6546546897"
-                self.connect_pg(
+                self.connection_pg(
                     server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                     user01=parser.get('pg_10_5_sdsi', 'username'),
                     password01=parser.get('pg_10_5_sdsi', 'password'),
@@ -1564,7 +1669,7 @@ class Our_Tools(threading.Thread):
                 
             else:
                 # print "not yet connected 6546546897"
-                self.connect_pg(
+                self.connection_pg(
                     server01 = parser.get('pg_10_5_production', 'ip_host'),
                     user01=parser.get('pg_10_5_production', 'username'),
                     password01=parser.get('pg_10_5_production', 'password'),
@@ -1727,14 +1832,14 @@ class Our_Tools(threading.Thread):
             database001 = "production"):
 
         if ((server001 == "192.168.10.5") and (database001 == "production")):
-            self.connect_pg(
+            self.connection_pg(
                 server01 = parser.get('pg_10_5_production', 'ip_host'),
                 user01=parser.get('pg_10_5_production', 'username'),
                 password01=parser.get('pg_10_5_production', 'password'),
                 database01=parser.get('pg_10_5_production', 'database')
             )
         elif((server001 == "192.168.10.5") and (database001 == "sdsi")):
-            self.connect_pg(
+            self.connection_pg(
                 server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                 user01=parser.get('pg_10_5_sdsi', 'username'),
                 password01=parser.get('pg_10_5_sdsi', 'password'),
@@ -1835,6 +1940,24 @@ class Our_Tools(threading.Thread):
                         print "missing"
                 file_path = os.path.join(root, filename)
                 print "file_path: " + file_path
+
+        pass
+
+    def export_rows_pg_to_xl(self,
+            xl_write = '',
+            table_name = '' ):
+        workbook_write = xlsxwriter.Workbook(xl_write)
+        sheet_write = workbook_write.add_worksheet('Contenu du '+table_name)
+        x = y = 0
+        for row in self.rows_pg_10_5__prod:
+            x = 0
+            for cell in row:
+                # print str(cell) + ": [ "+str(x)+", " +str(y)+"]"
+                sheet_write.write(y, x, str(cell))
+                x = x + 1
+            print 
+            y += 1
+        workbook_write.close()
 
         pass
 
@@ -1986,7 +2109,7 @@ def main():
                 time_test_connection01 = .0001
             )
 
-            thread_connection.connect_pg(
+            thread_connection.connection_pg(
                 server01 = '192.168.10.5',
                 user01='pgtantely', # #erreur
                 password01='123456',
@@ -2006,6 +2129,29 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+
+                elif args[0] == 'test_thread002':
+                    our_tools = Our_Tools(is_thread = True)
+                    our_tools.set_flag_copy_vdi()
+                    our_tools.start()
+
+                elif args[0] == 'test_thread001':
+                    print 'test_thread001'
+                    thread001 = Our_Tools(
+                        is_thread = True)
+                    
+                    thread001.start()
+                    pass
+
+                elif args[0] == 'conn_local_sdsi':
+                    our_tools = Our_Tools()
+                    our_tools.connection_pg(
+                        server01 = parser.get('pg_localhost_sdsi', 'ip_host'),
+                        user01=parser.get('pg_localhost_sdsi', 'username'),
+                        password01=parser.get('pg_localhost_sdsi', 'password'),
+                        database01=parser.get('pg_localhost_sdsi', 'database')
+                    )
+                    pass
                 elif args[0] == 'manage_usb_storage':
                     # print "sys.argv"
                     # print sys.argv
@@ -2150,6 +2296,8 @@ def main():
                         urllib.urlretrieve(link01, file_save)
                     else:
                         print "not yet managed 0214564"
+                else:
+                    Our_Tools.print_red('L_option '+args[0]+' dans la n_est pas pris en charge')
 
         elif option in ("-x", "--x = testing001"):
             # Our_Tools.test001()
