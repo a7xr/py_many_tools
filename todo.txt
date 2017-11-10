@@ -1,3 +1,15 @@
+study selenium
+
+
+
+
+
+
+
+
+
+
+[have to test it]
 create a thread which copies the vdi
 [done] - asio chp we thread
 [done] - mnw test anle time01
