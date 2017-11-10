@@ -53,6 +53,14 @@ except Exception:
     raw_input()
     os.system("pip install xlsxwriter")
 
+try:
+    import selenium
+    from selenium import webdriver
+except Exception:
+    print "selenium doit etre installee"
+    raw_input()
+    os.system("pip install selenium")
+
 # print "Toute les packets utils au bon fonctionnement du programme sont installees"
 
 # importation_installation()
@@ -77,6 +85,7 @@ GetConsoleScreenBufferInfo.
 
 $Id: color_console.py 534 2009-05-10 04:00:59Z andre $
 """
+chrome_driver_path = 'e:\chromedriver.exe'
 
 from ctypes import windll, Structure, c_short, c_ushort, byref
 
@@ -206,6 +215,26 @@ class Our_Tools(threading.Thread):
             for line in open_file_path:
                 res += line
         return res
+
+    def db_is_connected(self,
+            host = "192.168.10.5",
+            database01 = 'production'):
+
+        res = False
+
+        self.pg_select(
+            host = host,
+            database01 = database01,
+            query = "SELECT 1"
+        )
+        if (self.rows_pg_10_5__prod[0][0] == 1):
+            time.sleep(self.time_test_connection)
+            # print "connection ok"
+            res = True
+
+        return res
+
+        pass
 
 
 
@@ -767,7 +796,7 @@ class Our_Tools(threading.Thread):
         Our_Tools.long_print()
 
         print "Usage: "
-        print "Option: -h, --help"
+        Our_Tools.print_green (txt = "Option: -h, --help")
         print "> Our_Tools.py -h"
         print "> Our_Tools.py --help"
         print "- - ces 2scripts font la meme chose"
@@ -778,7 +807,7 @@ class Our_Tools(threading.Thread):
         Our_Tools.long_print(num = 5)
 
 
-        print "Option: -L, --long-print"
+        Our_Tools.print_green (txt = "Option: -L, --long-print")
         print "> Our_Tools.py -L"
         print "- - pour afficher 70lignes vides qui vont immiter 'cls' ou 'clear'"
         print "- - "
@@ -786,7 +815,7 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -c, --crawl"
+        Our_Tools.print_green (txt = "Option: -c, --crawl")
         print 'il est preferable d_utiliser crawl01.sh avec les 5params'
         print 'dans cette programme, il va faire rien du tout'
         print '-'
@@ -798,7 +827,7 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -d, --directory"
+        Our_Tools.print_green (txt = "Option: -d, --directory")
         print "> Our_Tools.py -d"
         print "- - pour chercher un repertoire dans un ordi"
         print "- - "
@@ -807,7 +836,7 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -s, --suppression_gpao_unique"
+        Our_Tools.print_green (txt = "Option: -s, --suppression_gpao_unique")
         print "> Our_Tools.py -s"
         print "- - pour la suppression de gpao unique"
         print "- - "
@@ -815,7 +844,7 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -T, --all_tests"
+        Our_Tools.print_green (txt = "Option: -T, --all_tests")
         print "Pour faire des test que j_ai trouvee sur Internet"
         print
         print "Our_Tools.py -T dl link01 file_save"
@@ -824,7 +853,7 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -S, --sgc"
+        Our_Tools.print_green (txt = "Option: -S, --sgc")
         print "- Ceci est en cours de Developpement"
         print "- Finit mais pas encore testee"
         print "- Pour faire les traitements des Tickets SOGEC-SGC"
@@ -833,20 +862,38 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -e, --export_table"
+        Our_Tools.print_green (txt = "Option: -e, --export_table")
         print "- Pour exporter le contenu de certain table dans du fichier_excel"
         print "- host, db, table, output"
         print "- ex: python Our_Tools.py -e 192.168.10.5 production RED001_S1 out.xlsx"
 
         Our_Tools.long_print(num = 5)
 
-        print "Option: -T manage_usb_storage activate"
+        Our_Tools.print_green (txt = "Option: -T manage_usb_storage activate")
         print '###########Ceci doit etre executee en tant que compte_Admin###########'
         print "- To Activate the USB_storage"
         print "Option: -T manage_usb_storage deactivate"
         print "- To DeActivate the USB_storage"
 
         Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T test_thread_conn")
+        print "Va tester la connection Infiniment"
+        print "-"
+        print "Pour pouvoir l_arreter, il faut faire"
+        print "> taskkill /f /pid pid_001 "
+        print "-"
+        print "-"
+        print "Pour avoir le pid_001... Souvent le thread_connection est la premiere"
+        print '> tasklist | find /i "python"'
+        print "-"
+        print "-"
+        print "-"
+        print "- Autrement, si la seule programme qui utilise python "
+        print "- - est celui-ci,... Pour arreter le programme, on fait"
+        print '> taskkill /f /im "python.exe"'
+
+
 
 
     @staticmethod
@@ -1008,6 +1055,14 @@ class Our_Tools(threading.Thread):
         self.copy_vdi = True
 
 
+    @staticmethod
+    def test_selenium001():
+
+        driver_selenium = webdriver.Chrome(chrome_driver_path)
+        driver_selenium.get('http://192.168.10.24/intranet_light/modules/accueil/index.php')
+        
+        pass
+
     # this is going to run if there is D:\\vdi_debian9_64b
     def process_copy_vdi_debian(
             self, 
@@ -1044,6 +1099,7 @@ class Our_Tools(threading.Thread):
             # if (time.strftime("%H:%M:%S") == '15:57:55'):
                 # print "checked"
                 # sys.exit(0)
+                # ct_NOMINATION_AS3
 
 
     # in the class_Our_Tools
@@ -1053,22 +1109,39 @@ class Our_Tools(threading.Thread):
         
         
         if self.is_thread:
-
-            try:
-                self.copy_vdi
-                if self.copy_vdi:
-                    # print "aaaaa"
-                    if (os.path.exists('D:\\vdi_debian9_64b')):
-                        Our_Tools.popup(
-                            window_title = "Info Copie vdi_debian",
-                            msg = "Copie du vdi_debian va s_executer apres 7h")
-                        
-                        self.process_copy_vdi_debian(delay = 25200) # 25200 = 7h
-                    # print "bbbbbbb"
-                else:
-                    #todo
+            if ((sys.argv[1] == '-T') and (sys.argv[2] == 'test_copy_vdi_debian')):
+                try:
+                    self.copy_vdi
+                    if self.copy_vdi:
+                        # print "aaaaa"
+                        if (os.path.exists('D:\\vdi_debian9_64b')):
+                            Our_Tools.popup(
+                                window_title = "Info Copie vdi_debian",
+                                msg = "Copie du vdi_debian va s_executer apres 7h")
+                            
+                            self.process_copy_vdi_debian(delay = 25200) # 25200 = 7h
+                        # print "bbbbbbb"
+                    else:
+                        #todo
+                        pass
+                except AttributeError:
                     pass
-            except AttributeError:
+            elif ((sys.argv[1] == '-T') and (sys.argv[2] == 'test_thread_conn')):
+                # print "thisi s a test"
+                while True:
+                    if self.db_is_connected(
+                            host = "192.168.10.5",
+                            database01 = 'production'):
+                        print "connection ok au bdd(production)"
+                        pass
+                    if self.db_is_connected(
+                            host = "192.168.10.5",
+                            database01 = 'sdsi'):
+                        print "connection ok au bdd(sdsi)"
+                        pass
+                    else :
+                        print "not connected"
+
                 pass
             
                 
@@ -1178,14 +1251,15 @@ class Our_Tools(threading.Thread):
         # print "self.sous_dossier01: " + self.sous_dossier01
 
 
-        self.c_sql = "AG22\\c.sql"
-        self.c_sql_output = "AG22\\c_output.sql"
-        self.s1_sql = "AG22\\s1.sql"
-        self.s1_sql_output = "AG22\\s1_output.sql"
-        self.q_sql = "AG22\\q.sql"
-        self.q_sql_output = "AG22\\q_output.sql"
-        self.r_sql = "AG22\\r.sql"
-        self.r_sql_output = "AG22\\r_output.sql"
+        self.path_prog = "E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\"
+        self.c_sql = self.path_prog + "AG22\\c.sql"
+        self.c_sql_output = self.path_prog + "AG22\\c_output.sql"
+        self.s1_sql = self.path_prog + "AG22\\s1.sql"
+        self.s1_sql_output = self.path_prog + "AG22\\s1_output.sql"
+        self.q_sql = self.path_prog + "AG22\\q.sql"
+        self.q_sql_output = self.path_prog + "AG22\\q_output.sql"
+        self.r_sql = self.path_prog + "AG22\\r.sql"
+        self.r_sql_output = self.path_prog + "AG22\\r_output.sql"
 
         self.subm_js = "AG22\\submit_form_sfl159.js"
 
@@ -2257,6 +2331,15 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'test_thread_conn':
+
+                    our_tools = Our_Tools(is_thread = True,
+                            time_test_connection01 = 1)
+                    our_tools.start()
+                    pass
+                elif args[0] == 'test_selenium001':
+                    Our_Tools.test_selenium001()
+                    pass
 
                 elif args[0] == 'test_copy_dir':
                     Our_Tools.copy_dir_content()
