@@ -1137,26 +1137,31 @@ class Our_Tools(threading.Thread):
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_redmine')
             ):
-                now = datetime.datetime.now()
-                self.time_redmine_popup = "08:56:00"
+                now_date_time = datetime.datetime.now()
+                self.time_redmine_popup = "09:06:35"
                 self.time_redmine_popup = datetime.datetime.strptime(
                     self.time_redmine_popup, "%H:%M:%S")
-                self.time_redmine_popup = now.replace(hour=self.time_redmine_popup.time().hour, 
+                self.time_redmine_popup = now_date_time.replace(hour=self.time_redmine_popup.time().hour, 
                     minute=self.time_redmine_popup.time().minute, 
                     second=self.time_redmine_popup.time().second, 
                     microsecond=0) 
                 while True:
-                    now = datetime.datetime.now()
-                    if (now > self.time_redmine_popup):
+                    now_date_time = datetime.datetime.now()
+                    now_time = datetime.time(now_date_time.hour, now_date_time.minute,now_date_time.second)
+                    tmp_time_redmine_popup = datetime.time(
+                        self.time_redmine_popup.hour, 
+                        self.time_redmine_popup.minute,
+                        self.time_redmine_popup.second)
+                    if (now_time > tmp_time_redmine_popup):
                         Our_Tools.popup(
                             window_title = "Redmine Pop_Up Error",
                             msg = "Temps deja depassee")
                         sys.exit(0)
-                    elif (now == self.time_redmine_popup.time()):
+                    elif (now_time == tmp_time_redmine_popup):
                         self.redmine01()
                         sys.exit(0)
                     else:
-                        print "now: ", now.time(), "time_redmine_popup: ", self.time_redmine_popup.time()
+                        print "now_time: ", now_time, "tmp_time_redmine_popup: ", tmp_time_redmine_popup
                         # print "time_redmine_popup: ", self.time_redmine_popup
                         # print time.strftime("%H:%M:%S")
                         time.sleep(1)
