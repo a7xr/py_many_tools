@@ -25,6 +25,10 @@ import ctypes
 
 from ConfigParser import SafeConfigParser
 
+
+path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
+
+
 parser = SafeConfigParser()
 parser.read('all_confs.ini')
 
@@ -1109,7 +1113,10 @@ class Our_Tools(threading.Thread):
         
         
         if self.is_thread:
-            if ((sys.argv[1] == '-T') and (sys.argv[2] == 'test_copy_vdi_debian')):
+            if (
+                (sys.argv[1] == '-T') and 
+                (sys.argv[2] == 'test_copy_vdi_debian')
+            ):
                 try:
                     self.copy_vdi
                     if self.copy_vdi:
@@ -1126,7 +1133,23 @@ class Our_Tools(threading.Thread):
                         pass
                 except AttributeError:
                     pass
-            elif ((sys.argv[1] == '-T') and (sys.argv[2] == 'test_thread_conn')):
+            elif (
+                (sys.argv[1] == '-T') and 
+                (sys.argv[2] == 'test_thread_redmine')
+            ):
+                self.time_redmine_popup = "08:29:15"
+                while True:
+                    if (time.strftime("%H:%M:%S") == self.time_redmine_popup):
+                        self.redmine01()
+                        sys.exit(0)
+                    else:
+                        print time.strftime("%H:%M:%S")
+                        time.sleep(1)
+                    pass
+            elif (
+                (sys.argv[1] == '-T') and 
+                (sys.argv[2] == 'test_thread_conn')
+            ):
                 # print "thisi s a test"
                 while True:
                     if self.db_is_connected(
@@ -2039,6 +2062,23 @@ where idcommande ilike 'crh%'
             print txt,
         set_text_attr(default_colors)
 
+    def redmine01(self):
+
+        redmine_file = path_prg + "redmine_file.txt"
+
+        content_redm_file = Our_Tools.read_file_line_by_line(redmine_file)
+
+        popup_res = Our_Tools.popup(
+            window_title = "Redmine",
+            msg = content_redm_file)
+
+        if popup_res == 6:
+            print "yep"
+        elif popup_res == 7:
+            print "nope"
+
+        pass
+
     @staticmethod
     def print_green(
             txt = "this is a test",
@@ -2331,6 +2371,10 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'test_thread_redmine':
+                    our_tools = Our_Tools(is_thread = True)
+                    our_tools.start()
+                    pass
                 elif args[0] == 'test_thread_conn':
 
                     our_tools = Our_Tools(is_thread = True,
