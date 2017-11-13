@@ -1137,13 +1137,28 @@ class Our_Tools(threading.Thread):
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_redmine')
             ):
-                self.time_redmine_popup = "08:29:15"
+                now = datetime.datetime.now()
+                self.time_redmine_popup = "08:56:00"
+                self.time_redmine_popup = datetime.datetime.strptime(
+                    self.time_redmine_popup, "%H:%M:%S")
+                self.time_redmine_popup = now.replace(hour=self.time_redmine_popup.time().hour, 
+                    minute=self.time_redmine_popup.time().minute, 
+                    second=self.time_redmine_popup.time().second, 
+                    microsecond=0) 
                 while True:
-                    if (time.strftime("%H:%M:%S") == self.time_redmine_popup):
+                    now = datetime.datetime.now()
+                    if (now > self.time_redmine_popup):
+                        Our_Tools.popup(
+                            window_title = "Redmine Pop_Up Error",
+                            msg = "Temps deja depassee")
+                        sys.exit(0)
+                    elif (now == self.time_redmine_popup.time()):
                         self.redmine01()
                         sys.exit(0)
                     else:
-                        print time.strftime("%H:%M:%S")
+                        print "now: ", now.time(), "time_redmine_popup: ", self.time_redmine_popup.time()
+                        # print "time_redmine_popup: ", self.time_redmine_popup
+                        # print time.strftime("%H:%M:%S")
                         time.sleep(1)
                     pass
             elif (
