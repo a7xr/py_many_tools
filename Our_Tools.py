@@ -29,10 +29,13 @@ from ConfigParser import SafeConfigParser
 
 path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
 
-path_sublime2 = "C:\Program Files\Sublime Text 2\sublime_text.exe"
+
 
 parser = SafeConfigParser()
 parser.read(path_prg + 'all_confs.ini')
+
+# path_sublime2 = "C:\Program Files\Sublime Text 2\sublime_text.exe"
+path_sublime2 = parser.get('general', 'path_subl_2')
 
 try:
     import psycopg2
@@ -202,6 +205,114 @@ class Person:
 
 
 
+class CMail(object):
+
+    def __init__(self, bool01 = True, 
+            smtp_link = "192.168.10.4",
+            tto = ["Mamitiana <mamitiana_iam@vivetic.mg>"],
+            cc = [],
+            sender = "mamitiana_iam@vivetic.mg",
+            sujet="", 
+            sbodymail="",
+            file="",
+            path=""):
+
+        self.SmtpLink = smtplib.SMTP(smtp_link)
+        self.html = ""
+        # self.tto = ["hasina@vivetic.mg"]
+        # self.cc   = ["hasina@vivetic.mg", "hasina@vivetic.mg"]
+        self.tto = tto
+        #self.cc   = ["Tojo <tojo_iam@vivetic.mg>","Herve <herve_iam@vivetic.mg>","Tahiry <harisoa_iam@vivetic.mg>","Fabrice <fabrice_iam@vivetic.mg>"]
+        
+        self.cc = cc
+        # self.sender = "infodev@vivetic.mg"
+        self.sender = "mamitiana_iam@vivetic.mg"
+        
+        self.sujet = sujet
+        
+        self.Email = None
+        self.SmtpLink = None
+        self.subject=sujet
+        self.sbodymail=sbodymail
+        # path = "E:/herve/Commande/CALL/CallWAV/"
+
+        self.filename = file#"CPE_RECUP_Mail_06-05-2016.log"#
+        self.attachment = open(path+file,"rb")#, "rb")#
+        
+        self.setUp()
+
+    def setUp(self):
+        self.Email = MIMEMultipart()
+        self.Email['Date']           = time.strftime('%m/%d/%Y')
+        self.Email['From']           = self.sender
+        self.Email['To']      = ', '.join(self.tto)
+        self.Email['Cc']      = ', '.join(self.cc)
+        
+        # self.SmtpLink = smtplib.SMTP("192.168.10.4")
+        #self.SmtpLink = smtplib.SMTP("192.168.10.4")
+        self.contentmail()
+
+    def contentmail(self):
+        html = ""
+        html += """\
+                <html>"""
+        
+        html += """\
+     
+        
+        
+        <BODY bgColor=#ffffff> 
+        
+        """
+        
+      
+        html += """<DIV><FONT face=Arial size=2>&nbsp;</FONT></DIV>"""
+        html += """<DIV><FONT face=Arial size=2>Bonjour,</FONT></DIV>"""
+        html += """<DIV><FONT face=Arial size=2>&nbsp;</FONT></DIV>"""
+        html += """<DIV><FONT face=Arial size=2>"""+self.sbodymail+""" </FONT></DIV>."""
+       
+        html += """<DIV><FONT face=Arial size=2>Cordialement</FONT></DIV>"""
+        html += """<DIV><FONT face=Arial size=2></FONT>L'&eacute;quipe IAM</DIV>"""
+        
+        
+        html += """\
+        </body>
+        </html>"""
+        
+        
+        self.html = html.encode("utf8")
+        
+        
+    def envoyer_mail(self):
+        #try:
+        attachment = self.attachment
+        self.part = MIMEBase('application', 'octet-stream')
+        self.part.set_payload((attachment).read())
+        encoders.encode_base64(self.part)
+        self.part.add_header('Content-Disposition', "attachment; filename= %s" % self.filename)
+         
+        self.Email.attach(self.part)
+        
+        self.Email.attach(
+            MIMEText(
+                self.html.encode(
+                    'utf8','ignore'
+                ), 'html'
+            )
+        )
+        self.Email['Subject']        = self.subject
+        self.SmtpLink.sendmail(
+            self.Email['From'], 
+            self.tto+self.cc, 
+            self.Email.as_string()
+        )
+        self.SmtpLink.quit()
+        return True
+        #
+
+
+
+
 
 class Our_Tools(threading.Thread):
 
@@ -252,7 +363,7 @@ class Our_Tools(threading.Thread):
             query = "SELECT 1"
         )
         if (self.rows_pg_10_5__prod[0][0] == 1):
-            time.sleep(self.time_test_connection)
+            # time.sleep(self.time_test_connection)
             # print "connection ok"
             res = True
 
@@ -919,7 +1030,15 @@ class Our_Tools(threading.Thread):
         Our_Tools.long_print(num = 5)
 
         Our_Tools.print_green (txt = "Option: -T test_edit_file_redmine")
-        print "Va Editer le fichier qui va "
+        print "Va Editer le fichier qui va s_afficher au moment du pop_up__redmine"
+
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T test_thread_conf")
+        print "Le thread qui sont Configurees dans fichier_conf__all_confs.ini "
+        print "- vont etre executees"
+        #fin_usage
+    
 
     @staticmethod
     def display_pic(
@@ -938,6 +1057,47 @@ class Our_Tools(threading.Thread):
             # os.system('cls')
 
         pass
+
+    def manage_redmine_popup(self):
+        # print "ty ooh"
+        now_date_time = datetime.datetime.now()
+
+        self.time_redmine_popup = "15:00:00"
+        self.time_redmine_popup = datetime.datetime.strptime(
+            self.time_redmine_popup, "%H:%M:%S")
+        # you need to convert the now_date_time to now_time... so that it is easier to compare the timeS
+        # # https://stackoverflow.com/questions/15105112/compare-only-time-part-in-datetime-python
+        self.time_redmine_popup = now_date_time.replace(hour=self.time_redmine_popup.time().hour, 
+            minute=self.time_redmine_popup.time().minute, 
+            second=self.time_redmine_popup.time().second, 
+            microsecond=0) 
+        while True:
+
+            now_date_time = datetime.datetime.now()
+            now_time = datetime.time(now_date_time.hour, now_date_time.minute,now_date_time.second)
+            tmp_time_redmine_popup = datetime.time(
+                self.time_redmine_popup.hour, 
+                self.time_redmine_popup.minute,
+                self.time_redmine_popup.second)
+            if (now_time > tmp_time_redmine_popup):
+                Our_Tools.popup(
+                    window_title = "Redmine Pop_Up Error",
+                    msg = "Temps deja depassee")
+                sys.exit(0)
+            elif (now_time == tmp_time_redmine_popup):
+                self.redmine01()
+                sys.exit(0)
+            else:
+                txt001 = "now_time: ", now_time, "time_redmine_popup: ", tmp_time_redmine_popup
+                Our_Tools.write_append_to_file(
+                    path_file = 'log_redmine_popup.txt',
+                    txt_to_add = txt001)
+                # print "time_redmine_popup: ", self.time_redmine_popup
+                # print time.strftime("%H:%M:%S")
+                time.sleep(1)
+            pass
+        pass
+
 
     @staticmethod
     def csv_read():
@@ -965,6 +1125,7 @@ class Our_Tools(threading.Thread):
             # print "xxxxxxxxxxxxxxxxxxxx"
             open_file = open(path_file, 'ab')
             with open_file:
+                # print "ato ndrai"
                 open_file.write('\n' + txt_to_add)
             pass
         else:
@@ -980,13 +1141,11 @@ class Our_Tools(threading.Thread):
             Our_Tools.print_green(
                     txt = "Creation du fichier " + path_file,
                     new_line = False)
+
             open_file = open(path_file, 'ab')
             with open_file:
                 open_file.write('\n' + txt_to_add)
             pass
-
-
-        pass
 
     @staticmethod
     def csv_test003():
@@ -1064,8 +1223,7 @@ class Our_Tools(threading.Thread):
                 )
             self.cursor_pg_10_5__bdd_prod.execute(query)
             self.rows_pg_10_5__prod = self.cursor_pg_10_5__bdd_prod.fetchall()
-            print ""
-
+            # print ""
 
     def set_moment(
             self,
@@ -1132,9 +1290,38 @@ class Our_Tools(threading.Thread):
     @staticmethod
     def test_selenium001():
 
-        driver_selenium = webdriver.Chrome(chrome_driver_path)
-        driver_selenium.get('http://192.168.10.24/intranet_light/modules/accueil/index.php')
+        driver_chrome = webdriver.Chrome(chrome_driver_path)
+        driver_chrome.get('http://192.168.10.24/intranet_light/modules/accueil/index.php')
         
+        matr_field = driver_chrome.find_element_by_name('T1')
+        pass_field = driver_chrome.find_element_by_name('T2')
+        
+        matr_field.clear()
+        pass_field.clear()
+
+        matr_field.send_keys(parser.get('selenium_10_24', 'login'))
+        pass_field.send_keys(parser.get('selenium_10_24', 'passw'))
+
+        pass_field.submit()
+
+        search_field = driver_chrome.find_element_by_name('q')
+        search_field.clear()
+        search_field.send_keys('admin')
+        
+        search_button01 = driver_chrome.find_element_by_name('search')
+        # search_button01.submit()
+        search_button01.click()
+
+        # search_button01.click()
+# 
+        # elem_admin_push = driver_chrome.find_element_by_link_text('Administration Push')
+        # elem_admin_push = driver_chrome.find_element(selenium.webdriver.common.by.By.PARTIAL_LINK_TEXT, 'text')
+        elem_admin_push = driver_chrome.find_element_by_partial_link_text("Push")
+        # variable = "Push"
+        # elem_admin_push = driver_chrome.find_element_by_xpath('//a[@href="'+variable+'"]')
+        print elem_admin_push
+        elem_admin_push.click()
+
         pass
 
     # this is going to run if there is D:\\vdi_debian9_64b
@@ -1213,50 +1400,98 @@ class Our_Tools(threading.Thread):
 
 
         elif((self.is_thread_conf == True) and (self.is_thread == False)):
-                try:
-                    while True:
-                        if (parser.get('thread_conf', 'pop_up_redmine') == '1'):
-                            pass
-                        if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
-                            if self.db_is_connected(
-                                host = "192.168.10.5",
-                                database01 = 'production'
-                            ):
-                                # print "connection ok au bdd(production)"
-                                Our_Tools.write_append_to_file(
-                                    path_file = path_prg + "log_connect_db.txt",
-                                    txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(production)")
-                                pass
-                            else:
-                                txt001 = ""
-                                Our_Tools.write_append_to_file(
-                                    path_file = path_prg + "log_connect_db.txt",
-                                    txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(production)")
-                        if (parser.get('thread_conf', 'connection_bdd_sdsi') == '1'):
-                            if self.db_is_connected(
-                                    host = "192.168.10.5",
-                                    database01 = 'sdsi'
-                            ):
-                                Our_Tools.write_append_to_file(
-                                    path_file = path_prg + "log_connect_db.txt",
-                                    txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(sdsi)")
-                                pass
-                            else :
-                                Our_Tools.write_append_to_file(
-                                    path_file = path_prg + "log_connect_db.txt",
-                                    txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(sdsi)")
+            # print "tonga ato"
+            # sys.exit(0)
+            try:
+                now_date_time = datetime.datetime.now()
+                
+                self.time_redmine_popup = datetime.datetime.strptime(
+                    self.time_redmine_popup, "%H:%M:%S")
+                # you need to convert the now_date_time to now_time... so that it is easier to compare the timeS
+                # # https://stackoverflow.com/questions/15105112/compare-only-time-part-in-datetime-python
+                self.time_redmine_popup = now_date_time.replace(hour=self.time_redmine_popup.time().hour, 
+                    minute=self.time_redmine_popup.time().minute, 
+                    second=self.time_redmine_popup.time().second, 
+                    microsecond=0)
+                will_print_redmine_popup = True
+                while True:
+
+                    if (parser.get('thread_conf', 'pop_up_redmine') == '1'):
+                        # print "tonga ato"
+                        # our_tools = Our_Tools()
+                        # our_tools.manage_redmine_popup()
+
+                        # print "go"
+                        now_date_time = datetime.datetime.now()
+                        now_time = datetime.time(now_date_time.hour, now_date_time.minute,now_date_time.second)
+                        tmp_time_redmine_popup = datetime.time(
+                            self.time_redmine_popup.hour, 
+                            self.time_redmine_popup.minute,
+                            self.time_redmine_popup.second)
+
+                        if (now_time > tmp_time_redmine_popup):
+                            if will_print_redmine_popup:
+                                Our_Tools.popup(
+                                    window_title = "Redmine Pop_Up Error",
+                                    msg = "Temps deja depassee")
+                                will_print_redmine_popup = False
                             
-                                pass
+                        elif (now_time == tmp_time_redmine_popup):
+                            self.redmine01()
+                            # sys.exit(0)
+                        else:
+                            # print "ato"
+                            txt001 = "now_time: " + str(now_time)
+                            txt001 += " time_redmine_popup: "+ str(tmp_time_redmine_popup)
+                            # print txt001
+                            Our_Tools.write_append_to_file(
+                                path_file = 'log_redmine_popup.txt',
+                                txt_to_add = txt001)
+                            # Our_Tools.write_append_to_file(
+                                # path_file = 'log_redmine_popup.txt',
+                                # txt_to_add = txt001)
+                            # print "time_redmine_popup: ", self.time_redmine_popup
+                            # print time.strftime("%H:%M:%S")
+                        pass
+                    if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
+                        if self.db_is_connected(
+                            host = "192.168.10.5",
+                            database01 = 'production'
+                        ):
+                            # print "connection ok au bdd(production)"
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(production)")
+                            pass
+                        else:
+                            txt001 = ""
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(production)")
+                    if (parser.get('thread_conf', 'connection_bdd_sdsi') == '1'):
+                        if self.db_is_connected(
+                                host = "192.168.10.5",
+                                database01 = 'sdsi'
+                        ):
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(sdsi)")
+                            pass
+                        else :
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(sdsi)")                            
                             pass
                         pass
-                        time.sleep(self.time_test_connection)
-                except Exception:
                     pass
+
+                    time.sleep(self.time_sleep_thread)
+
+            except Exception:
+                pass
         
         
         elif((self.is_thread_conf == False) and (self.is_thread == True)):
-
-
 
             if (
                 (sys.argv[1] == '-T') and 
@@ -1281,39 +1516,8 @@ class Our_Tools(threading.Thread):
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_redmine')
             ):
-                now_date_time = datetime.datetime.now()
-
-                self.time_redmine_popup = "15:00:00"
-
-                self.time_redmine_popup = datetime.datetime.strptime(
-                    self.time_redmine_popup, "%H:%M:%S")
-                # you need to convert the now_date_time to now_time
-                # #  https://stackoverflow.com/questions/15105112/compare-only-time-part-in-datetime-python
-                self.time_redmine_popup = now_date_time.replace(hour=self.time_redmine_popup.time().hour, 
-                    minute=self.time_redmine_popup.time().minute, 
-                    second=self.time_redmine_popup.time().second, 
-                    microsecond=0) 
-                while True:
-                    now_date_time = datetime.datetime.now()
-                    now_time = datetime.time(now_date_time.hour, now_date_time.minute,now_date_time.second)
-                    tmp_time_redmine_popup = datetime.time(
-                        self.time_redmine_popup.hour, 
-                        self.time_redmine_popup.minute,
-                        self.time_redmine_popup.second)
-                    if (now_time > tmp_time_redmine_popup):
-                        Our_Tools.popup(
-                            window_title = "Redmine Pop_Up Error",
-                            msg = "Temps deja depassee")
-                        sys.exit(0)
-                    elif (now_time == tmp_time_redmine_popup):
-                        self.redmine01()
-                        sys.exit(0)
-                    else:
-                        print "now_time: ", now_time, "time_redmine_popup: ", tmp_time_redmine_popup
-                        # print "time_redmine_popup: ", self.time_redmine_popup
-                        # print time.strftime("%H:%M:%S")
-                        time.sleep(1)
-                    pass
+                our_tools = Our_Tools()
+                our_tools.manage_redmine_popup()
             elif (
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_conn')
@@ -1955,10 +2159,6 @@ where idcommande ilike 'crh%'
                 query = query01
             )
 
-
-
-
-
         pass
 
     # this is the constructor of class(Our_Tools)
@@ -1966,17 +2166,27 @@ where idcommande ilike 'crh%'
             is_thread = False,
             is_thread_conf = False,
             is_thread_connection001 = True,
-            time_test_connection01 = 5):
+            time_sleep_thread = 5):
 
         self.is_thread = is_thread
 
         self.is_thread_conf = is_thread_conf
         
         self.is_thread_connection = is_thread_connection001
+
+        # self.time_redmine_popup = "15:00:00"
+        # self.time_redmine_popup = "11:49:00"
+        self.time_redmine_popup = parser.get('about_redmine', 'redmine_popup_time')
         
         if is_thread_connection001:
             threading.Thread.__init__(self)
-            self.time_test_connection = time_test_connection01
+            self.time_sleep_thread = time_sleep_thread
+
+            # print int(parser.get('thread_conf', 'time_sleep_thread'))
+            try:
+                self.time_sleep_thread = float(parser.get('thread_conf', 'time_sleep_thread'))
+            except AttributeError:
+                self.time_sleep_thread = time_sleep_thread
         else:
             print "not a thread"
             pass
@@ -2472,8 +2682,6 @@ where idcommande ilike 'crh%'
                             if ((pattern_search in line) and (wrote_file_path == True)) :
                                 print str(line_number) +": "+ line
 
-
-
 def main():
     try:
         #opts, args = getopt.getopt(sys.argv[1:],"hle:t:p:cu:", ["help","listen","execute","target","port","command","upload"])
@@ -2563,11 +2771,15 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'test_mail':
+
+                    print "go"
+                    pass
                 elif args[0] == 'test_thread_conf':
                     our_tools = Our_Tools(
                         is_thread = False,
                         is_thread_conf = True,
-                        time_test_connection01 = 2)
+                        time_sleep_thread = 1)
                     our_tools.start()
                     pass
                 elif args[0] == 'test_disp_pic':
