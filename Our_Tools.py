@@ -22,15 +22,17 @@ import shutil
 from _winreg import *
 import csv
 import ctypes
+import subprocess
 
 from ConfigParser import SafeConfigParser
 
 
 path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
 
+path_sublime2 = "C:\Program Files\Sublime Text 2\sublime_text.exe"
 
 parser = SafeConfigParser()
-parser.read('all_confs.ini')
+parser.read(path_prg + 'all_confs.ini')
 
 try:
     import psycopg2
@@ -64,6 +66,15 @@ except Exception:
     print "selenium doit etre installee"
     raw_input()
     os.system("pip install selenium")
+
+try:
+    from PIL import Image
+    pass
+except Exception:
+    print "PIL n_est pas installee dans cette machine"
+    print "Je vous prie d_installer PIL"
+    pass
+
 
 # print "Toute les packets utils au bon fonctionnement du programme sont installees"
 
@@ -210,6 +221,15 @@ class Our_Tools(threading.Thread):
     def long_print(num = 10):
         for i in range(num):
             print
+        pass
+
+    @staticmethod
+    def edit_file_w_sublime2(
+            path_file = "E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\" + "redmine_file.txt"):
+        # subprocess.Popen(["subl", "-w", path_file]).wait()
+        # path_sublime2 = "C:\Program Files\Sublime Text 2\sublime_text.exe"
+        subprocess.Popen([path_sublime2, "-w", path_file]).wait()
+        print path_file
         pass
 
     @staticmethod
@@ -652,12 +672,6 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print()
 
-
-
-
-
-
-
         delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
         delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
 
@@ -703,14 +717,14 @@ class Our_Tools(threading.Thread):
 
         delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
         delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
         delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
         delete_query_sdsi005 = "DELETE FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"');"
 
         list_query_delete_sdsi = [
             delete_query_sdsi001, 
             delete_query_sdsi002, 
-            delete_query_sdsi003,
+            # delete_query_sdsi003,
             delete_query_sdsi004, 
             delete_query_sdsi005
         ]
@@ -897,8 +911,33 @@ class Our_Tools(threading.Thread):
         print "- - est celui-ci,... Pour arreter le programme, on fait"
         print '> taskkill /f /im "python.exe"'
 
+        Our_Tools.long_print(num = 5)
 
+        Our_Tools.print_green (txt = "Option: -T test_thread_redmine")
+        print "Va afficher un pop_up quand il est 15:00"
 
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T test_edit_file_redmine")
+        print "Va Editer le fichier qui va "
+
+    @staticmethod
+    def display_pic(
+            path_pic = path_prg + "icon.png"
+    ):
+        # print path_pic
+        # img = Image.open(path_pic)
+        # img = Image.open(r'E:\DISK_D\mamitiana\kandra\do_not_erase\our_tools\icon.png')
+        # # https://stackoverflow.com/questions/1413540/showing-an-image-from-console-in-python
+        # # # not working in windows7
+        # img = Image.open('icon.png')
+        # img.show()
+
+        if os.name == 'nt':
+            os.system(path_pic)
+            # os.system('cls')
+
+        pass
 
     @staticmethod
     def csv_read():
@@ -917,6 +956,37 @@ class Our_Tools(threading.Thread):
                 list_res.append(row)
         return list_res
 
+    @staticmethod
+    def write_append_to_file(
+            path_file = path_prg + "test_append.txt",
+            txt_to_add = "this is anotehr test"):
+
+        if os.path.exists(path_file):
+            # print "xxxxxxxxxxxxxxxxxxxx"
+            open_file = open(path_file, 'ab')
+            with open_file:
+                open_file.write('\n' + txt_to_add)
+            pass
+        else:
+            Our_Tools.print_green(
+                    txt = "Le fichier que vous voulez ajouter",
+                    new_line = False)
+            
+            Our_Tools.print_red(
+                    txt = "n_existe pas",
+                    new_line = True)
+            # print ""
+            # print ""
+            Our_Tools.print_green(
+                    txt = "Creation du fichier " + path_file,
+                    new_line = False)
+            open_file = open(path_file, 'ab')
+            with open_file:
+                open_file.write('\n' + txt_to_add)
+            pass
+
+
+        pass
 
     @staticmethod
     def csv_test003():
@@ -1110,9 +1180,84 @@ class Our_Tools(threading.Thread):
     def run(self):
         # i = 0
 
+        if ( (self.is_thread == True) and  (self.is_thread_conf == True)):
+            Our_Tools.print_red(
+                txt = "chp__is_thread",
+                new_line = False)
+            Our_Tools.print_green(
+                txt = "et",
+                new_line = False)
+            Our_Tools.print_red(
+                txt = "chp__is_thread_conf",
+                new_line = False)
+            Our_Tools.print_green(
+                txt = "ne peuvent pas etre vrai en meme temps",
+                new_line = False)
+            sys.exit(0)
+            pass
+        elif ( (self.is_thread == False) and  (self.is_thread_conf == False)):
+            Our_Tools.print_red(
+                txt = "chp__is_thread",
+                new_line = False)
+            Our_Tools.print_green(
+                txt = "et",
+                new_line = False)
+            Our_Tools.print_red(
+                txt = "chp__is_thread_conf",
+                new_line = False)
+            Our_Tools.print_green(
+                txt = "sont Tous Desactivee",
+                new_line = False)
+            sys.exit(0)
+            pass
+
+
+        elif((self.is_thread_conf == True) and (self.is_thread == False)):
+                try:
+                    while True:
+                        if (parser.get('thread_conf', 'pop_up_redmine') == '1'):
+                            pass
+                        if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
+                            if self.db_is_connected(
+                                host = "192.168.10.5",
+                                database01 = 'production'
+                            ):
+                                # print "connection ok au bdd(production)"
+                                Our_Tools.write_append_to_file(
+                                    path_file = path_prg + "log_connect_db.txt",
+                                    txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(production)")
+                                pass
+                            else:
+                                txt001 = ""
+                                Our_Tools.write_append_to_file(
+                                    path_file = path_prg + "log_connect_db.txt",
+                                    txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(production)")
+                        if (parser.get('thread_conf', 'connection_bdd_sdsi') == '1'):
+                            if self.db_is_connected(
+                                    host = "192.168.10.5",
+                                    database01 = 'sdsi'
+                            ):
+                                Our_Tools.write_append_to_file(
+                                    path_file = path_prg + "log_connect_db.txt",
+                                    txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(sdsi)")
+                                pass
+                            else :
+                                Our_Tools.write_append_to_file(
+                                    path_file = path_prg + "log_connect_db.txt",
+                                    txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(sdsi)")
+                            
+                                pass
+                            pass
+                        pass
+                        time.sleep(self.time_test_connection)
+                except Exception:
+                    pass
         
         
-        if self.is_thread:
+        elif((self.is_thread_conf == False) and (self.is_thread == True)):
+
+
+
             if (
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_copy_vdi_debian')
@@ -1125,7 +1270,6 @@ class Our_Tools(threading.Thread):
                             Our_Tools.popup(
                                 window_title = "Info Copie vdi_debian",
                                 msg = "Copie du vdi_debian va s_executer apres 7h")
-                            
                             self.process_copy_vdi_debian(delay = 25200) # 25200 = 7h
                         # print "bbbbbbb"
                     else:
@@ -1138,9 +1282,13 @@ class Our_Tools(threading.Thread):
                 (sys.argv[2] == 'test_thread_redmine')
             ):
                 now_date_time = datetime.datetime.now()
-                self.time_redmine_popup = "09:06:35"
+
+                self.time_redmine_popup = "15:00:00"
+
                 self.time_redmine_popup = datetime.datetime.strptime(
                     self.time_redmine_popup, "%H:%M:%S")
+                # you need to convert the now_date_time to now_time
+                # #  https://stackoverflow.com/questions/15105112/compare-only-time-part-in-datetime-python
                 self.time_redmine_popup = now_date_time.replace(hour=self.time_redmine_popup.time().hour, 
                     minute=self.time_redmine_popup.time().minute, 
                     second=self.time_redmine_popup.time().second, 
@@ -1161,7 +1309,7 @@ class Our_Tools(threading.Thread):
                         self.redmine01()
                         sys.exit(0)
                     else:
-                        print "now_time: ", now_time, "tmp_time_redmine_popup: ", tmp_time_redmine_popup
+                        print "now_time: ", now_time, "time_redmine_popup: ", tmp_time_redmine_popup
                         # print "time_redmine_popup: ", self.time_redmine_popup
                         # print time.strftime("%H:%M:%S")
                         time.sleep(1)
@@ -1171,24 +1319,39 @@ class Our_Tools(threading.Thread):
                 (sys.argv[2] == 'test_thread_conn')
             ):
                 # print "thisi s a test"
-                while True:
-                    if self.db_is_connected(
-                            host = "192.168.10.5",
-                            database01 = 'production'):
-                        print "connection ok au bdd(production)"
-                        pass
-                    if self.db_is_connected(
-                            host = "192.168.10.5",
-                            database01 = 'sdsi'):
-                        print "connection ok au bdd(sdsi)"
-                        pass
-                    else :
-                        print "not connected"
-
+                try:
+                    while True:
+                        if self.db_is_connected(
+                                host = "192.168.10.5",
+                                database01 = 'production'):
+                            # print "connection ok au bdd(production)"
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(production)")
+                            pass
+                        else:
+                            txt001 = ""
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(production)")
+                            
+                            pass
+                        if self.db_is_connected(
+                                host = "192.168.10.5",
+                                database01 = 'sdsi'):
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(sdsi)")
+                            pass
+                        else :
+                            Our_Tools.write_append_to_file(
+                                path_file = path_prg + "log_connect_db.txt",
+                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(sdsi)")
+                except KeyboardInterrupt:
+                    print "<ctrl - c> est s_est executee" 
                 pass
-            
                 
-#                 
+
             # for i in range(5):
                 # print i
                 # time.sleep(2)
@@ -1801,10 +1964,13 @@ where idcommande ilike 'crh%'
     # this is the constructor of class(Our_Tools)
     def __init__(self, 
             is_thread = False,
+            is_thread_conf = False,
             is_thread_connection001 = True,
             time_test_connection01 = 5):
 
         self.is_thread = is_thread
+
+        self.is_thread_conf = is_thread_conf
         
         self.is_thread_connection = is_thread_connection001
         
@@ -2081,6 +2247,12 @@ where idcommande ilike 'crh%'
         else:
             print txt,
         set_text_attr(default_colors)
+
+    def edit_redmine_file(self):
+
+
+
+        pass
 
     def redmine01(self):
 
@@ -2391,13 +2563,29 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                elif args[0] == 'test_thread_conf':
+                    our_tools = Our_Tools(
+                        is_thread = False,
+                        is_thread_conf = True,
+                        time_test_connection01 = 2)
+                    our_tools.start()
+                    pass
+                elif args[0] == 'test_disp_pic':
+                    Our_Tools.display_pic()
+                    pass
+                elif args[0] == 'test_append_file':
+                    Our_Tools.write_append_to_file()
+                    pass
+                elif args[0] == 'test_edit_file_redmine':
+                    Our_Tools.edit_file_w_sublime2()
+                    pass
                 elif args[0] == 'test_thread_redmine':
                     our_tools = Our_Tools(is_thread = True)
                     our_tools.start()
                     pass
                 elif args[0] == 'test_thread_conn':
-
-                    our_tools = Our_Tools(is_thread = True,
+                    our_tools = Our_Tools(
+                            is_thread = True,
                             time_test_connection01 = 1)
                     our_tools.start()
                     pass
