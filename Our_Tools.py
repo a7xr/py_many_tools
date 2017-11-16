@@ -317,6 +317,225 @@ class CMail(object):
 class Our_Tools(threading.Thread):
 
     @staticmethod
+    def test_multithread005():
+        import logging
+        import threading
+        import time
+        
+        logging.basicConfig(level=logging.DEBUG,
+                            format='(%(threadName)-10s) %(message)s',
+                            )
+                            
+        def wait_for_event(e):
+            """Wait for the event to be set before doing anything"""
+            logging.debug('wait_for_event starting')
+            event_is_set = e.wait()
+            logging.debug('event set: %s', event_is_set)
+        
+        def wait_for_event_timeout(e, t):
+            """Wait t seconds and then timeout"""
+            while not e.isSet():
+                logging.debug('wait_for_event_timeout starting')
+                event_is_set = e.wait(t)
+                logging.debug('event set: %s', event_is_set)
+                if event_is_set:
+                    logging.debug('processing event')
+                else:
+                    logging.debug('doing other work')
+        
+        
+        e = threading.Event()
+        t1 = threading.Thread(name='block', 
+                            target=wait_for_event,
+                            args=(e,))
+        t1.start()
+        
+        t2 = threading.Thread(name='non-block', 
+                            target=wait_for_event_timeout, 
+                            args=(e, 2))
+        t2.start()
+        
+        logging.debug('Waiting before calling Event.set()')
+        time.sleep(3)
+        e.set()
+        logging.debug('Event is set')
+
+    @staticmethod
+    def test_multithread004():
+        import threading
+        import time
+        import logging
+        
+        logging.basicConfig(level=logging.DEBUG,
+                            format='(%(threadName)-10s) %(message)s',
+                            )
+        
+        def daemon():
+            logging.debug('Starting')
+            time.sleep(2)
+            logging.debug('Exiting')
+        
+        d = threading.Thread(name='daemon', target=daemon)
+        d.setDaemon(True)
+        
+        def non_daemon():
+            logging.debug('Starting')
+            logging.debug('Exiting')
+        
+        t = threading.Thread(name='non-daemon', target=non_daemon)
+        
+        d.start()
+        t.start()
+        pass
+
+    # https://pymotw.com/2/threading/
+    @staticmethod
+    def test_multithread003():
+        import logging
+        import threading
+        import time
+
+        logging.basicConfig(level=logging.DEBUG,
+                format='[%(levelname)s] (%(threadName)-10s) %(message)s',
+        )
+
+        def worker():
+            logging.debug('Starting')
+            time.sleep(2)
+            logging.debug('Exiting')
+
+        def my_service():
+            logging.debug('Starting')
+            time.sleep(3)
+            logging.debug('Exiting')
+
+        t = threading.Thread(name='my_service', target=my_service)
+        w = threading.Thread(name='worker', target=worker)
+        w2 = threading.Thread(target=worker) # use default name
+
+        w.start()
+        w2.start()
+        t.start()
+        pass
+
+    # https://pymotw.com/2/threading/
+    @staticmethod
+    def test_multithread002():
+        import threading
+
+        def worker():
+            """thread worker function"""
+            print 'Worker'
+            return
+        
+        threads = []
+        for i in range(5):
+            t = threading.Thread(target=worker)
+            threads.append(t)
+            t.start()
+            time.sleep(1)
+        pass
+
+    # https://www.tutorialspoint.com/python/python_multithreading.htm
+    # https://geo.mydati.com/partners/HSS-6.9.1-install-hss-826-plain.exe
+    @staticmethod
+    def test_multithread001():
+        import Queue
+        import threading
+        import time
+
+        exitFlag = 0
+
+
+        class myThread (threading.Thread):
+           def __init__(self, threadID, name, q):
+              threading.Thread.__init__(self)
+              self.threadID = threadID
+              self.name = name
+              self.q = q
+           def run(self):
+              print "Starting " + self.name
+              process_data(self.name, self.q)
+              print "Exiting " + self.name
+
+        def process_data(threadName, q):
+           while not exitFlag:
+                queueLock.acquire()
+                if not workQueue.empty():
+                    data = q.get()
+                    queueLock.release()
+                    print "%s processing %s" % (threadName, data)
+                else:
+                    queueLock.release()
+                time.sleep(1)
+
+
+        threadList = ["Thread-1", "Thread-2", "Thread-3"]
+        nameList = ["One", "Two", "Three", "Four", "Five"]
+        queueLock = threading.Lock()
+        workQueue = Queue.Queue(10)
+        threads = []
+        threadID = 1
+
+        # Create new threads
+        for tName in threadList:
+           thread = myThread(threadID, tName, workQueue)
+           thread.start()
+           threads.append(thread)
+           threadID += 1
+
+        # Fill the queue
+        queueLock.acquire()
+        for word in nameList:
+           workQueue.put(word)
+        queueLock.release()
+
+        # Wait for queue to empty
+        while not workQueue.empty():
+           pass
+
+        # Notify threads it's time to exit
+        exitFlag = 1
+
+        # Wait for all threads to complete
+        for t in threads:
+           t.join()
+        print "Exiting Main Thread"
+        pass
+
+    def reformat_thread_conf_test_connect_prod_10_5(
+        self, 
+        host = parser.get(
+            'pg_10_5_production', 
+            'ip_host'),
+        database = parser.get(
+            'pg_10_5_production', 
+            'database')
+    ):
+        if self.db_is_connected(
+            host = host,
+            database01 = database
+        ):
+            # print "connection ok au bdd(production)"
+            Our_Tools.write_append_to_file(
+                path_file = path_prg + "log_connect_db.txt",
+                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd("+database+")@"+host
+            )
+            pass
+        else:
+            
+            txt001 = "************ " + str(datetime.datetime.now()) + ": Connection PERDU pour bdd("+database+")@" + host
+            txt002 = str(datetime.datetime.now()) + ": Connection PERDU pour bdd("+database+")@" + host
+            Our_Tools.write_append_to_file(
+                path_file = path_prg + "log_connect_db.txt",
+                txt_to_add = txt001
+            )
+            Our_Tools.popup(
+                window_title = "Erreur de connection de base",
+                msg = txt002)
+        pass
+
+    @staticmethod
     def copy_dir_content(
             path_src = 'E:\DISK_D\date',
             path_target = 'E:\DISK_D\ASA\BLF') :
@@ -482,11 +701,12 @@ class Our_Tools(threading.Thread):
         replacer = Our_Tools.replacer_factory(changmt)
         return re.sub(pattern, replacer, text)
 
-    def connection_pg(self, 
+    def connection_pg(self,  
             server01 = '127.0.0.1',
             user01='postgres',
             password01='123456',
-            database01='saisie'):
+            database01='saisie'
+    ):
         try:
             if(server01 == parser.get('pg_10_5_sdsi', 'ip_host')):
                 if (database01 == parser.get('pg_10_5_sdsi', 'database')):
@@ -530,11 +750,43 @@ class Our_Tools(threading.Thread):
                         self.cursor_pg_local__bdd_sdsi = self.connect_pg_local_sdsi.cursor()
                         print "Connection OK au pg_localhost bdd(sdsi_local)"
                 pass
+            elif(
+                    (server01 == parser.get('pg_10_32_production', 'ip_host'))
+                    and (database01 == parser.get('pg_10_32_production', 'database'))
+            ):
+                try:
+                    self.connect_pg_10_32_prod
+                except AttributeError:
+                    self.connect_pg_10_32_prod = psycopg2.connect(
+                        "dbname=" + database01
+                        +" user=" + user01
+                        +" password=" + password01
+                        +" host=" + server01
+                    )
+                    self.connect_pg_10_32_prod.set_isolation_level(0)
+                    self.cursor_pg_10_32_prod = self.connect_pg_10_32_prod.cursor()
+                    print "Connection OK au pg_10_32 bdd(production)"
+                
+
+                pass
         except(psycopg2.OperationalError):
             print ""
             print ""
             print ""
             print "there is an OperationalError"
+            # txt = 
+            Our_Tools.write_append_to_file(
+                    path_file = 'log_connect_db.txt',
+                    txt_to_add = str(datetime.datetime.now()) + ": Impossible de se connecter au db__" + database01)
+            Our_Tools.popup(
+                window_title = "Connection interrompue",
+                msg = "Connection interrompue sur la base de donnee(" + database01 + ")")
+            # self.connection_pg(
+                # server01 = server01,
+                # user01 = user01,
+                # password01 = password01,
+                # database01 = database01)
+            time.sleep(1)
 
     def logging_n_print(self, 
             bool01 = True,
@@ -601,7 +853,9 @@ class Our_Tools(threading.Thread):
         pass
 
 
-    def suppression_gpao_unique(self):
+    def suppression_gpao_unique(
+            self,
+            suppr_total = 1):
         print "suppression_gpao_unique"
         # print "parser.get('pg_10_5_production', 'ip_host')"
         # print parser.get('pg_10_5_production', 'ip_host')
@@ -782,9 +1036,16 @@ class Our_Tools(threading.Thread):
 
 
         Our_Tools.long_print()
+        # lot_scan IN (" + all_lots + ")  AND
+        # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
+        # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
 
         delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        if suppr_total == 1:
+            delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        
 
         delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
         delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where lot_scan IN ("+ all_lots +")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
@@ -1098,13 +1359,87 @@ class Our_Tools(threading.Thread):
             pass
         pass
 
+    def init_selenium_chrome(self, 
+            with_pic = False
+    ):
+
+        if with_pic:
+            chromeOptions = None
+            pass
+        else:
+            chromeOptions = webdriver.ChromeOptions()
+            prefs = {"profile.managed_default_content_settings.images":2}
+            chromeOptions.add_experimental_option("prefs",prefs)
+        pass
+
+        self.driver_chrome = webdriver.Chrome(
+            chrome_driver_path
+            , chrome_options=chromeOptions
+        )
+
+        
+
+    def automate_redmine(self, 
+            path_file_csv_redmine = 'csv_redmine.csv',
+            delimiter = '|'
+    ):
+
+        self.init_selenium_chrome(with_pic = False)
+
+        list_content_redm_csv = Our_Tools.csv_read_content(
+            path_file_csv = path_file_csv_redmine,
+            delimiter = delimiter)
+
+        self.driver_chrome.get(parser.get('selenium_10_24_redmine', 'link_redmine'))
+
+        login_field = self.driver_chrome.find_element_by_name('username')
+        passw_field = self.driver_chrome.find_element_by_name('password')
+        
+        login_field.send_keys(parser.get('selenium_10_24_redmine', 'login'))
+        passw_field.send_keys(parser.get('selenium_10_24_redmine', 'passw'))
+        
+        passw_field.submit()
+
+        self.driver_chrome.get('https://192.168.10.13/redmine/projects/iam-new/issues')
+
+        raw_input()
+
+
+        for cont_redm_csv in list_content_redm_csv:
+            # print cont_redm_csv
+            pass
+        # print list_content_redm_csv
+            # https://192.168.10.13/redmine
+            # login_field = 
+            # login_field = 
+        pass
 
     @staticmethod
-    def csv_read():
-        with open('names.csv') as csv_read:
-            reader = csv.reader(csv_read)
+    def csv_read_content(path_file_csv = 'csv_redmine.csv',delimiter = '|'):
+        # print "coco"
+        # print res
+        res = []
+        list01 = Our_Tools.csv_read_all(
+            path_file_csv = path_file_csv,
+            delimiter = delimiter)[1:]
+        for elem in list01:
+            res.append(elem)
+        return res
+        # for elem in list01:
+            # print elem
+
+    @staticmethod
+    def csv_read_all(
+        path_file_csv = 'csv_redmine.csv',
+        delimiter = '|' ):
+        res = []
+        with open(path_file_csv) as csv_read:
+            reader = csv.reader(
+                csv_read, delimiter = delimiter)
             for row in reader:
-                print row
+                res.append(row)
+            # print "another_line"
+        return res
         pass
 
     @staticmethod
@@ -1260,27 +1595,6 @@ class Our_Tools(threading.Thread):
             0x40 | 0x4)
         return returnValue
 
-        # if returnValue == 6:
-            # messageBox = ctypes.windll.user32.MessageBoxA
-            # returnValue = messageBox(None, "TextRespondingToAnswerYes", "SWindowTitle", 0x40 | 0x0)
-        # elif returnValue == 7:
-            # messageBox = ctypes.windll.user32.MessageBoxA
-            # returnValue = messageBox(None, "TextRespondingToAnswerNo", "WindowTitle", 0x40 | 0x0)
-# 
-        # while (count < 4):
-            # time.sleep(60*60*2)
-            # print "This break message was sent on"+time.ctime()
-            # messageBox = ctypes.windll.user32.MessageBoxA
-            # returnValue = messageBox(None, "TextAskingToDoSomething", "WindowTitle", 0x40 | 0x4)
-            # if returnValue == 6:
-                # messageBox = ctypes.windll.user32.MessageBoxA
-                # returnValue = messageBox(None, "TextRespondingToAnswerYes", "WindowTitle", 0x40 | 0x0)
-            # elif returnValue == 7:
-                # messageBox = ctypes.windll.user32.MessageBoxA
-                # returnValue = messageBox(None, "TextRespondingToAnswerNo", "WindowTitle", 0x40 | 0x0)
-            # count = count + 1
-# 
-        # time.localtime()
         pass
 
     def set_flag_copy_vdi(self, copy_vdi = True):
@@ -1290,17 +1604,25 @@ class Our_Tools(threading.Thread):
     @staticmethod
     def test_selenium001():
 
-        driver_chrome = webdriver.Chrome(chrome_driver_path)
-        driver_chrome.get('http://192.168.10.24/intranet_light/modules/accueil/index.php')
         
+        chromeOptions = webdriver.ChromeOptions()
+        prefs = {"profile.managed_default_content_settings.images":2}
+        chromeOptions.add_experimental_option("prefs",prefs)
+
+        driver_chrome = webdriver.Chrome(
+            chrome_driver_path,
+            chrome_options=chromeOptions
+        )
+        driver_chrome.get(parser.get('selenium_10_24_gpao', 'link_gpao'))
+
         matr_field = driver_chrome.find_element_by_name('T1')
         pass_field = driver_chrome.find_element_by_name('T2')
         
         matr_field.clear()
         pass_field.clear()
 
-        matr_field.send_keys(parser.get('selenium_10_24', 'login'))
-        pass_field.send_keys(parser.get('selenium_10_24', 'passw'))
+        matr_field.send_keys(parser.get('selenium_10_24_gpao', 'login'))
+        pass_field.send_keys(parser.get('selenium_10_24_gpao', 'passw'))
 
         pass_field.submit()
 
@@ -1313,15 +1635,24 @@ class Our_Tools(threading.Thread):
         search_button01.click()
 
         # search_button01.click()
-# 
+
         # elem_admin_push = driver_chrome.find_element_by_link_text('Administration Push')
         # elem_admin_push = driver_chrome.find_element(selenium.webdriver.common.by.By.PARTIAL_LINK_TEXT, 'text')
-        elem_admin_push = driver_chrome.find_element_by_partial_link_text("Push")
+        # elem_admin_push = driver_chrome.find_element_by_partial_link_text("Push")
         # variable = "Push"
         # elem_admin_push = driver_chrome.find_element_by_xpath('//a[@href="'+variable+'"]')
-        print elem_admin_push
-        elem_admin_push.click()
+        # print elem_admin_push
+        # elem_admin_push.click()
 
+        # links = driver_chrome.find_elements_by_partial_link_text('http')
+        # print links
+        
+        time.sleep(5)
+
+        links = driver_chrome.find_element_by_xpath['//*[@id="40"]/div[2]/div/div[1]/a']
+        
+        for link in links:
+            print link.get_attribute("href")
         pass
 
     # this is going to run if there is D:\\vdi_debian9_64b
@@ -1453,35 +1784,36 @@ class Our_Tools(threading.Thread):
                             # print "time_redmine_popup: ", self.time_redmine_popup
                             # print time.strftime("%H:%M:%S")
                         pass
+                    # if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
                     if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
-                        if self.db_is_connected(
-                            host = "192.168.10.5",
-                            database01 = 'production'
-                        ):
-                            # print "connection ok au bdd(production)"
-                            Our_Tools.write_append_to_file(
-                                path_file = path_prg + "log_connect_db.txt",
-                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(production)")
-                            pass
-                        else:
-                            txt001 = ""
-                            Our_Tools.write_append_to_file(
-                                path_file = path_prg + "log_connect_db.txt",
-                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(production)")
+
+                        self.reformat_thread_conf_test_connect_prod_10_5()
+                    if (parser.get('thread_conf', 'connection_bdd_production_10_32') == '1'):
+                        # print "tik"
+                        self.reformat_thread_conf_test_connect_prod_10_5(
+                            host = parser.get(
+                                'pg_10_32_production', 
+                                'ip_host'
+                            ),
+                            database = parser.get(
+                                'pg_10_32_production', 
+                                'database'
+                            )
+                        )
+                        # print "tak"
+                        pass
                     if (parser.get('thread_conf', 'connection_bdd_sdsi') == '1'):
-                        if self.db_is_connected(
-                                host = "192.168.10.5",
-                                database01 = 'sdsi'
-                        ):
-                            Our_Tools.write_append_to_file(
-                                path_file = path_prg + "log_connect_db.txt",
-                                txt_to_add = str(datetime.datetime.now()) + ": Connection OK au bdd(sdsi)")
-                            pass
-                        else :
-                            Our_Tools.write_append_to_file(
-                                path_file = path_prg + "log_connect_db.txt",
-                                txt_to_add = "************ " + str(datetime.datetime.now()) + ": Connection PERDU au bdd(sdsi)")                            
-                            pass
+                        self.reformat_thread_conf_test_connect_prod_10_5(
+                            host = parser.get(
+                                'pg_10_5_sdsi', 
+                                'ip_host'
+                            ),
+                            database = parser.get(
+                                'pg_10_5_sdsi', 
+                                'database'
+                            )
+                        )
+
                         pass
                     pass
 
@@ -2771,9 +3103,22 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
-                elif args[0] == 'test_mail':
+                elif args[0] == 'test_multithread005':
+                    Our_Tools.test_multithread005()
+                    pass
+                elif args[0] == 'test_multithread004':
+                    Our_Tools.test_multithread004()
+                    pass
+                elif args[0] == 'test_multithread003':
+                    Our_Tools.test_multithread003()
+                    pass
+                elif args[0] == 'test_multithread002':
+                    Our_Tools.test_multithread002()
+                    pass
+                elif args[0] == 'test_multithread001':
 
-                    print "go"
+                    Our_Tools.test_multithread001()
+                    
                     pass
                 elif args[0] == 'test_thread_conf':
                     our_tools = Our_Tools(
@@ -2916,8 +3261,18 @@ def main():
                     our_tools = Our_Tools()
                     l001 = our_tools.csv_to_list()
                     print l001
-                elif args[0] == 'csv_read':
-                    Our_Tools.csv_read()
+                elif args[0] == 'csv_read_content':
+                    list_content = Our_Tools.csv_read_content()
+                    # for content in list_content:
+                        # print content
+                    # pass
+                elif args[0] == 'automate_redmine':
+                    our_tools = Our_Tools()
+                    our_tools.automate_redmine()
+                elif args[0] == 'csv_read_all':
+                    list_content = Our_Tools.csv_read_all()
+                    for cont in list_content:
+                        print cont
                 elif args[0] == 'csv_write003':
                     Our_Tools.csv_test003()
                 elif args[0] == 'csv_write002':
@@ -2989,3 +3344,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
