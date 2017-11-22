@@ -23,6 +23,8 @@ from _winreg import *
 import csv
 import ctypes
 import subprocess
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 from ConfigParser import SafeConfigParser
 
@@ -313,8 +315,145 @@ class CMail(object):
 
 
 
+class Thread001(threading.Thread): # done for Mahaitia_Demand
+    
+
+    def set_configuration(self,
+        exe = "out.xlsx",
+        temp_attendre = 10
+    ):
+        self.exe = exe
+        self.temp_attendre = temp_attendre
+
+        pass
+
+    # class Thread001
+    def __init__(
+        self
+    ):
+        threading.Thread.__init__(self)
+        fichier_conf_mahaitia = "conf_mahaitia.txt"
+                    
+        parser_mahaitia = SafeConfigParser()
+        parser_mahaitia.read(fichier_conf_mahaitia)                    
+        exe = parser_mahaitia.get('thread_conf', 'exe')
+        temp_attendre = parser_mahaitia.get('thread_conf', 'temp_attendre')
+
+        self.set_configuration(
+            exe = exe,
+            temp_attendre = temp_attendre
+        )
+
+
+
+        pass
+    # class Thread001 #Thread001_run
+    def run(self):
+        # try:
+        while True:
+            # print "avant ni_exe"
+            # from subprocess import Popen
+            # Popen(self.exe)
+
+
+            from subprocess import check_output
+            check_output(self.exe, shell=True)
+            time.sleep(float(self.temp_attendre))
+        
+
+        # except Exception:
+            # print "out"
+            # pass
+        # pass
 
 class Our_Tools(threading.Thread):
+
+    @staticmethod
+    def test_tabwidget_pyqt001():
+        class Test001(QTabWidget):
+            def __init__(self, title, parent):
+                # QtGui.QDockWidget.__init__(self, title, parent)
+                QDockWidget.__init__(self, title, parent)
+                self.parent = parent
+                self.currentLocation = None
+
+                # self.tabWidget = QtGui.QTabWidget()
+                self.tabWidget = QTabWidget()
+                # self.tabWidget.setTabPosition(QtGui.QTabWidget.West)
+                self.tabWidget.setTabPosition(QTabWidget.West)
+                self.setWidget(self.tabWidget)
+                
+                dropArea = DropArea(hostTypes.keys())
+                dropArea2 = DropArea(netTypes.keys())
+                dropArea3 = DropArea(customTypes.keys())
+                self.tabWidget.addTab(dropArea, self.tr("&Host Element"))
+                self.tabWidget.addTab(dropArea2, self.tr("&Net Element"))
+                self.tabWidget.addTab(dropArea3, self.tr("&Custom Element"))
+                
+                self.connect(self,
+                             QtCore.SIGNAL("dockLocationChanged(Qt::DockWidgetArea)"),
+                             self.locationChanged)
+                self.connect(self.tabWidget,
+                             QtCore.SIGNAL("currentChanged(int)"),
+                             self.tabChanged)
+        app = QApplication(sys.argv)
+        test001 = Test001("Title001", "Parent001")
+        test001.show()
+        sys.exit(app.exec_())
+
+        pass
+
+    @staticmethod
+    def test_tabwidget_pyqt():
+
+        # https://www.tutorialspoint.com/pyqt/pyqt_qtabwidget.htm
+        class tabdemo(QTabWidget):
+           def __init__(self, parent = None):
+              super(tabdemo, self).__init__(parent)
+              self.tab1 = QWidget()
+              self.tab2 = QWidget()
+              self.tab3 = QWidget()
+                
+              self.addTab(self.tab1,"Tab 1")
+              self.addTab(self.tab2,"Tab 2")
+              self.addTab(self.tab3,"Tab 3")
+              self.tab1UI()
+              self.tab2UI()
+              self.tab3UI()
+              self.setWindowTitle("tab demo")
+                
+           def tab1UI(self):
+              layout = QFormLayout()
+              layout.addRow("Name",QLineEdit())
+              layout.addRow("Address",QLineEdit())
+              self.setTabText(0,"Contact Details")
+              self.tab1.setLayout(layout)
+                
+           def tab2UI(self):
+              layout = QFormLayout()
+              sex = QHBoxLayout()
+              sex.addWidget(QRadioButton("Male"))
+              sex.addWidget(QRadioButton("Female"))
+              layout.addRow(QLabel("Sex"),sex)
+              layout.addRow("Date of Birth",QLineEdit())
+              self.setTabText(1,"Personal Details")
+              self.tab2.setLayout(layout)
+                
+           def tab3UI(self):
+              layout = QHBoxLayout()
+              layout.addWidget(QLabel("subjects")) 
+              layout.addWidget(QCheckBox("Physics"))
+              layout.addWidget(QCheckBox("Maths"))
+              self.setTabText(2,"Education Details")
+              self.tab3.setLayout(layout)
+                
+        def main():
+           app = QApplication(sys.argv)
+           ex = tabdemo()
+           ex.show()
+           sys.exit(app.exec_())
+
+        main()
 
     @staticmethod
     def test_multithread005():
@@ -855,7 +994,7 @@ class Our_Tools(threading.Thread):
 
     def suppression_gpao_unique(
             self,
-            suppr_total = 1):
+            suppr_total = 0):
         print "suppression_gpao_unique"
         # print "parser.get('pg_10_5_production', 'ip_host')"
         # print parser.get('pg_10_5_production', 'ip_host')
@@ -1024,7 +1163,10 @@ class Our_Tools(threading.Thread):
         # txt001 = "aa"
         txt001 = """
 # ################################################################
-# Dans bdd(production) pour la commande("""+cmd001+""")
+# Dans bdd(production) pour la commande("""+cmd001
+
+        txt001 += " _ suppr_total" if (suppr_total == 1) else ""
+        txt001 += """)
 # ################################################################
 # 
 # 
@@ -1042,21 +1184,34 @@ class Our_Tools(threading.Thread):
 
         delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
         delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        if suppr_total == 1:
+        if (suppr_total == 0):
             delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
         delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
         
 
         delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
-        delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where lot_scan IN ("+ all_lots +")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
+        if suppr_total == 0:
+            delete_query_prod002 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod002 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
 
         delete_query_prod003 = "DELETE FROM image_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  and idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE"
+        if suppr_total == 0:
+            delete_query_prod003 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod003 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+
 
         delete_query_prod004 = "DELETE FROM fichesuiveuse_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  and idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        if suppr_total == 0:
+            delete_query_prod004 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod004 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
 
-        delete_query_prod005 = "DELETE FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
+        delete_query_prod005 = "DELETE FROM lot_numerisation WHERE "
+        if suppr_total == 0:
+            delete_query_prod005 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod005 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
 
         list_query_delete_prod = [
             delete_query_prod001, 
@@ -1086,12 +1241,27 @@ class Our_Tools(threading.Thread):
 
 
 
-
-        delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        # lot_client IN (" + all_lots + ") AND
+        delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi001 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi001 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        
+        delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi002 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi002 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
         # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        delete_query_sdsi005 = "DELETE FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"');"
+        delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi004 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi004 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        
+        delete_query_sdsi005 = "DELETE FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi005 += "lot_client IN (" + all_lots + ") AND"
+        
+        delete_query_sdsi005 += " idcommande IN ('"+cmd001+"','0"+cmd001+"');"
 
         list_query_delete_sdsi = [
             delete_query_sdsi001, 
@@ -1104,7 +1274,11 @@ class Our_Tools(threading.Thread):
         i = 0
         txt001 = """
 ##################################################################
-# Dans bdd(sdsi) pour la commande("""+cmd001+""")
+# Dans bdd(sdsi) pour la commande("""+cmd001
+
+        txt001 += " _ suppr_total" if (suppr_total == 1) else ""
+
+        txt001 +=""")
 ##################################################################
 # 
 # 
@@ -1230,11 +1404,15 @@ class Our_Tools(threading.Thread):
         print "> Our_Tools.py -s"
         print "- - pour la suppression de gpao unique"
         print "- - "
+        print "- - "
+        print "- - "
+        print "- - Il est possible que la Suppression ne possede pas de "
+        print '- - - lots_clients... ie, on a k1 seule commande et on suppr tout'
+        Our_Tools.print_yellow(txt = "> Our_Tools.py -s --total")
         
-
         Our_Tools.long_print(num = 5)
 
-        Our_Tools.print_green (txt = "Option: -T, --all_tests")
+        Our_Tools.print_green (txt = "Option: -T, --all_test")
         print "Pour faire des test que j_ai trouvee sur Internet"
         print
         print "Our_Tools.py -T dl link01 file_save"
@@ -2498,7 +2676,8 @@ where idcommande ilike 'crh%'
             is_thread = False,
             is_thread_conf = False,
             is_thread_connection001 = True,
-            time_sleep_thread = 5):
+            time_sleep_thread = 5
+    ):
 
         self.is_thread = is_thread
 
@@ -3030,7 +3209,8 @@ def main():
                 "all_tests"
                 "x = testing001",
                 "sgc",
-                "export_table"
+                "export_table",
+                "total"
             ])
     except getopt.GetoptError as err:
         print str(err)
@@ -3060,12 +3240,29 @@ def main():
         elif option in ("-d","--directory"):
             script001 = Our_Tools()
             script001.search_a_dir001()
-        elif option in ("-s","--suppression_gpao_unique"):
-            script001 = Our_Tools()
-            # at this time, only meth(suppression_gpao_unique)
-            # # is going to connect the db(production, sdsi)
-            # # is going to create a new excel_file
-            script001.suppression_gpao_unique()
+        elif (
+            (option in ("-s","--suppression_gpao_unique"))
+        ):
+            if (
+                (len (sys.argv) == 3) 
+                and (sys.argv[1] == '-s')
+                and (sys.argv[2] == '--total')
+            ):
+                # print "suppr_total"
+                # sys.exit(0)
+                script001 = Our_Tools()
+                script001.suppression_gpao_unique(suppr_total = 1)
+            elif (
+                (len (sys.argv) == 2) 
+                and (sys.argv[1] == '-s')
+            ):
+                # print "suppr normal"
+                # sys.exit(0)
+                script001 = Our_Tools()
+
+                script001.suppression_gpao_unique(suppr_total = 0)
+            else:
+                print "not managed at all"
         elif option in ("-r","--replace_accent"):
             Our_Tools.replace_accent()
         elif option in ("-e", "--export_table"):
@@ -3103,6 +3300,26 @@ def main():
             else:
                 if args[0] == 'p':
                     p = Person()
+                    print p
+                elif args[0] == 'test_mahaitia001':
+                    # mamaky anle fichier conf
+                    # # alaina ny exe
+                    # # alaina ny temp_ouverture
+                    # # alaina ny temp_wait
+                    # 
+                    # mnw anle iz
+                    
+                    thread001 = Thread001()
+                    thread001.start()
+                    pass
+                elif args[0] == 'test_tabwidget_pyqt001':
+                    Our_Tools.test_tabwidget_pyqt001()
+                elif args[0] == 'test_tabwidget_pyqt':
+                    Our_Tools.test_tabwidget_pyqt()
+                    pass
+                elif args[0] == 'test_asyncio':
+                    Our_Tools.to_del_asyncio001()
+                    pass
                 elif args[0] == 'test_multithread005':
                     Our_Tools.test_multithread005()
                     pass

@@ -1,8 +1,8 @@
--- Table: sgam23_r
+-- Table: ____table_prod_____r
 
--- DROP TABLE sgam23_r;
+DROP IF EXISTS TABLE ____table_prod_____r;
 
-CREATE TABLE sgam23_r
+CREATE TABLE ____table_prod_____r
 (
   n_enr character varying(254),
   n_ima character varying(254),
@@ -60,7 +60,7 @@ mobile_d2 character varying(254),
   index_image text,
   doublon character varying(255),
   id_lot_numerisation integer,
-  idenr integer NOT NULL DEFAULT nextval(('public.sgam23_r_seq'::text)::regclass),
+  idenr integer NOT NULL DEFAULT nextval(('public.____table_prod_____r_seq'::text)::regclass),
   date_saisie date DEFAULT ('now'::text)::date,
   idexecute integer,
   nom_fichier_csv text,
@@ -69,67 +69,67 @@ mobile_d2 character varying(254),
   list_ima text,
   __s character varying(1),
   lot_operation character varying(254),
-  CONSTRAINT pk_sgam23__r PRIMARY KEY (idenr ),
-  CONSTRAINT p_unique_sgam23__r UNIQUE (n_ima , n_lot , commande , n_enr )
+  CONSTRAINT pk_____table_prod______r PRIMARY KEY (idenr ),
+  CONSTRAINT p_unique_____table_prod______r UNIQUE (n_ima , n_lot , commande , n_enr )
 )
 WITH (
   OIDS=TRUE
 );
-ALTER TABLE sgam23_r
+ALTER TABLE ____table_prod_____r
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgam23_r TO pgtantely;
-GRANT ALL ON TABLE sgam23_r TO op;
-GRANT SELECT ON TABLE sgam23_r TO prep;
+GRANT ALL ON TABLE ____table_prod_____r TO pgtantely;
+GRANT ALL ON TABLE ____table_prod_____r TO op;
+GRANT SELECT ON TABLE ____table_prod_____r TO prep;
 
--- Index: idx1_sgam23__r
+-- Index: idx1_____table_prod______r
 
--- DROP INDEX idx1_sgam23__r;
+DROP INDEX IF EXISTS idx1_____table_prod______r;
 
-CREATE INDEX idx1_sgam23__r
-  ON sgam23_r
+CREATE INDEX idx1_____table_prod______r
+  ON ____table_prod_____r
   USING btree
   (commande COLLATE pg_catalog."default" , n_lot COLLATE pg_catalog."default" , __s COLLATE pg_catalog."default" );
 
--- Index: idx2_sgam23__r
+-- Index: idx2_____table_prod______r
 
--- DROP INDEX idx2_sgam23__r;
+DROP INDEX IF EXISTS idx2_____table_prod______r;
 
-CREATE INDEX idx2_sgam23__r
-  ON sgam23_r
+CREATE INDEX idx2_____table_prod______r
+  ON ____table_prod_____r
   USING btree
   (idexecute );
 
--- Index: idx3_sgam23__r
+-- Index: idx3_____table_prod______r
 
--- DROP INDEX idx3_sgam23__r;
+DROP INDEX IF EXISTS idx3_____table_prod______r;
 
-CREATE INDEX idx3_sgam23__r
-  ON sgam23_r
+CREATE INDEX idx3_____table_prod______r
+  ON ____table_prod_____r
   USING btree
   (idenr );
 
--- Index: idx4_sgam23__r
+-- Index: idx4_____table_prod______r
 
--- DROP INDEX idx4_sgam23__r;
+DROP INDEX IF EXISTS idx4_____table_prod______r;
 
-CREATE INDEX idx4_sgam23__r
-  ON sgam23_r
+CREATE INDEX idx4_____table_prod______r
+  ON ____table_prod_____r
   USING btree
   (n_lot COLLATE pg_catalog."default" );
 
 
-  -- Sequence: sgam23_r_seq
+  -- Sequence: ____table_prod_____r_seq
 
--- DROP SEQUENCE sgam23_r_seq;
+DROP SEQUENCE IF EXISTS ____table_prod_____r_seq;
 
-CREATE SEQUENCE sgam23_r_seq
+CREATE SEQUENCE ____table_prod_____r_seq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1;
-ALTER TABLE sgam23_r_seq
+ALTER TABLE ____table_prod_____r_seq
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgam23_r_seq TO pgtantely;
-GRANT SELECT, UPDATE ON TABLE sgam23_r_seq TO op;
-GRANT SELECT ON TABLE sgam23_r_seq TO prep;
+GRANT ALL ON TABLE ____table_prod_____r_seq TO pgtantely;
+GRANT SELECT, UPDATE ON TABLE ____table_prod_____r_seq TO op;
+GRANT SELECT ON TABLE ____table_prod_____r_seq TO prep;

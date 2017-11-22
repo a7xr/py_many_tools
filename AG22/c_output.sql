@@ -1,8 +1,8 @@
--- Table: sgal75_c
+-- Table: sgal85_c
 
--- DROP TABLE sgal75_c;
+DROP TABLE IF EXISTS sgal85_c;
 
-CREATE TABLE sgal75_c
+CREATE TABLE sgal85_c
 (
   n_enr character varying(254),
   n_ima character varying(254),
@@ -72,7 +72,7 @@ mobile_d2 character varying(254),
   index_image text,
   doublon character varying(255),
   id_lot_numerisation integer,
-  idenr integer NOT NULL DEFAULT nextval(('public.sgal75_c_seq'::text)::regclass),
+  idenr integer NOT NULL DEFAULT nextval(('public.sgal85_c_seq'::text)::regclass),
   date_saisie date DEFAULT ('now'::text)::date,
   idexecute integer,
   nom_fichier_csv text,
@@ -80,66 +80,66 @@ mobile_d2 character varying(254),
   idsousdossier text,
   list_ima text,
   __s character varying(1),
-  CONSTRAINT pk_sgal75__c PRIMARY KEY (idenr ),
-  CONSTRAINT p_unique_sgal75__c UNIQUE (n_ima , n_lot , commande , n_enr )
+  CONSTRAINT pk_sgal85__c PRIMARY KEY (idenr ),
+  CONSTRAINT p_unique_sgal85__c UNIQUE (n_ima , n_lot , commande , n_enr )
 )
 WITH (
   OIDS=TRUE
 );
-ALTER TABLE sgal75_c
+ALTER TABLE sgal85_c
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgal75_c TO pgtantely;
-GRANT ALL ON TABLE sgal75_c TO op;
-GRANT SELECT ON TABLE sgal75_c TO prep;
+GRANT ALL ON TABLE sgal85_c TO pgtantely;
+GRANT ALL ON TABLE sgal85_c TO op;
+GRANT SELECT ON TABLE sgal85_c TO prep;
 
--- Index: idx1_sgal75__c
+-- Index: idx1_sgal85__c
 
--- DROP INDEX idx1_sgal75__c;
+DROP INDEX IF EXISTS idx1_sgal85__c;
 
-CREATE INDEX idx1_sgal75__c
-  ON sgal75_c
+CREATE INDEX idx1_sgal85__c
+  ON sgal85_c
   USING btree
   (commande COLLATE pg_catalog."default" , n_lot COLLATE pg_catalog."default" , __s COLLATE pg_catalog."default" );
 
--- Index: idx2_sgal75__c
+-- Index: idx2_sgal85__c
 
--- DROP INDEX idx2_sgal75__c;
+DROP INDEX IF EXISTS idx2_sgal85__c;
 
-CREATE INDEX idx2_sgal75__c
-  ON sgal75_c
+CREATE INDEX idx2_sgal85__c
+  ON sgal85_c
   USING btree
   (idexecute );
 
--- Index: idx3_sgal75__c
+-- Index: idx3_sgal85__c
 
--- DROP INDEX idx3_sgal75__c;
+DROP INDEX IF EXISTS idx3_sgal85__c;
 
-CREATE INDEX idx3_sgal75__c
-  ON sgal75_c
+CREATE INDEX idx3_sgal85__c
+  ON sgal85_c
   USING btree
   (idenr );
 
--- Index: idx4_sgal75__c
+-- Index: idx4_sgal85__c
 
--- DROP INDEX idx4_sgal75__c;
+DROP INDEX IF EXISTS idx4_sgal85__c;
 
-CREATE INDEX idx4_sgal75__c
-  ON sgal75_c
+CREATE INDEX idx4_sgal85__c
+  ON sgal85_c
   USING btree
   (n_lot COLLATE pg_catalog."default" );
 
--- Sequence: sgal75_c_seq
+-- Sequence: sgal85_c_seq
 
--- DROP SEQUENCE sgal75_c_seq;
+DROP SEQUENCE IF EXISTS sgal85_c_seq;
 
-CREATE SEQUENCE sgal75_c_seq
+CREATE SEQUENCE sgal85_c_seq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1;
-ALTER TABLE sgal75_c_seq
+ALTER TABLE sgal85_c_seq
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgal75_c_seq TO pgtantely;
-GRANT SELECT, UPDATE ON TABLE sgal75_c_seq TO op;
-GRANT SELECT ON TABLE sgal75_c_seq TO prep;
+GRANT ALL ON TABLE sgal85_c_seq TO pgtantely;
+GRANT SELECT, UPDATE ON TABLE sgal85_c_seq TO op;
+GRANT SELECT ON TABLE sgal85_c_seq TO prep;

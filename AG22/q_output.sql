@@ -1,11 +1,11 @@
--- Table: sgam23_q
+-- Table: sgal85_q
 -- -- chaine1
 -- -- numvoie2
 -- -- email1
 
--- DROP TABLE sgam23_q;
+DROP TABLE IF EXISTS sgal85_q;
 
-CREATE TABLE sgam23_q
+CREATE TABLE sgal85_q
 (
   n_enr character varying(254),
   n_ima character varying(254),
@@ -64,7 +64,7 @@ mobile_d2 character varying(254),
   index_image text,
   doublon character varying(255),
   id_lot_numerisation integer,
-  idenr integer NOT NULL DEFAULT nextval(('public.sgam23_q_seq'::text)::regclass),
+  idenr integer NOT NULL DEFAULT nextval(('public.sgal85_q_seq'::text)::regclass),
   date_saisie date DEFAULT ('now'::text)::date,
   idexecute integer,
   nom_fichier_csv text,
@@ -73,66 +73,66 @@ mobile_d2 character varying(254),
   list_ima text,
   __s character varying(1),
   lot_operation character varying(254),
-  CONSTRAINT pk_sgam23__q PRIMARY KEY (idenr ),
-  CONSTRAINT p_unique_sgam23__q UNIQUE (n_ima , n_lot , commande , n_enr )
+  CONSTRAINT pk_sgal85__q PRIMARY KEY (idenr ),
+  CONSTRAINT p_unique_sgal85__q UNIQUE (n_ima , n_lot , commande , n_enr )
 )
 WITH (
   OIDS=TRUE
 );
-ALTER TABLE sgam23_q
+ALTER TABLE sgal85_q
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgam23_q TO pgtantely;
-GRANT ALL ON TABLE sgam23_q TO op;
-GRANT SELECT ON TABLE sgam23_q TO prep;
+GRANT ALL ON TABLE sgal85_q TO pgtantely;
+GRANT ALL ON TABLE sgal85_q TO op;
+GRANT SELECT ON TABLE sgal85_q TO prep;
 
--- Index: idx1_sgam23__q
+-- Index: idx1_sgal85__q
 
--- DROP INDEX idx1_sgam23__q;
+DROP INDEX IF EXISTS idx1_sgal85__q;
 
-CREATE INDEX idx1_sgam23__q
-  ON sgam23_q
+CREATE INDEX idx1_sgal85__q
+  ON sgal85_q
   USING btree
   (commande COLLATE pg_catalog."default" , n_lot COLLATE pg_catalog."default" , __s COLLATE pg_catalog."default" );
 
--- Index: idx2_sgam23__q
+-- Index: idx2_sgal85__q
 
--- DROP INDEX idx2_sgam23__q;
+DROP INDEX IF EXISTS idx2_sgal85__q;
 
-CREATE INDEX idx2_sgam23__q
-  ON sgam23_q
+CREATE INDEX idx2_sgal85__q
+  ON sgal85_q
   USING btree
   (idexecute );
 
--- Index: idx3_sgam23__q
+-- Index: idx3_sgal85__q
 
--- DROP INDEX idx3_sgam23__q;
+DROP INDEX IF EXISTS idx3_sgal85__q;
 
-CREATE INDEX idx3_sgam23__q
-  ON sgam23_q
+CREATE INDEX idx3_sgal85__q
+  ON sgal85_q
   USING btree
   (idenr );
 
--- Index: idx4_sgam23__q
+-- Index: idx4_sgal85__q
 
--- DROP INDEX idx4_sgam23__q;
+DROP INDEX IF EXISTS idx4_sgal85__q;
 
-CREATE INDEX idx4_sgam23__q
-  ON sgam23_q
+CREATE INDEX idx4_sgal85__q
+  ON sgal85_q
   USING btree
   (n_lot COLLATE pg_catalog."default" );
 
--- Sequence: sgam23_q_seq
+-- Sequence: sgal85_q_seq
 
--- DROP SEQUENCE sgam23_q_seq;
+DROP SEQUENCE IF EXISTS sgal85_q_seq;
 
-CREATE SEQUENCE sgam23_q_seq
+CREATE SEQUENCE sgal85_q_seq
   INCREMENT 1
   MINVALUE 1
   MAXVALUE 9223372036854775807
   START 1
   CACHE 1;
-ALTER TABLE sgam23_q_seq
+ALTER TABLE sgal85_q_seq
   OWNER TO pgtantely;
-GRANT ALL ON TABLE sgam23_q_seq TO pgtantely;
-GRANT SELECT, UPDATE ON TABLE sgam23_q_seq TO op;
-GRANT SELECT ON TABLE sgam23_q_seq TO prep;
+GRANT ALL ON TABLE sgal85_q_seq TO pgtantely;
+GRANT SELECT, UPDATE ON TABLE sgal85_q_seq TO op;
+GRANT SELECT ON TABLE sgal85_q_seq TO prep;

@@ -1,6 +1,6 @@
 -- Table: ____table_prod_____c
 
--- DROP TABLE ____table_prod_____c;
+DROP TABLE IF EXISTS ____table_prod_____c;
 
 CREATE TABLE ____table_prod_____c
 (
@@ -49,7 +49,7 @@ GRANT SELECT ON TABLE ____table_prod_____c TO prep;
 
 -- Index: idx1_____table_prod______c
 
--- DROP INDEX idx1_____table_prod______c;
+DROP INDEX IF EXISTS idx1_____table_prod______c;
 
 CREATE INDEX idx1_____table_prod______c
   ON ____table_prod_____c
@@ -58,7 +58,7 @@ CREATE INDEX idx1_____table_prod______c
 
 -- Index: idx2_____table_prod______c
 
--- DROP INDEX idx2_____table_prod______c;
+DROP INDEX IF EXISTS idx2_____table_prod______c;
 
 CREATE INDEX idx2_____table_prod______c
   ON ____table_prod_____c
@@ -67,7 +67,7 @@ CREATE INDEX idx2_____table_prod______c
 
 -- Index: idx3_____table_prod______c
 
--- DROP INDEX idx3_____table_prod______c;
+DROP INDEX IF EXISTS idx3_____table_prod______c;
 
 CREATE INDEX idx3_____table_prod______c
   ON ____table_prod_____c
@@ -76,7 +76,7 @@ CREATE INDEX idx3_____table_prod______c
 
 -- Index: idx4_____table_prod______c
 
--- DROP INDEX idx4_____table_prod______c;
+DROP INDEX IF EXISTS idx4_____table_prod______c;
 
 CREATE INDEX idx4_____table_prod______c
   ON ____table_prod_____c
@@ -85,7 +85,7 @@ CREATE INDEX idx4_____table_prod______c
 
 -- Sequence: ____table_prod_____c_seq
 
--- DROP SEQUENCE ____table_prod_____c_seq;
+DROP SEQUENCE IF EXISTS ____table_prod_____c_seq;
 
 CREATE SEQUENCE ____table_prod_____c_seq
   INCREMENT 1
