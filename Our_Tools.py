@@ -1966,6 +1966,7 @@ class Our_Tools(threading.Thread):
                     if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
 
                         self.reformat_thread_conf_test_connect_prod_10_5()
+                        
                     if (parser.get('thread_conf', 'connection_bdd_production_10_32') == '1'):
                         # print "tik"
                         self.reformat_thread_conf_test_connect_prod_10_5(
@@ -2098,8 +2099,8 @@ class Our_Tools(threading.Thread):
                                 pass
                             else:
                                 print "connection interrompue aa la bdd(production)"
-                        
-                            
+
+
                 except KeyboardInterrupt:
                     print "<ctrl - c> est s_est executee"
     
