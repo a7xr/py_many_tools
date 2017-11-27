@@ -15,6 +15,7 @@ import logging
 import threading
 import time
 import datetime
+from datetime import date
 from msvcrt import getch
 import urllib
 import fileinput
@@ -27,6 +28,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from ConfigParser import SafeConfigParser
+import ConfigParser as cfgparser
 
 
 path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
@@ -34,13 +36,13 @@ path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
 
 
 parser = SafeConfigParser()
-parser.read(path_prg + 'all_confs.ini')
+parser.read(path_prg + 'all_confs.txt')
 
 # path_sublime2 = "C:\Program Files\Sublime Text 2\sublime_text.exe"
 path_sublime2 = parser.get('general', 'path_subl_2')
 
 try:
-    import psycopg2
+    import psycopg2,psycopg2.extras
 except Exception:
     print "psycopg2 doit etre installee"
     raw_input()
@@ -67,6 +69,12 @@ except Exception:
 try:
     import selenium
     from selenium import webdriver
+    from selenium.common.exceptions import NoSuchElementException
+    from selenium.webdriver.common.keys import Keys
+    from selenium.webdriver.support.ui import WebDriverWait
+    from selenium.webdriver.support.ui import Select
+
+
 except Exception:
     print "selenium doit etre installee"
     raw_input()
@@ -1632,14 +1640,12 @@ class Our_Tools(threading.Thread):
     @staticmethod
     def write_append_to_file(
             path_file = path_prg + "test_append.txt",
-            txt_to_add = "this is anotehr test"):
+            txt_to_add = "this is anotehr test",
+    ):
 
         if os.path.exists(path_file):
             # print "xxxxxxxxxxxxxxxxxxxx"
-            open_file = open(path_file, 'ab')
-            with open_file:
-                # print "ato ndrai"
-                open_file.write('\n' + txt_to_add)
+            
             pass
         else:
             Our_Tools.print_green(
@@ -1656,9 +1662,12 @@ class Our_Tools(threading.Thread):
                     new_line = False)
 
             open_file = open(path_file, 'ab')
-            with open_file:
-                open_file.write('\n' + txt_to_add)
-            pass
+            
+        open_file = open(path_file, 'ab')
+        
+        with open_file:
+            # print "ato ndrai"
+            open_file.write('\n' + txt_to_add)
 
     @staticmethod
     def csv_test003():
@@ -1872,7 +1881,7 @@ class Our_Tools(threading.Thread):
                 # ct_NOMINATION_AS3
 
 
-    # in the class_Our_Tools
+    # run_our_tools
     def run(self):
         # i = 0
 
@@ -1966,7 +1975,7 @@ class Our_Tools(threading.Thread):
                     if (parser.get('thread_conf', 'connection_bdd_production') == '1'):
 
                         self.reformat_thread_conf_test_connect_prod_10_5()
-                        
+
                     if (parser.get('thread_conf', 'connection_bdd_production_10_32') == '1'):
                         # print "tik"
                         self.reformat_thread_conf_test_connect_prod_10_5(
@@ -2023,6 +2032,21 @@ class Our_Tools(threading.Thread):
                         pass
                 except AttributeError:
                     pass
+            elif (
+                (sys.argv[1] == '-T') and 
+                (sys.argv[2] == 'test_conn_db025')
+            ):
+                try:
+                    while True:
+                        key = ord(getch())
+                        # print chr(key)
+                        Our_Tools.write_append_to_file(
+                            path_file = "log_stuffs.txt",
+                            txt_to_add = chr(key)
+                        )
+                except KeyboardInterrupt:
+                    print "<ctrl - c> est s_est executee"
+                pass
             elif (
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_redmine')
@@ -2672,7 +2696,7 @@ where idcommande ilike 'crh%'
 
         pass
 
-    # this is the constructor of class(Our_Tools)
+    # #__init__our_tools
     def __init__(self, 
             is_thread = False,
             is_thread_conf = False,
@@ -3026,8 +3050,10 @@ where idcommande ilike 'crh%'
 
 
     @staticmethod
-    def print_red(txt = "this is a test",
-            new_line = True):
+    def print_red(
+        txt = "this is a test",
+            new_line = True
+    ):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
@@ -3302,6 +3328,104 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif args[0] == 'test_selenium_sfl':
+                    try:
+                        sous_doc = sys.argv[3]
+                    except IndexError:
+                        Our_Tools.long_print(num = 10)
+                        Our_Tools.print_red(txt = "Veuillez donnee l_idsousdossier dans le parametre")
+                        print "- ex:"
+                        Our_Tools.print_blue(txt = "> python Our_Tools.py -T test_selenium_sfl AP03")
+                        return
+
+                    rechercher = sous_doc
+                    chromedriverexe = parser.get('softw_path_exe', 'selenium_chromedriver')
+                    chromeexe = parser.get('softw_path_exe', 'chrome_exe')
+                    chromeOps = webdriver.ChromeOptions()
+                    chromeOps._binary_location = chromeexe
+
+                    print "02"
+                    
+                    driver = webdriver.Chrome(chromedriverexe, chrome_options=chromeOps)
+
+                    driver.get(
+                        parser.get('selenium_correspondance_sfl', 'link_bouygues')
+                    ) # Load page
+                    rch=driver.find_element_by_xpath("/html/body/form/table/tbody/tr[2]/td[2]/select")
+
+
+                    slct = rch.find_element_by_xpath("option[text()='" + rechercher + "']")
+                    slct.click()
+                    matr = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[3]/td[2]/input")
+                    login = '99999'
+                    matr.send_keys(login)
+                    matr.send_keys(Keys.RETURN)
+                    
+                    
+                    consulter = driver.find_element_by_xpath("/html/body/div[3]/table/tbody/tr[2]/td[2]/a")
+                    consulter.click()
+                    
+                    nvldmd = driver.find_element_by_xpath("//*[@id='nouvelleDemande']")
+                    nvldmd.click()
+                    
+                    liste_parent = driver.find_elements_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr")
+                    
+                    
+                    t_name=[]
+                    i=0
+                    print len(liste_parent)
+                    for t in range(len(liste_parent)-1):
+                        i+=1
+                        try:
+                            
+                            d = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/input")
+                            print d.get_attribute('name')
+                            d_str = str(d.get_attribute('name'))
+                            d1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                            d2_str = d1.text
+                            if (d_str.find('password')==-1):
+                                t_name.append(d_str+"\t"+d2_str)
+                            
+                        except:
+                            try:
+                                f = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/label[1]/input")
+                                print f.get_attribute('name')
+                                f_str = str(f.get_attribute('name'))
+                                f1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                                f2_str = f1.text
+                                
+                                if (f_str.find('password')==-1):
+                                    t_name.append(f_str+"\t"+f2_str)
+                                
+                            except:
+                                g = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/select")
+                                print g.get_attribute('name')
+                                g_str = str(g.get_attribute('name'))
+                                g1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                                g2_str = g1.text
+                                
+                                t_name.append(g_str+"\t"+g2_str)
+                    
+                    
+                    fichier = open("name_SFL_"+rechercher+".txt", "a")
+                    for t in t_name:
+                        fichier.write("%s\n"%(t))
+                    
+                    fichier.close()
+                    
+                    print 'DONE!'
+                    
+                    driver.quit()
+                    pass
+                elif args[0] == 'test_conn_db025':
+                    # this is for the keylogger
+                    # main_keylogger
+                    our_tools = Our_Tools(
+                        is_thread = True,
+                        is_thread_conf = False,
+                        time_sleep_thread = 1)
+                    our_tools.start()
+                    pass
                 elif args[0] == 'test_mahaitia001':
                     # mamaky anle fichier conf
                     # # alaina ny exe
