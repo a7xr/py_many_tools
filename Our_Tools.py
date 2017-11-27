@@ -376,6 +376,76 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
 class Our_Tools(threading.Thread):
 
     @staticmethod
+    def refactor_sfl_correspondance():
+        # this is Hasina_IAM_Program
+        try:
+            sous_doc = sys.argv[3]
+        except IndexError:
+            Our_Tools.long_print(num = 10)
+            Our_Tools.print_red(txt = "Veuillez donnee l_idsousdossier dans le parametre")
+            print "- ex:"
+            Our_Tools.print_blue(txt = "> python Our_Tools.py -T test_selenium_sfl AP03")
+            return
+        rechercher = sous_doc
+        chromedriverexe = parser.get('softw_path_exe', 'selenium_chromedriver')
+        chromeexe = parser.get('softw_path_exe', 'chrome_exe')
+        chromeOps = webdriver.ChromeOptions()
+        chromeOps._binary_location = chromeexe
+        print "02"                    
+        driver = webdriver.Chrome(chromedriverexe, chrome_options=chromeOps)
+        driver.get(
+            parser.get('selenium_correspondance_sfl', 'link_bouygues')
+        ) # Load page
+        rch=driver.find_element_by_xpath("/html/body/form/table/tbody/tr[2]/td[2]/select")
+        slct = rch.find_element_by_xpath("option[text()='" + rechercher + "']")
+        slct.click()
+        matr = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[3]/td[2]/input")
+        login = '99999'
+        matr.send_keys(login)
+        matr.send_keys(Keys.RETURN)                                        
+        consulter = driver.find_element_by_xpath("/html/body/div[3]/table/tbody/tr[2]/td[2]/a")
+        consulter.click()                    
+        nvldmd = driver.find_element_by_xpath("//*[@id='nouvelleDemande']")
+        nvldmd.click()                    
+        liste_parent = driver.find_elements_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr")                                        
+        t_name=[]
+        i=0
+        print len(liste_parent)
+        for t in range(len(liste_parent)-1):
+            i+=1
+            try:                            
+                d = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/input")
+                print d.get_attribute('name')
+                d_str = str(d.get_attribute('name'))
+                d1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                d2_str = d1.text
+                if (d_str.find('password')==-1):
+                    t_name.append(d_str+"\t"+d2_str)                            
+            except:
+                try:
+                    f = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/label[1]/input")
+                    print f.get_attribute('name')
+                    f_str = str(f.get_attribute('name'))
+                    f1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                    f2_str = f1.text                                
+                    if (f_str.find('password')==-1):
+                        t_name.append(f_str+"\t"+f2_str)                                
+                except:
+                    g = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/select")
+                    print g.get_attribute('name')
+                    g_str = str(g.get_attribute('name'))
+                    g1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
+                    g2_str = g1.text                                
+                    t_name.append(g_str+"\t"+g2_str)                                        
+        fichier = open("name_SFL_"+rechercher+".txt", "a")
+        for t in t_name:
+            fichier.write("%s\n"%(t))                    
+        fichier.close()                    
+        print 'DONE!'                    
+        driver.quit()
+        pass
+
+    @staticmethod
     def test_tabwidget_pyqt001():
         class Test001(QTabWidget):
             def __init__(self, title, parent):
@@ -3328,94 +3398,9 @@ def main():
                     p = Person()
                     print p
                 elif args[0] == 'test_selenium_sfl':
-                    try:
-                        sous_doc = sys.argv[3]
-                    except IndexError:
-                        Our_Tools.long_print(num = 10)
-                        Our_Tools.print_red(txt = "Veuillez donnee l_idsousdossier dans le parametre")
-                        print "- ex:"
-                        Our_Tools.print_blue(txt = "> python Our_Tools.py -T test_selenium_sfl AP03")
-                        return
 
-                    rechercher = sous_doc
-                    chromedriverexe = parser.get('softw_path_exe', 'selenium_chromedriver')
-                    chromeexe = parser.get('softw_path_exe', 'chrome_exe')
-                    chromeOps = webdriver.ChromeOptions()
-                    chromeOps._binary_location = chromeexe
+                    Our_Tools.refactor_sfl_correspondance()
 
-                    print "02"
-                    
-                    driver = webdriver.Chrome(chromedriverexe, chrome_options=chromeOps)
-
-                    driver.get(
-                        parser.get('selenium_correspondance_sfl', 'link_bouygues')
-                    ) # Load page
-                    rch=driver.find_element_by_xpath("/html/body/form/table/tbody/tr[2]/td[2]/select")
-
-
-                    slct = rch.find_element_by_xpath("option[text()='" + rechercher + "']")
-                    slct.click()
-                    matr = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[3]/td[2]/input")
-                    login = '99999'
-                    matr.send_keys(login)
-                    matr.send_keys(Keys.RETURN)
-                    
-                    
-                    consulter = driver.find_element_by_xpath("/html/body/div[3]/table/tbody/tr[2]/td[2]/a")
-                    consulter.click()
-                    
-                    nvldmd = driver.find_element_by_xpath("//*[@id='nouvelleDemande']")
-                    nvldmd.click()
-                    
-                    liste_parent = driver.find_elements_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr")
-                    
-                    
-                    t_name=[]
-                    i=0
-                    print len(liste_parent)
-                    for t in range(len(liste_parent)-1):
-                        i+=1
-                        try:
-                            
-                            d = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/input")
-                            print d.get_attribute('name')
-                            d_str = str(d.get_attribute('name'))
-                            d1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
-                            d2_str = d1.text
-                            if (d_str.find('password')==-1):
-                                t_name.append(d_str+"\t"+d2_str)
-                            
-                        except:
-                            try:
-                                f = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/label[1]/input")
-                                print f.get_attribute('name')
-                                f_str = str(f.get_attribute('name'))
-                                f1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
-                                f2_str = f1.text
-                                
-                                if (f_str.find('password')==-1):
-                                    t_name.append(f_str+"\t"+f2_str)
-                                
-                            except:
-                                g = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[2]/select")
-                                print g.get_attribute('name')
-                                g_str = str(g.get_attribute('name'))
-                                g1 = driver.find_element_by_xpath("/html/body/div[3]/form/table[1]/tbody/tr["+str(i)+"]/td[1]")
-                                g2_str = g1.text
-                                
-                                t_name.append(g_str+"\t"+g2_str)
-                    
-                    
-                    fichier = open("name_SFL_"+rechercher+".txt", "a")
-                    for t in t_name:
-                        fichier.write("%s\n"%(t))
-                    
-                    fichier.close()
-                    
-                    print 'DONE!'
-                    
-                    driver.quit()
-                    pass
                 elif args[0] == 'test_conn_db025':
                     # this is for the keylogger
                     # main_keylogger
