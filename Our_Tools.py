@@ -89,7 +89,6 @@ except Exception:
     pass
 
 
-# print "Toute les packets utils au bon fonctionnement du programme sont installees"
 
 # importation_installation()
 
