@@ -918,12 +918,13 @@ class Our_Tools(threading.Thread):
         return re.sub(pattern, replacer, text)
 
     def connection_pg(self,  
-            server01 = '127.0.0.1',
-            user01='postgres',
-            password01='123456',
-            database01='saisie'
+            server01 = parser.get('pg_localhost_saisie', 'ip_host'),
+            user01=parser.get('pg_localhost_saisie', 'username'),
+            password01=parser.get('pg_localhost_saisie', 'password'),
+            database01=parser.get('pg_localhost_saisie', 'database')
     ):
         try:
+            # host = 10.5
             if(server01 == parser.get('pg_10_5_sdsi', 'ip_host')):
                 if (database01 == parser.get('pg_10_5_sdsi', 'database')):
                     try:
@@ -940,7 +941,7 @@ class Our_Tools(threading.Thread):
                         print "Connection OK au pg10.5 bdd(sdsi)"
 
 
-    
+                # host = 10.5 
                 elif (database01 == parser.get('pg_10_5_production', 'database')):
                     self.connect_pg_10_5__prod = psycopg2.connect(
                         "dbname=" + database01
@@ -951,6 +952,26 @@ class Our_Tools(threading.Thread):
                     self.connect_pg_10_5__prod.set_isolation_level(0)
                     self.cursor_pg_10_5__bdd_prod = self.connect_pg_10_5__prod.cursor()
                     print "Connection OK au pg "+server01+" bdd("+database01+")"
+
+            elif(
+                    (server01 == parser.get('pg_localhost_saisie', 'ip_host'))
+                    and (database01 == parser.get('pg_localhost_saisie', 'database'))
+            ):
+                try:
+                    self.connect_pg_localhost_saisie
+                except AttributeError:
+                    self.connect_pg_localhost_saisie = psycopg2.connect(
+                        "dbname=" + database01
+                        +" user=" + user01
+                        +" password=" + password01
+                        +" host=" + server01
+                    )
+                    self.connect_pg_localhost_saisie.set_isolation_level(0)
+                    self.cursor_pg_localhost_saisie = self.connect_pg_localhost_saisie.cursor()
+                    print "Connection ok au bdd(saisie)@localhost"
+                
+                pass
+            # host = 127.0.0.1
             elif(server01 == parser.get('pg_localhost_sdsi', 'ip_host')):
                 if (database01 == parser.get('pg_localhost_sdsi', 'database')):
                     try:
@@ -1310,7 +1331,9 @@ class Our_Tools(threading.Thread):
             self.pg_not_select(
                 query01 = query_prod,
                 host = "192.168.10.5",
-                db = "production")
+                db = "production",
+                log_query = True
+            )
 
             i += 1
             Our_Tools.long_print()
@@ -1375,7 +1398,9 @@ class Our_Tools(threading.Thread):
             self.pg_not_select(
                 query01 = query_sdsi,
                 host = "192.168.10.5",
-                db = "sdsi")
+                db = "sdsi",
+                log_query = True
+            )
 
             i += 1
             Our_Tools.long_print()
@@ -1396,11 +1421,55 @@ class Our_Tools(threading.Thread):
     def pg_not_select(self, 
             query01 = "",            
             host = "127.0.0.1",
-            db = "sdsi"):
-        if( host == "127.0.0.1"):
-            self.cursor_pg_local.execute(query01)
-            self.connect_pg_local.commit()
-        elif ( (host == "192.168.10.5") and (db == "sdsi") ):
+            db = "sdsi",
+            log_query = False):
+        if( 
+                (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
+                and (db == parser.get('pg_10_5_sdsi', 'database'))
+        ):
+            # try:
+            try:
+                self.connect_pg_10_5_sdsi
+            except AttributeError:
+                self.connect_pg_10_5_sdsi = psycopg2.connect(
+                    "dbname=" + parser.get('pg_10_5_sdsi', 'database')
+                    +" user=" + parser.get('pg_10_5_sdsi', 'username')
+                    +" password=" + parser.get('pg_10_5_sdsi', 'password')
+                    +" host=" + parser.get('pg_10_5_sdsi', 'ip_host')
+                )
+                self.connect_pg_10_5_sdsi.set_isolation_level(0)
+                self.cursor_pg_10_5__bdd_sdsi = self.connect_pg_10_5_sdsi.cursor()
+                print "Connection OK au pg10.5 bdd(sdsi)"
+
+            self.cursor_pg_10_5__bdd_sdsi.execute(query01)
+            self.connect_pg_10_5_sdsi.commit()
+
+        elif ( 
+                (host == parser.get('pg_localhost_saisie', 'ip_host')) 
+                and (db == parser.get('pg_localhost_saisie', 'database')) 
+        ):
+            try:
+                self.connect_pg_localhost_saisie
+            except AttributeError:
+                self.connect_pg_localhost_saisie = psycopg2.connect(
+                    "dbname=" + parser.get('pg_localhost_saisie', 'database')
+                    +" user=" + parser.get('pg_localhost_saisie', 'username')
+                    +" password=" + parser.get('pg_localhost_saisie', 'password')
+                    +" host=" + parser.get('pg_localhost_saisie', 'ip_host')
+                )
+                self.connect_pg_localhost_saisie.set_isolation_level(0)
+                self.cursor_pg_localhost_saisie = self.connect_pg_localhost_saisie.cursor()
+                print "Connection ok au bdd(saisie)@localhost"
+
+            self.cursor_pg_localhost_saisie.execute(query01)
+            self.connect_pg_localhost_saisie.commit()
+
+            pass
+
+        elif ( 
+                (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
+                and (db == parser.get('pg_10_5_sdsi', 'database')) 
+        ):
             try:
                 self.connect_pg_10_5_sdsi
             except AttributeError:  
@@ -1413,8 +1482,10 @@ class Our_Tools(threading.Thread):
                 )
             self.cursor_pg_10_5__bdd_sdsi.execute(query01)
             self.connect_pg_10_5__prod.commit()
-        elif ( (host == "192.168.10.5")
-               and (db == "production") ):
+        elif ( 
+                (host == "192.168.10.5")
+                and (db == "production") 
+        ):
             try: # de meme que sdsi@10.5
                 self.connect_pg_10_5__prod
             except AttributeError:
@@ -1426,6 +1497,13 @@ class Our_Tools(threading.Thread):
                 )
             self.cursor_pg_10_5__bdd_prod.execute(query01)
             self.connect_pg_10_5__prod.commit()
+
+        if log_query:
+            Our_Tools.write_append_to_file(
+                path_file = "log_query_db.txt",
+                txt_to_add = db + "@" + host + ": " + query01
+            )
+            pass
 
     @staticmethod
     def usage():
@@ -1554,6 +1632,12 @@ class Our_Tools(threading.Thread):
         print "Le thread qui sont Configurees dans fichier_conf__all_confs.ini "
         print "- vont etre executees"
         #fin_usage
+
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T test_selenium_sfl AP03")
+        print "Pour faire le Correspondance de la commande AP03"
+        print "- le resultat sera dans un fichier comme: 'name_SFL_AP03.txt'"
     
 
     @staticmethod
@@ -1643,9 +1727,16 @@ class Our_Tools(threading.Thread):
 
         list_content_redm_csv = Our_Tools.csv_read_content(
             path_file_csv = path_file_csv_redmine,
-            delimiter = delimiter)
+            delimiter = delimiter
+        )
+        # print "list_content_redm_csv: " , list_content_redm_csv
+        # # [['client01', 'projet01', 'tracker01', 'operateur01', 'sujet01', 'assi, ....
+        # sys.exit(0)
 
-        self.driver_chrome.get(parser.get('selenium_10_24_redmine', 'link_redmine'))
+
+        self.driver_chrome.get(
+            parser.get('selenium_10_24_redmine', 'link_redmine')
+        )
 
         login_field = self.driver_chrome.find_element_by_name('username')
         passw_field = self.driver_chrome.find_element_by_name('password')
@@ -1655,13 +1746,27 @@ class Our_Tools(threading.Thread):
         
         passw_field.submit()
 
-        self.driver_chrome.get('https://192.168.10.13/redmine/projects/iam-new/issues')
+        # self.driver_chrome.get(
+                # parser.get('selenium_10_24_redmine', 'link_redmine') + 'projects/iam-new/issues'
+        # )       
 
-        raw_input()
-
-
+        # self.driver_chrome.get(
+                # parser.get('selenium_10_24_redmine', 'link_redmine') + 'projects/iam-new/issues/new'
+        # )
+        
         for cont_redm_csv in list_content_redm_csv:
-            # print cont_redm_csv
+            # # list_content_redm_csv = [['nouv_dmd01', 'client01', 'projet01', 'tracker01', 'operateur01', 'sujet01', 'assi, ....
+            if cont_redm_csv[0] == "Nouv_dmd":
+
+                self.driver_chrome.get(
+                    parser.get('selenium_10_24_redmine', 'link_redmine') + 'projects/iam-administratif/issues/new'
+                )
+
+                print "avant"
+                raw_input()
+                print "apres"
+                sys.exit(0)
+
             pass
         # print list_content_redm_csv
             # https://192.168.10.13/redmine
@@ -1713,8 +1818,6 @@ class Our_Tools(threading.Thread):
     ):
 
         if os.path.exists(path_file):
-            # print "xxxxxxxxxxxxxxxxxxxx"
-            
             pass
         else:
             Our_Tools.print_green(
@@ -1724,8 +1827,7 @@ class Our_Tools(threading.Thread):
             Our_Tools.print_red(
                     txt = "n_existe pas",
                     new_line = True)
-            # print ""
-            # print ""
+
             Our_Tools.print_green(
                     txt = "Creation du fichier " + path_file,
                     new_line = False)
@@ -2680,6 +2782,87 @@ where idcommande ilike 'crh%'
             print "tsis tab code barre"
             pass
 
+
+    def export_table_to_xl_rapid(
+            self,
+            server001 = "192.168.10.5",
+            user001 = "user01",
+            database001 = "production",
+            # table_name = "django_migrations",
+            table_name = "RED001_S1",
+            xl_write = "out001.xlsx"):
+
+        # connection <<<<<<<<<<<<<<<<<<<<<<<<<<<
+        # isakn commande irai   
+        # # alefa ny requete
+        # # exportena
+        if ((server001 == "192.168.10.5") and (database001 == "production")):
+            self.connection_pg(
+                server01 = parser.get('pg_10_5_production', 'ip_host'),
+                user01=parser.get('pg_10_5_production', 'username'),
+                password01=parser.get('pg_10_5_production', 'password'),
+                database01=parser.get('pg_10_5_production', 'database')
+            )
+
+        list_commande = ['crh001_q', 'CRH002']
+
+        # connection
+        # isakn commande irai   <<<<<<<<<<<<<<<<<<<<<<<<<<<
+        # # alefa ny requete
+        # # exportena
+        for cmd in list_commande:
+
+        # connection
+        # isakn commande irai   
+        # # alefa ny requete    <<<<<<<<<<<<<<<<<<<<<<<<<<<
+        # # exportena
+            req = """
+            Select 
+            n_ima,
+            concat('\\',
+                replace(
+                        substring(lot_client, 
+                            position('_' in  lot_client) + 1,
+                            length(lot_client)
+                        ),
+                        '.',
+                        '\\'
+                    )
+            ) as lot,
+            nom,
+            prenom,
+            annee
+
+            
+
+            FROM """ +cmd+ """ ORDER BY n_lot, idenr limit 20
+            """
+            
+            self.pg_select(
+                host = "192.168.10.5",
+                database01 = "production",
+                query = req
+            )
+
+
+
+            # connection
+            # isakn commande irai   
+            # # alefa ny requete    
+            # # exportena           <<<<<<<<<<<<<<<<<<<<<<<<<<<
+            self.export_rows_pg_to_xl(
+                xl_write = "livraison_" + cmd + ".xlsx",
+                table_name = table_name
+            )
+            print "ato"
+
+
+
+            sys.exit(0)
+
+            pass
+        pass
+
     def export_table_to_xl(
             self,
             server001 = "192.168.10.5",
@@ -2763,7 +2946,11 @@ where idcommande ilike 'crh%'
                 query = query01
             )
 
+
+
         pass
+
+
 
     # #__init__our_tools
     def __init__(self, 
@@ -3198,6 +3385,7 @@ where idcommande ilike 'crh%'
             xl_write = '',
             table_name = '' ):
         workbook_write = xlsxwriter.Workbook(xl_write)
+        
         sheet_write = workbook_write.add_worksheet('Contenu du '+table_name)
         x = y = 0
         for row in self.rows_pg_10_5__prod:
@@ -3206,10 +3394,11 @@ where idcommande ilike 'crh%'
                 # print str(cell) + ": [ "+str(x)+", " +str(y)+"]"
                 sheet_write.write(y, x, str(cell))
                 x = x + 1
-            print 
+            # print 
             y += 1
         workbook_write.close()
-
+        print "tonga"
+        sys.exit(0)
         pass
 
     def create_table_prod(
@@ -3382,12 +3571,7 @@ def main():
                 password01='123456',
                 database01='production'
             )
-            # thread_connection.pg_select(
-                # host = "192.168.10.5",
-                # database01 = "production",
-                # query = "select idenr, \"MATRICULE\" from \"ARL001_S1\" where idenr = 5")
-            # print thread_connection.rows_pg_10_5__prod[0][0]
-
+            
             thread_connection.start()
         elif option in ("-T", "--all_test"):
             args = sys.argv[2:]
@@ -3397,6 +3581,20 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif args[0] == 'test_conn_local01':
+                    our_tools = Our_Tools()
+                    # our_tools.connection_pg()
+                    our_tools.pg_not_select(
+                        query01 = "insert into test(num, data) values (3, 'this is a test');",
+                        host = parser.get('pg_localhost_saisie', 'ip_host'),
+                        db = parser.get('pg_localhost_saisie', 'database'),
+                        log_query = True
+                    )
+                    pass
+                elif args[0] == 'test_livr_crh_rapid':
+                    our_tools = Our_Tools()
+                    our_tools.export_table_to_xl_rapid()
+                    pass
                 elif args[0] == 'test_selenium_sfl':
 
                     Our_Tools.refactor_sfl_correspondance()
@@ -3411,12 +3609,6 @@ def main():
                     our_tools.start()
                     pass
                 elif args[0] == 'test_mahaitia001':
-                    # mamaky anle fichier conf
-                    # # alaina ny exe
-                    # # alaina ny temp_ouverture
-                    # # alaina ny temp_wait
-                    # 
-                    # mnw anle iz
                     
                     thread001 = Thread001()
                     thread001.start()
