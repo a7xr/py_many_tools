@@ -88,6 +88,13 @@ except Exception:
     print "Je vous prie d_installer PIL"
     pass
 
+try:
+    import wmi
+    pass
+except Exception:
+    os.system("pip install WMI")
+
+
 
 
 # importation_installation()
@@ -350,9 +357,6 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
             exe = exe,
             temp_attendre = temp_attendre
         )
-
-
-
         pass
     # class Thread001 #Thread001_run
     def run(self):
@@ -368,10 +372,6 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
             time.sleep(float(self.temp_attendre))
         
 
-        # except Exception:
-            # print "out"
-            # pass
-        # pass
 
 class Our_Tools(threading.Thread):
 
@@ -1638,7 +1638,13 @@ class Our_Tools(threading.Thread):
         Our_Tools.print_green (txt = "Option: -T test_selenium_sfl AP03")
         print "Pour faire le Correspondance de la commande AP03"
         print "- le resultat sera dans un fichier comme: 'name_SFL_AP03.txt'"
-    
+        
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T test_conn_db025")
+        print "Pour faire du keylogging dans ton pc"
+        print "- le fichier log sera log_stuffs.txt"
+        
 
     @staticmethod
     def display_pic(
@@ -3401,6 +3407,10 @@ where idcommande ilike 'crh%'
         sys.exit(0)
         pass
 
+    def __del__(self):
+        print "this is a test of destructor"
+        pass
+
     def create_table_prod(
         self,
         query_prod = ""
@@ -3581,6 +3591,13 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif args[0] == 'test_monitoring_wmi01':
+                    c = wmi.WMI()
+                    process_watcher = c.Win32_Process.watch_for("creation")
+                    while True:
+                        new_process = process_watcher()
+                        print new_process.Caption
+                    pass
                 elif args[0] == 'test_conn_local01':
                     our_tools = Our_Tools()
                     # our_tools.connection_pg()
