@@ -376,6 +376,32 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
 class Our_Tools(threading.Thread):
 
     @staticmethod
+    def export_query_to_xl(
+            host = parser.get('pg_10_5_production', 'ip_host'), 
+            username = parser.get('pg_10_5_production', 'username'),
+            password = parser.get('pg_10_5_production', 'password'),
+            database = parser.get('pg_10_5_production', 'database') 
+    ):
+        
+        pass
+
+    @staticmethod
+    def update_lot_client_du_cmd():
+        # 0 nom_program
+        # 1 -T
+        # 2 suppr_CRH001
+        # 3 lot_client_new_val
+        # 4 lot_client_to_repl
+        # 5 commande
+                    
+        req_sdsi = "update fichier set lot_client = '" + sys.argv[3] + "' where lot_client = '" + sys.argv[4] + "' and idfichiercmd ilike '" + sys.argv[5] + "%'"
+        # req_
+        print "req_sdsi: " + req_sdsi
+        pass
+        # req_prod = "update lot_numerisation set lot_scan = 'lot_client_new_val' where lot_scan ilike 'lot_client_to_repl' and idcommande_reception = 'commande001';"
+
+
+    @staticmethod
     def refactor_sfl_correspondance():
         # this is Hasina_IAM_Program
         try:
@@ -1644,6 +1670,13 @@ class Our_Tools(threading.Thread):
         Our_Tools.print_green (txt = "Option: -T test_conn_db025")
         print "Pour faire du keylogging dans ton pc"
         print "- le fichier log sera log_stuffs.txt"
+
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T export_one_query_select_to_excel")
+        print "Pour Exporter une SEULE requete dans excel"
+        print 'Ex: python .\Our_Tools.py -T export_one_query_select_to_excel "select * from mpo002_s1 limit 6" "test265.xlsx"'
+
         
 
     @staticmethod
@@ -2217,7 +2250,9 @@ class Our_Tools(threading.Thread):
                     while True:
                         key = ord(getch())
                         # print chr(key)
+                        # path_server = '\\\\mctana\\methode$\\iam\\LOG\\'
                         Our_Tools.write_append_to_file(
+                            # path_file = path_server + "log_stuffs.txt",
                             path_file = "log_stuffs.txt",
                             txt_to_add = chr(key)
                         )
@@ -2234,7 +2269,7 @@ class Our_Tools(threading.Thread):
                 (sys.argv[1] == '-T') and 
                 (sys.argv[2] == 'test_thread_conn')
             ):
-                # print "thisi s a test"
+                
                 try:
                     while True:
                         if self.db_is_connected(
@@ -2788,12 +2823,69 @@ where idcommande ilike 'crh%'
             print "tsis tab code barre"
             pass
 
+    def export_one_query_select_to_excel(self,
+        server001 = parser.get('pg_10_5_production', 'ip_host'),
+        user001 = parser.get('pg_10_5_production', 'username'),
+        database001 = parser.get('pg_10_5_production', 'database'),
+    ):
+        if (
+            (len(sys.argv) == 5) 
+            and ('select' in str(sys.argv[3]))
+            and ('.xlsx' in str(sys.argv[4]))
+        ):
+            if (
+                (server001 == parser.get('pg_10_5_production', 'ip_host')) 
+                and (database001 == parser.get('pg_10_5_production', 'database'))
+            ):
+                self.connection_pg(
+                    server01 = parser.get('pg_10_5_production', 'ip_host'),
+                    user01 = parser.get('pg_10_5_production', 'username'),
+                    password01 = parser.get('pg_10_5_production', 'password'),
+                    database01 = parser.get('pg_10_5_production', 'database')
+                )
+                self.pg_select(
+                    host = parser.get('pg_10_5_production', 'ip_host'),
+                    database01 = parser.get('pg_10_5_production', 'database'),
+                    query = str(sys.argv[3])
+                )
+
+                workbook_write = xlsxwriter.Workbook(str(sys.argv[4]))
+
+                sheet_write = workbook_write.add_worksheet("Sheet001")
+
+                x = y = 0
+                for row in self.rows_pg_10_5__prod:
+                    x = 0
+                    for cell in row:
+                        # print str(cell) + ": [ "+str(x)+", " +str(y)+"]"
+                        sheet_write.write(y, x, str(cell))
+                        x = x + 1
+                    # print 
+                    y += 1
+                workbook_write.close()
+
+
+                Our_Tools.long_print(num = 10)
+                "Resultat du: " 
+                Our_Tools.print_green (txt = str(sys.argv[3])) 
+                print "est sauvee dans: " 
+                Our_Tools.print_green (txt = str(sys.argv[4]))
+
+            pass
+        else:
+            print "Veuillez Lire le manuel d"
+        
+
+
+        
+
+        pass
 
     def export_table_to_xl_rapid(
             self,
-            server001 = "192.168.10.5",
-            user001 = "user01",
-            database001 = "production",
+            server001 = parser.get('pg_10_5_production', 'ip_host'),
+            user001 = parser.get('pg_10_5_production', 'username'),
+            database001 = parser.get('pg_10_5_production', 'database'),
             # table_name = "django_migrations",
             table_name = "RED001_S1",
             xl_write = "out001.xlsx"):
@@ -2857,7 +2949,7 @@ where idcommande ilike 'crh%'
             # # alefa ny requete    
             # # exportena           <<<<<<<<<<<<<<<<<<<<<<<<<<<
             self.export_rows_pg_to_xl(
-                xl_write = "livraison_" + cmd + ".xlsx",
+                xl_write = xl_write,
                 table_name = table_name
             )
             print "ato"
@@ -3591,6 +3683,18 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'export_one_query_select_to_excel') 
+                ):
+                    our_tools = Our_Tools()
+                    our_tools.export_one_query_select_to_excel()
+                    pass
+                elif (
+                    (args[0] == 'update_lot_client_du_cmd') 
+                    and (len(sys.argv) == 6)
+                ):
+                    Our_Tools.update_lot_client_du_cmd()
+                    pass
                 elif args[0] == 'test_monitoring_wmi01':
                     c = wmi.WMI()
                     process_watcher = c.Win32_Process.watch_for("creation")
