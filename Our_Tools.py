@@ -385,20 +385,130 @@ class Our_Tools(threading.Thread):
         
         pass
 
-    @staticmethod
-    def update_lot_client_du_cmd():
+
+
+    
+    def update_lot_client_du_cmd(
+        self
+        , with_prompt = False     # We alefa avy ary am prompt ny valeur ilaina rht
+    ):
         # 0 nom_program
         # 1 -T
         # 2 suppr_CRH001
         # 3 lot_client_new_val
         # 4 lot_client_to_repl
         # 5 commande
+        
+        if (with_prompt == True):
+            req_sdsi = "UPDATE fichier SET lot_client = '" + sys.argv[3] + "' WHERE lot_client = '" + sys.argv[4] + "' AND idfichiercmd ILIKE '" + sys.argv[5] + "%'"
+            # req_
+            print "req_sdsi: ", req_sdsi
+            req_prod = "UPDATE lot_numerisation SET lot_scan = '"+ sys.argv[3] +"' WHERE lot_scan ILIKE '"+ sys.argv[4] +"' AND idcommande_reception = '"+ sys.argv[5] +"';"
+            print "req_prod: ", req_prod
+            pass
+        else:
+            workbook_write = xlsxwriter.Workbook('upd_lot_client.xlsx')
+            sheet_modif_lot_client = workbook_write.add_worksheet('Modification Lot Client')
+            header_format_red = workbook_write.add_format({'bold': True,
+                    'align': 'center',
+                    'valign': 'vcenter',
+                    'fg_color': '#c80815',
+                    'border': 1})
+            sheet_modif_lot_client.write(0, 0, 
+                'Modification Lot Client', header_format_red)
+            header_format_blue = workbook_write.add_format({'bold': True,
+                    'align': 'center',
+                    'valign': 'vcenter',
+                    'fg_color': '#4d8fac',
+                    'border': 1})
+            sheet_modif_lot_client.write(3, 0, 'Commande', header_format_blue)
+            sheet_modif_lot_client.write(3, 1, 'Lot Aa Remplacer', header_format_blue)
+            sheet_modif_lot_client.write(3, 2, 'Nouvelle Lot', header_format_blue)
+
+
+
+
+            sheet_modif_lot_client.set_column('A:A', 20)
+            sheet_modif_lot_client.set_column('B:B', 75)
+
+            workbook_write.close()
+            os.system('upd_lot_client.xlsx')
+
+
+
+
+
+            workbook_read = xlrd.open_workbook('upd_lot_client.xlsx')
+            sheet_read = workbook_read.sheet_by_index(0)
+            try:
+
+                # time.sleep(10)
+                                            #  y  x
+                cmd001 = sheet_read.cell_value(4, 0)
+                lot_client_to_repl = sheet_read.cell_value(4, 1)
+                lot_client_nouv = sheet_read.cell_value(4, 2)
+            except IndexError:
+                print
+                Our_Tools.print_green("Vous avez entree vide pour la cellule(Commande)")
+                self.logging_n_print( 
+                    txt = "Commande vide dans l'Excel\n\n",
+                    type_log = "info")
+                sys.exit(0)
+            # print "cmd001: ", cmd001
+            # print "lot_client_to_repl: ", lot_client_to_repl
+            # print "lot_client_nouv: ", lot_client_nouv
+            list_req_sdsi_prod = Our_Tools.query_for_upd_lot_client(
+                cmd = cmd001
+                , lot_client_to_repl = lot_client_to_repl
+                , lot_client_new_val = lot_client_nouv
+            )
+
+            i = 0
+            for request001 in list_req_sdsi_prod:
+                if i == 0:  # requete ao am sdsi
+                    # connection
+                    # mandefa requete
+                    # mnw logging
+                    self.pg_not_select(
+                        host = parser.get('pg_10_5_sdsi', 'ip_host')
+                        , db = parser.get('pg_10_5_sdsi', 'database')
+                        , query01 = request001
+                        , log_query = True
+                    )
+                    pass
+
+                else: # requete ao am prod
                     
-        req_sdsi = "update fichier set lot_client = '" + sys.argv[3] + "' where lot_client = '" + sys.argv[4] + "' and idfichiercmd ilike '" + sys.argv[5] + "%'"
-        # req_
-        print "req_sdsi: " + req_sdsi
+                    # connection
+                    # mandefa requete
+                    # mnw logging
+                    self.pg_not_select(
+                        host = parser.get('pg_10_5_production', 'ip_host')
+                        , db = parser.get('pg_10_5_production', 'database')
+                        , query01 = request001
+                        , log_query = True
+                    )
+                    pass
+                i = i + 1
+            self.write_append_to_file(
+                path_file = self.log_query_db
+                , txt_to_add = "\n\n\n\n\n"
+            )
+                
+            
+
+    @staticmethod
+    def query_for_upd_lot_client(
+        cmd = "cmd001",
+        lot_client_to_repl = "lot_client_to_repl",
+        lot_client_new_val = "lot_client_new_val"
+    ):
+        req_sdsi = "UPDATE fichier SET lot_client = '" + lot_client_new_val + "' WHERE lot_client = '" + lot_client_to_repl + "' AND idfichiercmd ILIKE '" + cmd + "%'"
+
+        req_prod = "UPDATE lot_numerisation SET lot_scan = '"+ lot_client_new_val +"' WHERE lot_scan ILIKE '"+ lot_client_to_repl +"' AND idcommande_reception = '"+ cmd +"';"
+
+        return [req_sdsi, req_prod]
         pass
-        # req_prod = "update lot_numerisation set lot_scan = 'lot_client_new_val' where lot_scan ilike 'lot_client_to_repl' and idcommande_reception = 'commande001';"
 
 
     @staticmethod
@@ -1170,9 +1280,6 @@ class Our_Tools(threading.Thread):
                             'fg_color': '#4d8fac',
                             'border': 1})
 
-                                   
-
-
         sheet_suppr_gpao_uniq = workbook_write.add_worksheet('Suppression GPAO Unique')
         cell_format_union = workbook_write.add_format({'align': 'center',
             'valign': 'vcenter',
@@ -1448,7 +1555,8 @@ class Our_Tools(threading.Thread):
             query01 = "",            
             host = "127.0.0.1",
             db = "sdsi",
-            log_query = False):
+            log_query = False
+    ):
         if( 
                 (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
                 and (db == parser.get('pg_10_5_sdsi', 'database'))
@@ -1524,10 +1632,11 @@ class Our_Tools(threading.Thread):
             self.cursor_pg_10_5__bdd_prod.execute(query01)
             self.connect_pg_10_5__prod.commit()
 
+        txt_to_add001 = db + "@" + host + ": " + str(datetime.datetime.now())+ ": "+query01
         if log_query:
             Our_Tools.write_append_to_file(
-                path_file = "log_query_db.txt",
-                txt_to_add = db + "@" + host + ": " + query01
+                path_file = self.log_query_db,
+                txt_to_add = txt_to_add001
             )
             pass
 
@@ -1869,7 +1978,8 @@ class Our_Tools(threading.Thread):
 
             Our_Tools.print_green(
                     txt = "Creation du fichier " + path_file,
-                    new_line = False)
+                    new_line = False
+            )
 
             open_file = open(path_file, 'ab')
             
@@ -3057,6 +3167,7 @@ where idcommande ilike 'crh%'
             is_thread_connection001 = True,
             time_sleep_thread = 5
     ):
+        self.log_query_db = "log_query_db.txt"
 
         self.is_thread = is_thread
 
@@ -3691,9 +3802,21 @@ def main():
                     pass
                 elif (
                     (args[0] == 'update_lot_client_du_cmd') 
+                    and (len(sys.argv) != 6)
+                ):
+                    # mambotra anle fichier_xls
+                    # # 
+                    our_tools = Our_Tools()
+                    our_tools.update_lot_client_du_cmd(
+                        with_prompt = False
+                    )
+                    # Our_Tools.update_lot_client_du_cmd(with_prompt = True)
+                elif (
+                    (args[0] == 'update_lot_client_du_cmd')
                     and (len(sys.argv) == 6)
                 ):
-                    Our_Tools.update_lot_client_du_cmd()
+                    our_tools = Our_Tools()
+                    our_tools.update_lot_client_du_cmd()
                     pass
                 elif args[0] == 'test_monitoring_wmi01':
                     c = wmi.WMI()
