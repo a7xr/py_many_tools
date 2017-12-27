@@ -447,7 +447,7 @@ class Our_Tools(threading.Thread):
                 lot_client_nouv = sheet_read.cell_value(4, 2)
             except IndexError:
                 print
-                Our_Tools.print_green("Vous avez entree vide pour la cellule(Commande)")
+                Our_Tools.print_green(txt = "Vous avez entree vide pour la cellule(Commande)")
                 self.logging_n_print( 
                     txt = "Commande vide dans l'Excel\n\n",
                     type_log = "info")
@@ -1307,8 +1307,6 @@ class Our_Tools(threading.Thread):
         workbook_write.close()
         os.system(self.fichier_xlsx)
         
-
-
         # vita soratra ny "commande" sy ny "lot" rhf tonga eto
 
         workbook_read = xlrd.open_workbook(self.fichier_xlsx)
@@ -1551,7 +1549,30 @@ class Our_Tools(threading.Thread):
         print "Fin"
         sys.exit(0) 
 
+    @staticmethod
+    def read_one_cell_from_xl(
+        xl_file = "test001.xlsx"
+        , sheet_index = 0
+        , y = 2
+        , x = 0
+    ):
+        workbook_read = xlrd.open_workbook(xl_file)
+        sheet_read = workbook_read.sheet_by_index(sheet_index)
+        res = ""
 
+        try:
+            res = sheet_read.cell_value(y, x)
+
+            return res
+        except IndexError:
+            msg = "Valeur manquant pour fichier(" + xl_file + "), tab_index("+ sheet_index +")" + ", y = " + y + ", x = " + x
+            Our_Tools.print_green(
+                txt = msg
+            )
+            return False
+            pass
+
+        pass
 
     def pg_not_select(self
             , query01 = ""
@@ -1559,6 +1580,7 @@ class Our_Tools(threading.Thread):
             , db = "sdsi"
             , log_query = False
             , auto_commit = False
+            , test001 = True
     ):
         if( 
                 (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
@@ -1642,8 +1664,8 @@ class Our_Tools(threading.Thread):
                 # pass
 
         elif ( 
-                (host == "192.168.10.5")
-                and (db == "production") 
+                (host == parser.get('pg_10_5_production', 'ip_host'))
+                and (db == parser.get('pg_10_5_production', 'database')) 
         ):
             try: # de meme que sdsi@10.5
                 self.connect_pg_10_5__prod
@@ -1654,10 +1676,14 @@ class Our_Tools(threading.Thread):
                     password01=parser.get('pg_10_5_production', 'password'),
                     database01=parser.get('pg_10_5_production', 'database')
                 )
-            self.cursor_pg_10_5__bdd_prod.execute(query01)
+
+            # print "Execute2334579944678906453"
+            if test001 == False:
+                self.cursor_pg_10_5__bdd_prod.execute(query01)
 
 
             if (auto_commit == True):
+                # print "Commit12347689997654"
                 self.connect_pg_10_5__prod.commit()
                 pass
             else:
@@ -2116,9 +2142,11 @@ class Our_Tools(threading.Thread):
             filewriter.writerow(['Paul', 'Manager'])
 
     def pg_select(self, 
-            host = "192.168.10.5",
-            database01 = "sdsi",
-            query = "select * from execute"):
+            host = "192.168.10.5"
+            , database01 = "sdsi"
+            , query = "select * from execute"
+            , msg_if_error = ""
+    ):
         if ((host == "192.168.10.5") and (database01 == "sdsi")):
             # on va d_abord tester SI il y a connection
             # # si pas de connection aa sdsi@10.5... alors on fait une connection
@@ -2146,6 +2174,12 @@ class Our_Tools(threading.Thread):
             self.cursor_pg_10_5__bdd_prod.execute(query)
             self.rows_pg_10_5__prod = self.cursor_pg_10_5__bdd_prod.fetchall()
             # print ""
+
+            # print type(self.rows_pg_10_5__prod)
+            # # list
+
+            return self.rows_pg_10_5__prod
+            # if len(self.rows_pg_10_5__prod) == 1:
 
     def set_moment(
             self,
@@ -2580,6 +2614,26 @@ class Our_Tools(threading.Thread):
                 # db = db01)
         pass
 
+    @staticmethod
+    def read_chp_s1(self
+        , xl_file = "sgc_setting001.xlsx"
+        , sheet_index_s1 = 1
+        , x = 0
+    ):
+        workbook_read = xlrd.open_workbook(xl_file)
+        sheet_read = workbook_read.sheet_by_index(sheet_index_s1)
+        res = []
+        for i in range(2, sheet_read.nrows):
+            data = Our_Tools.read_one_cell_from_xl(
+                xl_file = xl_file
+                , sheet_index = sheet_index_s1
+                , x = 0
+                , y = i
+            )
+            res.append(data)
+        return res
+
+        pass
 
     def sgc001(
         self
@@ -2591,6 +2645,7 @@ class Our_Tools(threading.Thread):
         # Tadidio fa any am farany vao manao Commit
         # # fa ny logging dia mande fona na tsy tonga any am farany aza ny program
 
+        # Sokafana ilay sgc_xlsx
         # Fenoina ny sgc_xlsx
         # # Fenoina tanana ny:
         # # # @tab(Config SGC)
@@ -2606,6 +2661,7 @@ class Our_Tools(threading.Thread):
 
 
         # amboary loo we mamaky amle xl ka rah ohatra ka int no ao dia avadika string
+        # # jerena we vide v ilay ao sa ??
 
 
         # _XXX_: XXX dia var azo avy any am xl_setting_sgc
@@ -2626,7 +2682,7 @@ class Our_Tools(threading.Thread):
         # # # # # #
         # # # # # 
         # # # # # mnw m_a_j date.. le misy 99/99/9999 iny
-        # # # # # # UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = __vivetic_prestation_id__
+        # # # # # # UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = __vivetic_prestation_id__ and description ilike '%date%'
         # # # #
         # # # # mnw sequence
         # # # # # _s1, _c, _q, _r..... jere le guide_sgc_program.txt@34576876526987654
@@ -2684,10 +2740,281 @@ class Our_Tools(threading.Thread):
         # # # #
         # # # # ny enjana amty ilay __req_misy_case_when__
 
+        workbook_write = xlsxwriter.Workbook(self.sgc_xlsx)
+        header_format_red = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#c80815',
+                            'border': 1})
 
+
+        header_format_blue = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#4d8fac',
+                            'border': 1})
+
+        sheet_config_sgc = workbook_write.add_worksheet('Config SGC')
+        sheet_tout_chps_s1 = workbook_write.add_worksheet('Tout les Champs S1')
+        sheet_interdependance = workbook_write.add_worksheet('Interdependance')
+        sheet_code_barre = workbook_write.add_worksheet('Code Barre')
+        sheet_referentiel = workbook_write.add_worksheet('Referentiel')
+
+        cell_format_union = workbook_write.add_format({'align': 'center',
+            'valign': 'vcenter',
+            'border': 1}
+        )
+        sheet_config_sgc.merge_range('E1:H1', "", 
+            cell_format_union)
+
+
+        ################ Mameno anle libelle anle sheet_config_sgc
+
+        sheet_config_sgc.write(0, 4, 'Configuration Globale de SGC', header_format_red)
+        sheet_config_sgc.write(2, 0, 'Client', header_format_blue)
+        sheet_config_sgc.write(3, 0, 'Code Prestation', header_format_blue)
+        sheet_config_sgc.write(4, 0, 'Nom Prestation', header_format_blue)
+        sheet_config_sgc.write(5, 0, 'Table Prod ', header_format_blue)
+
+        sheet_config_sgc.write(7, 0, 'Existance de Traitement Code Barre ', header_format_blue)
+        sheet_config_sgc.write(8, 0, 'Traitement Interdependance Automatique ', header_format_blue)
+
+        sheet_config_sgc.write(10, 0, 'vivetic_prestation_id', header_format_blue)
+        sheet_config_sgc.write(11, 0, 'sous_dossier_id', header_format_blue)
+
+        sheet_config_sgc.set_column('A:A', 40)
+
+        ################ END Mameno anle libelle anle sheet_config_sgc
+
+
+
+
+
+        ################ Mameno anle libelle anle sheet_tout_chps_s1
+        
+        sheet_tout_chps_s1.merge_range('E1:H1', "", cell_format_union )
+    
+        sheet_tout_chps_s1.merge_range('A2:D2', "", cell_format_union )
+
+
+        sheet_tout_chps_s1.write(0, 4, 'Les Champs qui provient du Descripteur', header_format_red)
+        sheet_tout_chps_s1.write(1, 0, 'Commencee juste en bas :)', header_format_blue)
+
+        ################ END Mameno anle libelle anle sheet_tout_chps_s1
+
+
+
+
+
+        ################ Mameno anle libelle anle sheet_interdependance
+        
+        sheet_interdependance.merge_range('E1:H1', "", cell_format_union )
+    
+        sheet_interdependance.merge_range('A2:D2', "", cell_format_union )
+
+        
+        sheet_interdependance.write(0, 4, 'Mbola tsy vita ito', header_format_red)
+        sheet_interdependance.write(1, 0, '', header_format_blue)
+
+        ################ END Mameno anle libelle anle sheet_interdependance
+
+
+
+
+        ################ Mameno anle libelle anle sheet_code_barre
+        
+        sheet_code_barre.merge_range('E1:H1', "", cell_format_union )
+    
+        sheet_code_barre.merge_range('A2:D2', "", cell_format_union )
+
+        
+        sheet_code_barre.write(0, 4, 'Code Barre.. Tkn kopeno', header_format_red)
+        sheet_code_barre.write(1, 0, 'Commencee juste en bas!', header_format_blue)
+
+        ################ END Mameno anle libelle anle sheet_code_barre
+
+
+
+        ################ Mameno anle libelle anle sheet_referentiel
+        
+        sheet_referentiel.merge_range('E1:M1', "", cell_format_union )
+    
+        sheet_referentiel.merge_range('A2:D2', "", cell_format_union )
+
+        
+        sheet_referentiel.write(0, 4, 'Referentiel hanamboarana anle __query2_for_def_onExtract__', header_format_red)
+        sheet_referentiel.write(1, 0, 'Commencee juste en bas!', header_format_blue)
+
+        ################ END Mameno anle libelle anle sheet_referentiel
+
+
+
+        # workbook_write.save("test76344.xlsx")
+        workbook_write.close()
+        os.system(self.sgc_xlsx)
+
+
+        client = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 2
+            , x = 1
+        )
+
+        code_prestation = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 3
+            , x = 1
+        )
+
+        nom_prestation = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 4
+            , x = 1
+        )
+
+        table_prod = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 5
+            , x = 1
+        )
+
+        has_code_barre_operation = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 7
+            , x = 1
+        )
+
+        is_operation_code_barre_automatique = Our_Tools.read_one_cell_from_xl(
+            xl_file = self.sgc_xlsx
+            , sheet_index = 0
+            , y = 8
+            , x = 1
+        )
+
+        # print "client: ", client
+        # print "code_prestation: ", code_prestation
+        # print "nom_prestation: ", nom_prestation
+        # print "table_prod: ", table_prod
+
+        req_vv_prestation_id__sous_dossier_id = "SELECT vivetic_prestation_id, sous_dossier_id FROM vivetic_prestation WHERE code_prestation = 'SGC' AND client = 'SOGEC' AND nom_prestation = '" + nom_prestation + "'"
+
+        lg_vv_prest_id__sous_dossier = self.pg_select(
+            query = req_vv_prestation_id__sous_dossier_id
+            , host = parser.get('pg_10_5_production', 'ip_host')
+            , database01 = parser.get('pg_10_5_production', 'database') 
+        )
+
+        # vivetic_prestation_id = self.rows_pg_10_5__prod[0][0]
+        # sous_dossier_id = self.rows_pg_10_5__prod[0][1]
+
+        vivetic_prestation_id = lg_vv_prest_id__sous_dossier[0][0]
+        sous_dossier_id = lg_vv_prest_id__sous_dossier[0][1]
+        # print "vivetic_prestation_id: ", vivetic_prestation_id
+        # print 'sous_dossier_id: ', sous_dossier_id
+
+
+        req_m_a_j__date = "UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = " + str(vivetic_prestation_id) + " AND description ILIKE '%date%'"
+        # print "req_m_a_j__date: ", req_m_a_j__date
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_m_a_j__date
+            , log_query = True
+            , auto_commit = False
+        )
+
+
+
+        req_seq_s1 = self.req_sequence_sgc(
+            table_prod_sans_type = table_prod
+            , type_table = "s1"
+        )
+
+        # print "req_seq_s1: ", req_seq_s1
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_seq_s1
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+
+
+
+
+        req_seq_c = self.req_sequence_sgc(
+            table_prod_sans_type = table_prod
+            , type_table = "c"
+        )
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_seq_c
+            , log_query = True
+            , auto_commit = False
+        )
+
+
+
+
+        req_seq_q = self.req_sequence_sgc(
+            table_prod_sans_type = table_prod
+            , type_table = "q"
+        )
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_seq_q
+            , log_query = True
+            , auto_commit = False
+        )
+
+
+
+        req_seq_r = self.req_sequence_sgc(
+            table_prod_sans_type = table_prod
+            , type_table = "r"
+        )
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_seq_r
+            , log_query = True
+            , auto_commit = False
+        )
+
+
+
+
+        list_chp_s1 = Our_Tools.read_chp_s1(
+            xl_file = self.sgc_xlsx
+            , sheet_index_s1 = 1
+        )
+
+        print "list_chp_s1", list_chp_s1
+
+        
+
+
+
+        
+        
 
         sys.exit(0)
-        self.commit_all()
+        print "tonga ato334567889990"
+        self.commit_specific(connection = "pg_10_5_production")
+        self.commit_specific(connection = "pg_10_5_sdsi")
 
         self.table_prod001 = table_prod
 
@@ -3332,6 +3659,16 @@ where idcommande ilike 'crh%'
         pass
 
 
+    def req_sequence_sgc(
+            self
+            , table_prod_sans_type = "sgaq01"
+            , type_table = 's1'
+    ):
+        table_prod_avec_type = table_prod_sans_type + "_" + type_table
+
+        req001 = 'CREATE SEQUENCE ' + table_prod_avec_type + "_seq \nINCREMENT 1 \n MINVALUE 1 \n MAXVALUE 9223372036854775807 \n START 37 \nCACHE 1; \nALTER TABLE " + table_prod_avec_type + ' \n OWNER TO pgtantely; \n GRANT ALL ON SEQUENCE ' + table_prod_avec_type + ' TO pgtantely; \n GRANT SELECT, UPDATE ON SEQUENCE ' + table_prod_avec_type + ' TO op; \n GRANT SELECT ON SEQUENCE ' + table_prod_avec_type + ' TO prep;'
+        return req001
+        pass
 
     # #__init__our_tools
     def __init__(self, 
@@ -3970,6 +4307,19 @@ def main():
                     p = Person()
                     print p
                 elif (
+                    (args[0] == 'sequence_sgc') 
+                ):
+                    our_tools = Our_Tools()
+                    our_tools.sequence_sgc()
+                    pass
+                elif (
+                    (args[0] == 'test_read_xl001') 
+                ):
+                    a = Our_Tools.read_one_cell_from_xl(y = 13)
+                    print a
+                    print type(a)
+                    pass
+                elif (
                     (args[0] == 'test_xl_tahiry') 
                 ):
                     # doesn_t work for file.xlsx
@@ -4090,7 +4440,7 @@ def main():
                 elif args[0] == 'test_thread_conn':
                     our_tools = Our_Tools(
                             is_thread = True,
-                            time_test_connection01 = 1)
+                            time_sleep_thread = 1)
                     our_tools.start()
                     pass
                 elif args[0] == 'test_selenium001':
