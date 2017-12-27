@@ -472,6 +472,7 @@ class Our_Tools(threading.Thread):
                         , db = parser.get('pg_10_5_sdsi', 'database')
                         , query01 = request001
                         , log_query = True
+                        , auto_commit = True
                     )
                     pass
 
@@ -485,6 +486,7 @@ class Our_Tools(threading.Thread):
                         , db = parser.get('pg_10_5_production', 'database')
                         , query01 = request001
                         , log_query = True
+                        , auto_commit = True
                     )
                     pass
                 i = i + 1
@@ -1464,6 +1466,7 @@ class Our_Tools(threading.Thread):
                 host = "192.168.10.5",
                 db = "production",
                 log_query = True
+                , auto_commit = True
             )
 
             i += 1
@@ -1531,6 +1534,7 @@ class Our_Tools(threading.Thread):
                 host = "192.168.10.5",
                 db = "sdsi",
                 log_query = True
+                , auto_commit = True
             )
 
             i += 1
@@ -1549,11 +1553,12 @@ class Our_Tools(threading.Thread):
 
 
 
-    def pg_not_select(self, 
-            query01 = "",            
-            host = "127.0.0.1",
-            db = "sdsi",
-            log_query = False
+    def pg_not_select(self
+            , query01 = ""
+            , host = "127.0.0.1"
+            , db = "sdsi"
+            , log_query = False
+            , auto_commit = False
     ):
         if( 
                 (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
@@ -1574,7 +1579,14 @@ class Our_Tools(threading.Thread):
                 print "Connection OK au pg10.5 bdd(sdsi)"
 
             self.cursor_pg_10_5__bdd_sdsi.execute(query01)
-            self.connect_pg_10_5_sdsi.commit()
+
+            if (auto_commit == True):
+                self.connect_pg_10_5_sdsi.commit()
+                pass
+            else:
+                Our_Tools.print_green(txt = "Pas encore Commitee")
+                print "- ", query01
+                pass
 
         elif ( 
                 (host == parser.get('pg_localhost_saisie', 'ip_host')) 
@@ -1594,26 +1606,41 @@ class Our_Tools(threading.Thread):
                 print "Connection ok au bdd(saisie)@localhost"
 
             self.cursor_pg_localhost_saisie.execute(query01)
-            self.connect_pg_localhost_saisie.commit()
+            
 
             pass
+            if (auto_commit == True):
+                self.connect_pg_localhost_saisie.commit()
+                pass
+            else:
+                Our_Tools.print_green(txt = "Pas encore Commitee")
+                print "- ", query01
+                pass
 
-        elif ( 
-                (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
-                and (db == parser.get('pg_10_5_sdsi', 'database')) 
-        ):
-            try:
-                self.connect_pg_10_5_sdsi
-            except AttributeError:  
-                self.connection_pg(    # on fait une connection aa la base car elle est inexistant
-                    # cette methode va definir self.cursor_pg_10_5__bdd_sdsi
-                    server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
-                    user01=parser.get('pg_10_5_sdsi', 'username'),
-                    password01=parser.get('pg_10_5_sdsi', 'password'),
-                    database01=parser.get('pg_10_5_sdsi', 'database')
-                )
-            self.cursor_pg_10_5__bdd_sdsi.execute(query01)
-            self.connect_pg_10_5__prod.commit()
+        # elif ( 
+                # (host == parser.get('pg_10_5_sdsi', 'ip_host')) 
+                # and (db == parser.get('pg_10_5_sdsi', 'database')) 
+        # ):
+            # try:
+                # self.connect_pg_10_5_sdsi
+            # except AttributeError:  
+                # self.connection_pg(    # on fait une connection aa la base car elle est inexistant
+                    # # cette methode va definir self.cursor_pg_10_5__bdd_sdsi
+                    # server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
+                    # user01=parser.get('pg_10_5_sdsi', 'username'),
+                    # password01=parser.get('pg_10_5_sdsi', 'password'),
+                    # database01=parser.get('pg_10_5_sdsi', 'database')
+                # )
+            # self.cursor_pg_10_5__bdd_sdsi.execute(query01)
+# 
+            # if (auto_commit == True):
+                # self.connect_pg_10_5__prod.commit()
+                # pass
+            # else:
+                # Our_Tools.print_green(txt = "Pas encore Commitee")
+                # print "- ", query01
+                # pass
+
         elif ( 
                 (host == "192.168.10.5")
                 and (db == "production") 
@@ -1628,7 +1655,18 @@ class Our_Tools(threading.Thread):
                     database01=parser.get('pg_10_5_production', 'database')
                 )
             self.cursor_pg_10_5__bdd_prod.execute(query01)
-            self.connect_pg_10_5__prod.commit()
+
+
+            if (auto_commit == True):
+                self.connect_pg_10_5__prod.commit()
+                pass
+            else:
+                Our_Tools.print_green(txt = "Pas encore Commitee")
+                print "- ", query01
+                pass
+
+
+
 
         txt_to_add001 = db + "@" + host + ": " + str(datetime.datetime.now())+ ": "+query01
         if log_query:
@@ -1637,6 +1675,50 @@ class Our_Tools(threading.Thread):
                 txt_to_add = txt_to_add001
             )
             pass
+
+    def commit_all(self):
+        
+        self.commit_specific(connection = "pg_10_5_production")
+        self.commit_specific(connection = "pg_10_5_sdsi")
+        self.commit_specific(connection = "pg_localhost_saisie")
+
+        pass
+
+    def commit_specific(
+        self
+        , connection = "pg_10_5_production"
+    ):
+        if connection == "pg_10_5_production":
+            try: # de meme que sdsi@10.5
+                self.connect_pg_10_5__prod
+                self.connect_pg_10_5__prod.commit()
+            except:
+                Our_Tools.print_red(
+                    txt = "Connection au 10.5_production pas faite mais on a fait un Commit "
+                )
+                pass
+            pass
+        elif connection == "pg_10_5_sdsi":
+            try: # de meme que sdsi@10.5
+                self.connect_pg_10_5_sdsi
+                self.connect_pg_10_5_sdsi.commit()
+            except:
+                Our_Tools.print_red(
+                    txt = "Connection au 10.5_sdsi pas faite mais on a fait un Commit "
+                )
+                pass
+            pass
+        elif connection == "pg_localhost_saisie":
+            try: # de meme que sdsi@10.5
+                self.connect_pg_localhost_saisie
+                self.connect_pg_localhost_saisie.commit()
+            except:
+                Our_Tools.print_red(
+                    txt = "Connection au localhost_saisie pas faite mais on a fait un Commit "
+                )
+                pass
+            pass
+        pass
 
     @staticmethod
     def usage():
@@ -2452,6 +2534,38 @@ class Our_Tools(threading.Thread):
         else:
             Our_Tools.print_red('Vous avez Commencez le thread or que le programme n_est censee etre un thread')
 
+    @staticmethod
+    def test_xl_tahiry():
+        xl_sgc_tahiry = 'configSGC.xlsx'
+
+        import openpyxl
+        wb = openpyxl.load_workbook(xl_sgc_tahiry
+            #, data_only = True
+        )
+        sheet_config = wb.get_sheet_by_name('config')
+
+        sheet_config['B4'] = 'sgat88'
+# 
+        # req_passe001 = sheet_config['F14'].value
+# 
+        # print "req_passe001: ", req_passe001
+
+        wb.save(xl_sgc_tahiry)
+
+        workbook_read = xlrd.open_workbook(xl_sgc_tahiry)
+
+        sheet_read = workbook_read.sheet_by_index(0)
+
+        # req_passe001 = sheet_read.cell_value(13, 5)
+        req_passe001 = sheet_read.cell_value(1, 5)
+
+        print "req_passe001: ", req_passe001
+
+
+        
+        
+
+        pass
 
     def execute_list_queries_not_select(
             self,
@@ -2474,6 +2588,9 @@ class Our_Tools(threading.Thread):
 
         self.sgc_xlsx = "sgc_setting001.xlsx"
 
+        # Tadidio fa any am farany vao manao Commit
+        # # fa ny logging dia mande fona na tsy tonga any am farany aza ny program
+
         # Fenoina ny sgc_xlsx
         # # Fenoina tanana ny:
         # # # @tab(Config SGC)
@@ -2484,6 +2601,11 @@ class Our_Tools(threading.Thread):
         # # # @tab(Interdependance)
         # # # @tab(Code Barre)
         # # # @tab(Referentiel)
+
+
+
+
+        # amboary loo we mamaky amle xl ka rah ohatra ka int no ao dia avadika string
 
 
         # _XXX_: XXX dia var azo avy any am xl_setting_sgc
@@ -2491,23 +2613,81 @@ class Our_Tools(threading.Thread):
         # Fenoina ny sgc_xlsx
         # # Fenoina tanana ny:
         # # # @tab(Config SGC)
-        # # # # Client, Code Prestation, Nom Prestation, Table Prod
-        # # # # #
-        # # # # #
-        # # # # # jerena: vivetic_prestation_id, sous_dossier_id
-        # # # # # # select vivetic_prestation_id, sous_dossier_id from vivetic_prestation 
-        # # # # # # # where code_prestation = 'SGC' and client = "SOGEC"
-        # # # # # # # and nom_prestation = __nom_prestation__
+        # # # # Client(_client_), Code Prestation(_code_prestation_), Nom Prestation(_nom_prestation_), Table Prod
+        # # # # # Fenoina ireto var ireto: (client, code_prestation, nom_prestation, table_prod)
+        # # # # # # has_code_barre_operation, _is_operation_code_barre_automatique_
+        # # # # # jerena: __vivetic_prestation_id__, __sous_dossier_id__
+        # # # # # # SELECT vivetic_prestation_id, sous_dossier_id FROM vivetic_prestation 
+        # # # # # # # WHERE code_prestation = 'SGC' AND client = "SOGEC"
+        # # # # # # # AND nom_prestation = _nom_prestation_
+        # # # # # #
+        # # # # # # si __vivetic_prestation_id__   IS_NULL  >>>
+        # # # # # # # print "mbola tsy vita ny Importation"....  mvoka ny programme (sys.exit(0))
+        # # # # # #
         # # # # # 
         # # # # # mnw m_a_j date.. le misy 99/99/9999 iny
-        # # #
+        # # # # # # UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = __vivetic_prestation_id__
+        # # # #
+        # # # # mnw sequence
+        # # # # # _s1, _c, _q, _r..... jere le guide_sgc_program.txt@34576876526987654
+        # # # #
+        # # # #
         # # # @tab(Tout les Champs S1)
-        # # # @tab(Interdependance)
+        # # # # creation anle table(s1, c, q, r)
+        # # # # # vakiana loon ny tab(Tout les champs S1)
+        # # # # # amboarina ny champs_miova_table_s1
+        # # # # # ho an_ny champs_miova_table_c = champs_miova_table_s1
+        # # # # # amboarina ny champs_miova_table_q
+        # # # # # # champs_miova_table_s1 fa miala ny (numvoieXX, chaineXX)
+        # # # # # # champs_miova_table_s1 fa miala ny (email2)
+        # # # # # # champs_miova_table_s1 fa "email1" dia renomenna ho "email"
+        # # # # # # champs_miova_table_s1 fa ajoutena "code_pays" apres "pays"
+        # # #
+        # # #
         # # # @tab(Code Barre)
+        # # # # mande ito si _has_code_barre_operation_ == '1'
+        # # # # # alaina loo ny __max_code_barre_id_plus_1__, __max_sgc_champs_interdep_plus_1__
+        # # # # # # SELECT max(sgc_codebarre.sgc_codebarre_id)+1 codebarre, 
+        # # # # # # # max(sgc_champs_interdep.sgc_champs_interdep_id)+1 
+        # # # # # # # interdep FROM sgc_champs_interdep, sgc_codebarre
+        # # # # #
+        # # # # #
+        # # # # # amboarina ny __requete_code_barre__ > to table(sgc_codebarre)@10.5
+        # # # # # # alefaso ary am production@10.5 ilay __requete_code_barre__
+
+
+
+        # # # @tab(Interdependance)
+        # # # # mande ito si _is_operation_code_barre_automatique_ == '1'
+        # # # # 
+        # # # # pour le moment, atov _is_operation_code_barre_automatique_ == '0'
+        # # # # 
+        # # # # tatara b ny mamboatra anle __requete_interdependance__
+        # # # # # ny maka ireo __list_chp_interdep__ no enjana
+        # # # # # alaivo ny __list_chp_interdep_from_descripteur__ avam tab(Interdependance)
+        # # # # # alaivo ny __list_chp_from_vivetic_chp
+        # # # # # # select libelle from vivetic_champs where vivetic_prestation_id = __vivetic_prestation_id__
+        # # # # #
+        # # # # # __chp_interdep_from_descripteur__     ISAKN     __list_chp_interdep_from_descripteur__ 
+        # # # # # # msafidy __str001__     FROM     __chp_interdep_from_descripteur__
+        # # # # # # # select libelle from vivetic_champs where description ilike '%__str001__%' and vivetic_prestation_id = __vivetic_prestation_id__
+        # # # # # # # lasa maaz __list_choix_libelle__
+        # # # # # # # #
+        # # # # # # # # __choix_libelle__     ISAKN     __list_choix_libelle__
+        # # # # # # # # # __chp_interdep_from_descripteur__ aptovina am __choix_libelle__
+        # # # # # # # # # refa nsafidy __choix_libelle__ dia atambatra am __list_chp_interdep__
+
+
+
         # # # @tab(Referentiel)
+        # # # # ny tanjona dia mambotra anle __query2_for_def_onExtract__
+        # # # #
+        # # # # ny enjana amty ilay __req_misy_case_when__
+
+
 
         sys.exit(0)
-
+        self.commit_all()
 
         self.table_prod001 = table_prod
 
@@ -3616,7 +3796,9 @@ where idcommande ilike 'crh%'
         self.pg_not_select(
             query01=query_prod,
             host="192.168.10.5",
-            db="production")
+            db="production"
+            , auto_commit = True
+        )
         try:
             pass
 
@@ -3787,6 +3969,16 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_xl_tahiry') 
+                ):
+                    # doesn_t work for file.xlsx
+                    # ok for file.xls
+                    #
+                    # till now, it is NOT possible to read from the result of 
+                    # # excel_formula
+                    Our_Tools.test_xl_tahiry()
+                    pass
                 elif (
                     (args[0] == 'export_one_query_select_to_excel') 
                 ):
