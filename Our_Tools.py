@@ -5,8 +5,6 @@
 # default value of HKEY_CURRENT_USE\Software\Microsoft\Internet Explorer\Main\Start Page
 # # http://go.microsoft.com/fwlink/?LinkId=69157
 
-# def importation_installation():
-
 import os
 import re
 import sys
@@ -2469,53 +2467,49 @@ class Our_Tools(threading.Thread):
         pass
 
 
-    def sgc001(self,
-        table_prod = "sgal85"):
+    def sgc001(
+        self
+        , table_prod = "sgal75"
+    ):
+
+        self.sgc_xlsx = "sgc_setting001.xlsx"
+
+        # Fenoina ny sgc_xlsx
+        # # Fenoina tanana ny:
+        # # # @tab(Config SGC)
+        # # # # Client, Code Prestation, Nom Prestation, Table Prod
+        # # #
+        # # #
+        # # # @tab(Tout les Champs S1)
+        # # # @tab(Interdependance)
+        # # # @tab(Code Barre)
+        # # # @tab(Referentiel)
+
+
+        # _XXX_: XXX dia var azo avy any am xl_setting_sgc
+        # __XXXX__: azo avy am operation teo aloo
+        # Fenoina ny sgc_xlsx
+        # # Fenoina tanana ny:
+        # # # @tab(Config SGC)
+        # # # # Client, Code Prestation, Nom Prestation, Table Prod
+        # # # # #
+        # # # # #
+        # # # # # jerena: vivetic_prestation_id, sous_dossier_id
+        # # # # # # select vivetic_prestation_id, sous_dossier_id from vivetic_prestation 
+        # # # # # # # where code_prestation = 'SGC' and client = "SOGEC"
+        # # # # # # # and nom_prestation = __nom_prestation__
+        # # # # # 
+        # # # # # mnw m_a_j date.. le misy 99/99/9999 iny
+        # # #
+        # # # @tab(Tout les Champs S1)
+        # # # @tab(Interdependance)
+        # # # @tab(Code Barre)
+        # # # @tab(Referentiel)
+
+        sys.exit(0)
+
 
         self.table_prod001 = table_prod
-
-        try:
-            table_from_prompt = sys.argv[2]
-            # print "misy aa"
-            self.table_prod001 = table_from_prompt
-        except IndexError as index_error:
-            # print "tsisy"
-            pass
-        # sys.exit(0)
-
-        self.long_print()
-        print "table_prod: " + self.table_prod001
-
-        txt01 = 'Etes-vous sure que table_prod = ' + self.table_prod001 + ' [y/n]'
-        confirm_table_prod = raw_input(txt01)
-
-        if confirm_table_prod == 'y':
-            pass
-        else:
-            sys.exit(0)
-            pass
-
-
-
-        self.sous_dossier01 = self.table_prod001[-4:].upper()
-        # # AL75
-        
-        # connection to dbb
-        self.connection_pg(
-            server01 = parser.get('pg_10_5_production', 'ip_host'),
-            user01 = parser.get('pg_10_5_production', 'username'),
-            password01=parser.get('pg_10_5_production', 'password'),
-            database01=parser.get('pg_10_5_production', 'database')
-        )
-        self.connection_pg(
-            server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
-            user01=parser.get('pg_10_5_sdsi', 'username'),
-            password01=parser.get('pg_10_5_sdsi', 'password'),
-            database01=parser.get('pg_10_5_sdsi', 'database')
-        )
-
-
-        # print "self.sous_dossier01: " + self.sous_dossier01
 
 
         self.path_prog = "E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\"
@@ -2612,7 +2606,6 @@ class Our_Tools(threading.Thread):
         # sys.exit(0)
 
 
-        query_create_table = "create table ecoute_ip (a int)"
         # try:
             # self.pg_not_select(
                     # query01 = content_s1_sql,
