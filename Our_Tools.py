@@ -3956,40 +3956,81 @@ where idcommande ilike 'crh%'
         , ftp_login = parser.get("sftp_32_a", "login")
         , ftp_pass = parser.get("sftp_32_a", "password")
     ):
-        # with pysftp.Connection(
-                    # ftp_server, 
-                    # username=ftp_login, 
-                    # password=ftp_pass
-        # ) as sftp:
-            # print 'Connection SFTP OK'
-            # with sftp.cd('/var/www/localhost/htdocs/test/version2/controle/js/submit_script'):             # temporarily chdir to public
-                # # sftp.put('/my/local/filename')  # upload file to public/ on remote
-                # sftp.get('submit_form_ivx1.js')         # get a remote file
-                # print 'After DL'
-                # pass
-
-
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None   
 
+        if ((ftp_server == parser.get("sftp_32_a", "ip_server"))
+            and (ftp_login == parser.get("sftp_32_a", "login"))
+        ):
+            try:
+                self.connection_sftp_32_a
+            except IndexError:
+                self.connection_sftp_32_a = pysftp.Connection(
+                    # 'sftp.vivetic.com', 
+                    ftp_server
+                    , username=ftp_login
+                    , password=ftp_pass
+                    , port=22
+                    , cnopts=cnopts
+                )
+            with pysftp.Connection(
+                # 'sftp.vivetic.com', 
+                ftp_server
+                , username = ftp_login
+                , password = ftp_pass
+                , port=22
+                , cnopts=cnopts
+            ) as sftp:
+                # print "Connection OK"
+                sftp.get('/home/iam/PROD/SOGEC/livraison/AO69/param.ini')
+                # print "DL OK"
+
+    @staticmethod
+    def put_to_sftp(
+        ftp_server = parser.get("sftp_32_a", "ip_server")
+        , ftp_login = parser.get("sftp_32_a", "login")
+        , ftp_pass = parser.get("sftp_32_a", "password")
+        , local_file = 'E:\\db_study.sql'
+        , remote_dir = '/home/iam/PROD/SOGEC/livraison/AO69/'
+    
+    ):
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None   
         with pysftp.Connection(
-            # 'sftp.vivetic.com', 
-            ftp_server
-            , username=ftp_login
-            , password=ftp_pass
-            , port=22
-            , cnopts=cnopts
+                # 'sftp.vivetic.com', 
+                ftp_server
+                , username=ftp_login
+                , password=ftp_pass
+                , port=22
+                , cnopts=cnopts
         ) as sftp:
-            print "Connection OK"
-            sftp.get('/home/iam/PROD/SOGEC/livraison/AO69/param.ini')
-            print "DL OK"
-        # with pysftp.Connection(ftp_server, ftp_login, ftp_pass, cnopts=cnopts) as sftp:
+
+            with sftp.cd(remote_dir):
             # print "Connection OK"
-            # sftp.put(
-                # # local_path, 
-                # 'E:\\db_study.sql',
-                # '/var/www/localhost/htdocs/test/version2/controle/js/submit_script/'
-            # )
+                sftp.put(local_file)
+        
+        pass
+
+    @staticmethod
+    def get_from_sftp(
+            ftp_server = parser.get("sftp_32_a", "ip_server")
+            , ftp_login = parser.get("sftp_32_a", "login")
+            , ftp_pass = parser.get("sftp_32_a", "password")
+            , remote_file = '/home/iam/PROD/SOGEC/livraison/AO69/param.ini'
+    ):
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None   
+        with pysftp.Connection(
+                # 'sftp.vivetic.com', 
+                ftp_server
+                , username=ftp_login
+                , password=ftp_pass
+                , port=22
+                , cnopts=cnopts
+            ) as sftp:
+                # print "Connection OK"
+                sftp.get(remote_file)
+        pass
 
     def ftp_connection(
             self
@@ -4895,6 +4936,16 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_sftp003') 
+                ):
+                    Our_Tools.put_to_sftp()
+                    pass
+                elif (
+                    (args[0] == 'test_sftp002') 
+                ):
+                    Our_Tools.get_from_sftp()
+                    pass
                 elif (
                     (args[0] == 'test_sftp001') 
                 ):
