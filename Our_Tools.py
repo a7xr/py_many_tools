@@ -496,10 +496,10 @@ class Our_Tools(threading.Thread):
             type_log = "info")
         for query_sdsi in list_query_delete_sdsi:
             # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
-            self.logging_n_print( 
-                txt = query_sdsi + "\n", 
-                type_log = "info"
-            )
+            # self.logging_n_print( 
+                # txt = query_sdsi + "\n", 
+                # type_log = "info"
+            # )
 
             #eto
             self.pg_not_select(
@@ -522,7 +522,7 @@ class Our_Tools(threading.Thread):
 
         print long_void
         print "Fin"
-        sys.exit(0) 
+        # sys.exit(0) 
         pass
 
     def select_after_suppr_gpao_unique(
@@ -532,37 +532,108 @@ class Our_Tools(threading.Thread):
             , all_lots = "all_lots01"
         ):
 
-        sel_req_sdsi001 = "SELECT * FROM pli_numerisation WHERE id_lot_numerisation IN  (SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        sel_req_prod001 = "SELECT * FROM pli_numerisation WHERE id_lot_numerisation IN  (SELECT id_lot_numerisation FROM lot_numerisation WHERE "
         if suppr_total == False:
-            sel_req_sdsi001 += "lot_scan IN (" + all_lots + ") AND"
-        sel_req_sdsi001 += " idcommande_reception IN ('" + cmd001 + "')"
+            sel_req_prod001 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_prod001 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
-        sel_req_sdsi002 = "select * from pli_numerisation_anomalie where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        sel_req_prod002 = "select * from pli_numerisation_anomalie where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
         if suppr_total == False:
-            sel_req_sdsi002 += "lot_scan IN (" + all_lots + ") AND"
-        sel_req_sdsi002 += " idcommande_reception IN ('" + cmd001 + "')"
+            sel_req_prod002 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_prod002 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
-        sel_req_sdsi003 = "select * from image_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        sel_req_prod003 = "select * from image_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
         if suppr_total == False:
-            sel_req_sdsi003 += "lot_scan IN (" + all_lots + ") AND"
-        sel_req_sdsi003 += " idcommande_reception IN ('" + cmd001 + "')"
+            sel_req_prod003 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_prod003 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
 
-        sel_req_sdsi004 = "select * from fichesuiveuse_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        sel_req_prod004 = "select * from fichesuiveuse_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
         if suppr_total == False:
-            sel_req_sdsi004 += "lot_scan IN (" + all_lots + ") AND"
-        sel_req_sdsi004 += " idcommande_reception IN ('" + cmd001 + "')"
+            sel_req_prod004 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_prod004 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
-        sel_req_sdsi005 = "select * from lot_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        sel_req_prod005 = "select * from lot_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
         if suppr_total == False:
-            sel_req_sdsi005 += "lot_scan IN (" + all_lots + ") AND"
-        sel_req_sdsi005 += " idcommande_reception IN ('" + cmd001 + "')"
+            sel_req_prod005 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_prod005 += " idcommande_reception IN ('" + cmd001 + "'));"
 
-        
+        list_sel_req_prod = [
+            sel_req_prod001
+            , sel_req_prod002
+            , sel_req_prod003
+            , sel_req_prod004
+            , sel_req_prod005
+        ]
+
+
+
+        for req_select_prod in list_sel_req_prod:
+            txt_to_add001 = "production@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": \n" + req_select_prod
+            Our_Tools.write_append_to_file(
+                path_file = self.log_query_db,
+                txt_to_add = txt_to_add001
+            )
+
+            pass
+
+
+
+
+
+        sel_req_sdsi001 = "SELECT * FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        if suppr_total == False:
+            sel_req_sdsi001 += "lot_client IN (" + all_lots + ") AND "
+        sel_req_sdsi001 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
+
+
+        sel_req_sdsi002 = "select * from fichierimage where idprep in (select idprep from fichier where "
+        if suppr_total == False:
+            sel_req_sdsi002 += "lot_client IN (" + all_lots + ") AND "
+        sel_req_sdsi002 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
+
+        sel_req_sdsi003 = "select * from fichierimage where idprep in (select idprep from fichier where "
+        if suppr_total == False:
+            sel_req_sdsi003 += "lot_client IN (" + all_lots + ") AND "
+        sel_req_sdsi003 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
+
+
+        sel_req_sdsi004 = "select * from fichierimage where idprep in (select idprep from fichier where "
+        if suppr_total == False:
+            sel_req_sdsi004 += "lot_client IN (" + all_lots + ") AND "
+        sel_req_sdsi004 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
+
+
+        sel_req_sdsi005 = "select * from fichierimage where idprep in (select idprep from fichier where "
+        if suppr_total == False:
+            sel_req_sdsi005 += "lot_client IN (" + all_lots + ") AND "
+        sel_req_sdsi005 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
+
+
+
+
+        list_sel_req_sdsi = [
+            sel_req_sdsi001
+            , sel_req_sdsi002
+            , sel_req_sdsi003
+            , sel_req_sdsi004
+            , sel_req_sdsi005
+        ]
+
+
+
+        for req_select_sdsi in list_sel_req_sdsi:
+            txt_to_add001 = "sdsi@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": " + req_select_sdsi
+            Our_Tools.write_append_to_file(
+                path_file = self.log_query_db,
+                txt_to_add = txt_to_add001
+            )
+
+            pass
 
         pass
 
@@ -592,7 +663,7 @@ class Our_Tools(threading.Thread):
         
         if (with_prompt == True):
             req_sdsi = "UPDATE fichier SET lot_client = '" + sys.argv[3] + "' WHERE lot_client = '" + sys.argv[4] + "' AND idfichiercmd ILIKE '" + sys.argv[5] + "%'"
-            # req_
+            # req_update
             print "req_sdsi: ", req_sdsi
             req_prod = "UPDATE lot_numerisation SET lot_scan = '"+ sys.argv[3] +"' WHERE lot_scan ILIKE '"+ sys.argv[4] +"' AND idcommande_reception = '"+ sys.argv[5] +"';"
             print "req_prod: ", req_prod
@@ -625,10 +696,6 @@ class Our_Tools(threading.Thread):
             workbook_write.close()
             os.system('upd_lot_client.xlsx')
 
-
-
-
-
             workbook_read = xlrd.open_workbook('upd_lot_client.xlsx')
             sheet_read = workbook_read.sheet_by_index(0)
             try:
@@ -648,26 +715,24 @@ class Our_Tools(threading.Thread):
                     lot_client_new_val = str(lot_client_new_val)[:-2]
             except IndexError:
                 print
-                Our_Tools.print_green(txt = "Vous avez entree vide pour la cellule(Commande)")
+                Our_Tools.print_green(txt = "Vous avez entree vide quelque part")
                 self.logging_n_print( 
-                    txt = "Commande vide dans l'Excel\n\n",
-                    type_log = "info")
+                    txt = "Commande vide dans l'Excel\n\n"
+                    , type_log = "info"
+                )
                 sys.exit(0)
             # print "cmd001: ", cmd001
             # print "lot_client_to_repl: ", lot_client_to_repl
             # print "lot_client_new_val: ", lot_client_new_val
-            list_req_sdsi_prod = Our_Tools.query_for_upd_lot_client(
+            list_req_sdsi_prod__upd_lot_client = Our_Tools.query_for_upd_lot_client(
                 cmd = cmd001
                 , lot_client_to_repl = lot_client_to_repl
                 , lot_client_new_val = lot_client_new_val
             )
 
             i = 0
-            for request001 in list_req_sdsi_prod:
+            for request001 in list_req_sdsi_prod__upd_lot_client:
                 if i == 0:  # requete ao am sdsi
-                    # connection
-                    # mandefa requete
-                    # mnw logging
                     self.pg_not_select(
                         host = parser.get('pg_10_5_sdsi', 'ip_host')
                         , db = parser.get('pg_10_5_sdsi', 'database')
@@ -678,10 +743,6 @@ class Our_Tools(threading.Thread):
                     pass
 
                 else: # requete ao am prod
-                    
-                    # connection
-                    # mandefa requete
-                    # mnw logging
                     self.pg_not_select(
                         host = parser.get('pg_10_5_production', 'ip_host')
                         , db = parser.get('pg_10_5_production', 'database')
@@ -691,18 +752,60 @@ class Our_Tools(threading.Thread):
                     )
                     pass
                 i = i + 1
+            
+
+
+
+            list_sel_query_of_upd_lot_client = Our_Tools.select_query_for_upd_lot_client(
+                        cmd = cmd001
+                        , lot_client = lot_client_new_val
+            )
+
+            i = 0
+            for sel_query_of_upd_lot_client in list_sel_query_of_upd_lot_client:
+                if i == 0:  # SDSI
+                    txt_to_add = "sdsi@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": \n" + sel_query_of_upd_lot_client
+                    pass
+                else: 
+                    txt_to_add = "production@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": \n" + sel_query_of_upd_lot_client
+                    pass
+
+                self.write_append_to_file(
+                    path_file = self.log_query_db
+                    , txt_to_add = txt_to_add
+                )
+
+                i += 1
+
             self.write_append_to_file(
                 path_file = self.log_query_db
                 , txt_to_add = "\n\n\n\n\n"
             )
-                
+
+
+
+
             
+                
+    
+
+    @staticmethod
+    def select_query_for_upd_lot_client(
+        cmd = "cmd001",
+        lot_client = "lot_client001"
+    ):
+        req_sel_sdsi = "SELECT * FROM fichier WHERE lot_client = '" + lot_client + "' AND idfichiercmd ILIKE '"+ cmd + "%'"
+
+        req_sel_prod = "SELECT * FROM lot_numerisation WHERE lot_scan = '"+ lot_client +"' AND idcommande_reception = '"+ cmd +"';"
+        return [req_sel_sdsi, req_sel_prod]
+        pass
+
 
     @staticmethod
     def query_for_upd_lot_client(
-        cmd = "cmd001",
-        lot_client_to_repl = "lot_client_to_repl",
-        lot_client_new_val = "lot_client_new_val"
+        cmd = "cmd001"
+        , lot_client_new_val = "lot_client_new_val"
+        , lot_client_to_repl = "lot_client_to_repl"
     ):
         req_sdsi = "UPDATE fichier SET lot_client = '" + lot_client_new_val + "' WHERE lot_client = '" + lot_client_to_repl + "' AND idfichiercmd ILIKE '" + cmd + "%'"
 
@@ -1428,8 +1531,9 @@ class Our_Tools(threading.Thread):
 
 
     def suppression_gpao_unique(
-            self,
-            suppr_total = 0):
+            self
+            , save_check_query = False
+            , suppr_total = 0):
         print "suppression_gpao_unique"
         # print "parser.get('pg_10_5_production', 'ip_host')"
         # print parser.get('pg_10_5_production', 'ip_host')
@@ -1598,6 +1702,13 @@ class Our_Tools(threading.Thread):
             , cmd001 = cmd001
             , all_lots = all_lots
         )
+
+        if save_check_query:
+            self.select_after_suppr_gpao_unique(
+                suppr_total = False
+                , cmd001 = cmd001
+                , all_lots = all_lots
+            )
         #######################################################
         #######################################################
         #######################################################
@@ -1605,6 +1716,8 @@ class Our_Tools(threading.Thread):
         #######################################################
         #######################################################
         #######################################################
+
+
 
         # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
         # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
@@ -1846,7 +1959,7 @@ class Our_Tools(threading.Thread):
                 self.cursor_pg_10_5__bdd_sdsi = self.connect_pg_10_5_sdsi.cursor()
                 print "Connection OK au pg10.5 bdd(sdsi)"
 
-            self.cursor_pg_10_5__bdd_sdsi.execute(query01)
+            self.cursor_pg_10_5__bdd_sdsi.execute(query01.encode('ISO-8859-1'))
 
             if (auto_commit == True):
                 self.connect_pg_10_5_sdsi.commit()
@@ -1873,7 +1986,7 @@ class Our_Tools(threading.Thread):
                 self.cursor_pg_localhost_saisie = self.connect_pg_localhost_saisie.cursor()
                 print "Connection ok au bdd(saisie)@localhost"
 
-            self.cursor_pg_localhost_saisie.execute(query01)
+            self.cursor_pg_localhost_saisie.execute(query01.encode('ISO-8859-1'))
             
 
             pass
@@ -1925,7 +2038,7 @@ class Our_Tools(threading.Thread):
 
             # print "Execute2334579944678906453"
             if test001 == False:
-                self.cursor_pg_10_5__bdd_prod.execute(query01)
+                self.cursor_pg_10_5__bdd_prod.execute(query01.encode('ISO-8859-1'))
 
 
             if (auto_commit == True):
@@ -1940,7 +2053,7 @@ class Our_Tools(threading.Thread):
 
 
 
-        txt_to_add001 = db + "@" + host + ": " + str(datetime.datetime.now())+ ": "+query01
+        txt_to_add001 = ">>>>>>>>>>>> " + db + "@" + host + ": " + str(datetime.datetime.now())+ ": \n"+query01
         if log_query:
             Our_Tools.write_append_to_file(
                 path_file = self.log_query_db,
@@ -2125,7 +2238,7 @@ class Our_Tools(threading.Thread):
         Our_Tools.print_green (txt = "Option: -T test_selenium_sfl AP03")
         print "Pour faire le Correspondance de la commande AP03"
         print "- le resultat sera dans un fichier comme: 'name_SFL_AP03.txt'"
-        
+
         Our_Tools.long_print(num = 5)
 
         Our_Tools.print_green (txt = "Option: -T test_conn_db025")
@@ -4801,7 +4914,10 @@ def main():
                 # print "suppr_total"
                 # sys.exit(0)
                 script001 = Our_Tools()
-                script001.suppression_gpao_unique(suppr_total = 1)
+                script001.suppression_gpao_unique(
+                    suppr_total = 1
+                    , save_check_query = True
+                )
             elif (
                 (len (sys.argv) == 2) 
                 and (sys.argv[1] == '-s')
@@ -4810,7 +4926,10 @@ def main():
                 # sys.exit(0)
                 script001 = Our_Tools()
 
-                script001.suppression_gpao_unique(suppr_total = 0)
+                script001.suppression_gpao_unique(
+                    suppr_total = 0
+                    , save_check_query = True
+                )
             else:
                 print "not managed at all"
         elif option in ("-r","--replace_accent"):
