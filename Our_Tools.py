@@ -27,6 +27,7 @@ from PyQt4.QtGui import *
 from ftplib import FTP
 from ConfigParser import SafeConfigParser
 import ConfigParser as cfgparser
+import pysftp
 
 
 path_prg = 'E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\'
@@ -1719,128 +1720,7 @@ class Our_Tools(threading.Thread):
 
 
 
-        # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
-        # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-
-        # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
-        # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        # if (suppr_total == 0):
-            # delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
-        # delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-#         
-# 
-        # delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
-        # delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
-        # if suppr_total == 0:
-            # delete_query_prod002 += " lot_scan IN (" + all_lots + ")  AND"
-        # delete_query_prod002 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-# 
-        # delete_query_prod003 = "DELETE FROM image_numerisation WHERE id_lot_numerisation IN "
-        # delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE"
-        # if suppr_total == 0:
-            # delete_query_prod003 += " lot_scan IN (" + all_lots + ")  AND"
-        # delete_query_prod003 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-# 
-# 
-        # delete_query_prod004 = "DELETE FROM fichesuiveuse_numerisation WHERE id_lot_numerisation IN "
-        # delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        # if suppr_total == 0:
-            # delete_query_prod004 += " lot_scan IN (" + all_lots + ")  AND"
-        # delete_query_prod004 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-# 
-        # delete_query_prod005 = "DELETE FROM lot_numerisation WHERE "
-        # if suppr_total == 0:
-            # delete_query_prod005 += " lot_scan IN (" + all_lots + ")  AND"
-        # delete_query_prod005 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
-# 
-        # list_query_delete_prod = [
-            # delete_query_prod001, 
-            # delete_query_prod002, 
-            # delete_query_prod003,
-            # delete_query_prod004, 
-            # delete_query_prod005
-        # ]
-
         
-
-
-
-        # lot_client IN (" + all_lots + ") AND
-        # delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
-        # if suppr_total == 0:
-            # delete_query_sdsi001 += "lot_client IN (" + all_lots + ") AND"
-        # delete_query_sdsi001 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-#         
-        # delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE "
-        # if suppr_total == 0:
-            # delete_query_sdsi002 += "lot_client IN (" + all_lots + ") AND"
-        # delete_query_sdsi002 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        # # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        # delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE "
-        # if suppr_total == 0:
-            # delete_query_sdsi004 += "lot_client IN (" + all_lots + ") AND"
-        # delete_query_sdsi004 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-#         
-        # delete_query_sdsi005 = "DELETE FROM fichier WHERE "
-        # if suppr_total == 0:
-            # delete_query_sdsi005 += "lot_client IN (" + all_lots + ") AND"
-#         
-        # delete_query_sdsi005 += " idcommande IN ('"+cmd001+"','0"+cmd001+"');"
-# 
-        # list_query_delete_sdsi = [
-            # delete_query_sdsi001, 
-            # delete_query_sdsi002, 
-            # # delete_query_sdsi003,
-            # delete_query_sdsi004, 
-            # delete_query_sdsi005
-        # ]
-
-        # i = 0
-        # txt001 = """
-# ##################################################################
-# # Dans bdd(sdsi) pour la commande("""+cmd001
-# 
-        # txt001 += " _ suppr_total" if (suppr_total == 1) else ""
-# 
-        # txt001 +=""")
-# ##################################################################
-# # 
-# # 
-# 
-         # """
-        # self.logging_n_print( 
-            # txt = txt001 ,
-            # type_log = "info")
-        # for query_sdsi in list_query_delete_sdsi:
-            # # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
-            # self.logging_n_print( 
-                # txt = query_sdsi + "\n", 
-                # type_log = "info"
-            # )
-# 
-            # #eto
-            # self.pg_not_select(
-                # query01 = query_sdsi,
-                # host = "192.168.10.5",
-                # db = "sdsi",
-                # log_query = True
-                # , auto_commit = True
-            # )
-# 
-            # # i += 1
-            # Our_Tools.long_print()
-# 
-# 
-# 
-        # long_void = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-        # self.logging_n_print( 
-            # txt = long_void,
-            # type_log = "info")
-# 
-        # print long_void
-        # print "Fin"
-        # sys.exit(0) 
-
     @staticmethod
     def read_one_cell_from_xl(
         xl_file = "test001.xlsx"
@@ -2251,6 +2131,12 @@ class Our_Tools(threading.Thread):
         print "Pour Exporter une SEULE requete dans excel"
         print 'Ex: python .\Our_Tools.py -T export_one_query_select_to_excel "select * from mpo002_s1 limit 6" "test265.xlsx"'
 
+
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T update_lot_client_du_cmd")
+        print "Pour faire un m_a_j d_un lot_client"
+        print "- Un fichier_excel va s_ouvrir et tout va etre dedans"
         
 
     @staticmethod
@@ -4064,18 +3950,61 @@ where idcommande ilike 'crh%'
             open(path_file, 'a').close()
         pass
 
+    def sftp_connection(
+        self
+        , ftp_server = parser.get("sftp_32_a", "ip_server")
+        , ftp_login = parser.get("sftp_32_a", "login")
+        , ftp_pass = parser.get("sftp_32_a", "password")
+    ):
+        # with pysftp.Connection(
+                    # ftp_server, 
+                    # username=ftp_login, 
+                    # password=ftp_pass
+        # ) as sftp:
+            # print 'Connection SFTP OK'
+            # with sftp.cd('/var/www/localhost/htdocs/test/version2/controle/js/submit_script'):             # temporarily chdir to public
+                # # sftp.put('/my/local/filename')  # upload file to public/ on remote
+                # sftp.get('submit_form_ivx1.js')         # get a remote file
+                # print 'After DL'
+                # pass
+
+
+        cnopts = pysftp.CnOpts()
+        cnopts.hostkeys = None   
+
+        with pysftp.Connection(
+            # 'sftp.vivetic.com', 
+            ftp_server
+            , username=ftp_login
+            , password=ftp_pass
+            , port=22
+            , cnopts=cnopts
+        ) as sftp:
+            print "Connection OK"
+            sftp.get('/home/iam/PROD/SOGEC/livraison/AO69/param.ini')
+            print "DL OK"
+        # with pysftp.Connection(ftp_server, ftp_login, ftp_pass, cnopts=cnopts) as sftp:
+            # print "Connection OK"
+            # sftp.put(
+                # # local_path, 
+                # 'E:\\db_study.sql',
+                # '/var/www/localhost/htdocs/test/version2/controle/js/submit_script/'
+            # )
+
     def ftp_connection(
             self
-            , ftp_server = parser.get("ftp_10_13", "ip_server")
-            , ftp_login = parser.get("ftp_10_13", "login")
-            , ftp_pass = parser.get("ftp_10_13", "password")
+            , ftp_server = parser.get("ftp_24_w", "ip_server")
+            , ftp_login = parser.get("ftp_24_w", "login")
+            , ftp_pass = parser.get("ftp_24_w", "password")
     ):
 
-        self.ftp = FTP(ftp_server)
-        self.ftp.login(
+        self.ftp_24_w = FTP(ftp_server)
+        self.ftp_24_w.login(
             user = ftp_login
             , passwd = ftp_pass
         )
+
+        print "FTP Connection OK"
 
         # Our_Tools.write_append_to_file(
 #             
@@ -4084,7 +4013,8 @@ where idcommande ilike 'crh%'
         pass
 
     def ftp_quit(self):
-        self.ftp.quit()
+        self.ftp_24_w.quit()
+        print 'ftp_quit OK'
 
     def export_one_query_select_to_excel(self,
         server001 = parser.get('pg_10_5_production', 'ip_host'),
@@ -4966,6 +4896,13 @@ def main():
                     p = Person()
                     print p
                 elif (
+                    (args[0] == 'test_sftp001') 
+                ):
+                    
+                    our_tools = Our_Tools()
+                    our_tools.sftp_connection()
+                    pass
+                elif (
                     (args[0] == 'file_creation_if_missing') 
                 ):
                     Our_Tools.file_creation_if_missing(
@@ -5000,6 +4937,14 @@ def main():
                 ):
                     our_tools = Our_Tools()
                     our_tools.export_one_query_select_to_excel()
+                    pass
+                elif (
+                    (args[0] == 'test_connection_ftp001') 
+                ):
+                    our_tools = Our_Tools()
+                    our_tools.ftp_connection()
+                    our_tools.ftp_quit()
+                    # print 'FTP_Connection OK'
                     pass
                 elif (
                     (args[0] == 'update_lot_client_du_cmd') 
