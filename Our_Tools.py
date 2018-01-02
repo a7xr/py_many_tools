@@ -3,7 +3,7 @@
 # # https://www.python.org/dev/peps/pep-0263/
 
 # default value of HKEY_CURRENT_USE\Software\Microsoft\Internet Explorer\Main\Start Page
-# # http://go.microsoft.com/fwlink/?LinkId=69157
+
 
 import os
 import re
@@ -24,7 +24,7 @@ import ctypes
 import subprocess
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-
+from ftplib import FTP
 from ConfigParser import SafeConfigParser
 import ConfigParser as cfgparser
 
@@ -373,6 +373,199 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
 
 class Our_Tools(threading.Thread):
 
+    def doing_suppr_gpao_unique(
+        self
+        , suppr_total = False
+        , cmd001 = "cmd001"
+        , all_lots = "all_lots01"
+    ):
+        delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
+        delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        if (suppr_total == 0):
+            delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        
+
+
+
+        delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
+        delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
+        if suppr_total == 0:
+            delete_query_prod002 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod002 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+
+
+
+
+        delete_query_prod003 = "DELETE FROM image_numerisation WHERE id_lot_numerisation IN "
+        delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE"
+        if suppr_total == 0:
+            delete_query_prod003 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod003 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+
+
+        delete_query_prod004 = "DELETE FROM fichesuiveuse_numerisation WHERE id_lot_numerisation IN "
+        delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        if suppr_total == 0:
+            delete_query_prod004 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod004 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+
+        delete_query_prod005 = "DELETE FROM lot_numerisation WHERE "
+        if suppr_total == 0:
+            delete_query_prod005 += " lot_scan IN (" + all_lots + ")  AND"
+        delete_query_prod005 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
+
+        list_query_delete_prod = [
+            delete_query_prod001, 
+            delete_query_prod002, 
+            delete_query_prod003,
+            delete_query_prod004, 
+            delete_query_prod005
+        ]
+
+
+        i = 0
+        for query_prod in list_query_delete_prod:
+            # print "delete_query_prod00"+ str(i) +": " + query_prod
+            self.logging_n_print( 
+                txt = query_prod + "\n", 
+                type_log = "info"
+            )
+
+            #eto
+            self.pg_not_select(
+                query01 = query_prod,
+                host = "192.168.10.5",
+                db = "production",
+                log_query = True
+                , auto_commit = True
+            )
+
+            i += 1
+            Our_Tools.long_print()
+
+
+
+
+        delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi001 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi001 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        
+        delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi002 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi002 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi004 += "lot_client IN (" + all_lots + ") AND"
+        delete_query_sdsi004 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        
+        delete_query_sdsi005 = "DELETE FROM fichier WHERE "
+        if suppr_total == 0:
+            delete_query_sdsi005 += "lot_client IN (" + all_lots + ") AND"
+        
+        delete_query_sdsi005 += " idcommande IN ('"+cmd001+"','0"+cmd001+"');"
+
+        list_query_delete_sdsi = [
+            delete_query_sdsi001, 
+            delete_query_sdsi002, 
+            # delete_query_sdsi003,
+            delete_query_sdsi004, 
+            delete_query_sdsi005
+        ]
+
+
+
+
+        txt001 = """
+##################################################################
+# Dans bdd(sdsi) pour la commande("""+cmd001
+
+        txt001 += " _ suppr_total" if (suppr_total == 1) else ""
+
+        txt001 +=""")
+##################################################################
+# 
+# 
+
+         """
+        self.logging_n_print( 
+            txt = txt001 ,
+            type_log = "info")
+        for query_sdsi in list_query_delete_sdsi:
+            # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
+            self.logging_n_print( 
+                txt = query_sdsi + "\n", 
+                type_log = "info"
+            )
+
+            #eto
+            self.pg_not_select(
+                query01 = query_sdsi,
+                host = "192.168.10.5",
+                db = "sdsi",
+                log_query = True
+                , auto_commit = True
+            )
+
+            # i += 1
+            Our_Tools.long_print()
+
+
+
+        long_void = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        self.logging_n_print( 
+            txt = long_void,
+            type_log = "info")
+
+        print long_void
+        print "Fin"
+        sys.exit(0) 
+        pass
+
+    def select_after_suppr_gpao_unique(
+            self
+            , suppr_total = False
+            , cmd001 = "cmd001"
+            , all_lots = "all_lots01"
+        ):
+
+        sel_req_sdsi001 = "SELECT * FROM pli_numerisation WHERE id_lot_numerisation IN  (SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        if suppr_total == False:
+            sel_req_sdsi001 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_sdsi001 += " idcommande_reception IN ('" + cmd001 + "')"
+
+
+        sel_req_sdsi002 = "select * from pli_numerisation_anomalie where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        if suppr_total == False:
+            sel_req_sdsi002 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_sdsi002 += " idcommande_reception IN ('" + cmd001 + "')"
+
+
+        sel_req_sdsi003 = "select * from image_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        if suppr_total == False:
+            sel_req_sdsi003 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_sdsi003 += " idcommande_reception IN ('" + cmd001 + "')"
+
+
+
+        sel_req_sdsi004 = "select * from fichesuiveuse_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        if suppr_total == False:
+            sel_req_sdsi004 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_sdsi004 += " idcommande_reception IN ('" + cmd001 + "')"
+
+
+        sel_req_sdsi005 = "select * from lot_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
+        if suppr_total == False:
+            sel_req_sdsi005 += "lot_scan IN (" + all_lots + ") AND"
+        sel_req_sdsi005 += " idcommande_reception IN ('" + cmd001 + "')"
+
+        
+
+        pass
+
     @staticmethod
     def export_query_to_xl(
             host = parser.get('pg_10_5_production', 'ip_host'), 
@@ -442,9 +635,17 @@ class Our_Tools(threading.Thread):
 
                 # time.sleep(10)
                                             #  y  x
+
                 cmd001 = sheet_read.cell_value(4, 0)
                 lot_client_to_repl = sheet_read.cell_value(4, 1)
-                lot_client_nouv = sheet_read.cell_value(4, 2)
+                lot_client_new_val = sheet_read.cell_value(4, 2)
+
+                if isinstance(cmd001, float):
+                    cmd001 = str(cmd001)[:-2]
+                if isinstance(lot_client_to_repl, float):
+                    lot_client_to_repl = str(lot_client_to_repl)[:-2]
+                if isinstance(lot_client_new_val, float):
+                    lot_client_new_val = str(lot_client_new_val)[:-2]
             except IndexError:
                 print
                 Our_Tools.print_green(txt = "Vous avez entree vide pour la cellule(Commande)")
@@ -454,11 +655,11 @@ class Our_Tools(threading.Thread):
                 sys.exit(0)
             # print "cmd001: ", cmd001
             # print "lot_client_to_repl: ", lot_client_to_repl
-            # print "lot_client_nouv: ", lot_client_nouv
+            # print "lot_client_new_val: ", lot_client_new_val
             list_req_sdsi_prod = Our_Tools.query_for_upd_lot_client(
                 cmd = cmd001
                 , lot_client_to_repl = lot_client_to_repl
-                , lot_client_new_val = lot_client_nouv
+                , lot_client_new_val = lot_client_new_val
             )
 
             i = 0
@@ -1362,34 +1563,7 @@ class Our_Tools(threading.Thread):
         # print all_lots
         # # 'BE_20170923_02_P_R','BE_20170923_03_P_R', ...
 
-        # sys.exit(0)
-
-        # compteur = 0
-        # all_lots = ""
-        # for data in range(0, sheet_read.nrows):
-# 
-            # val001 = sheet_read.row_values(data, 0, 1)[0]
-#                 
-            # if compteur == 0:
-                # cmd001 = str(val001)
-            # elif compteur == 1:
-                # pass
-            # else:
-                # all_lots += "'" + str(val001) + "',"
-# 
-            # #print "val001[ " + str(compteur) + "]: " + str(val001)
-# 
-            # compteur += 1
-# 
-        # print str(val001)
-#         
-# 
-        # all_lots = all_lots[:-1]
-
-        # print "cmd001: " + cmd001
-        
-        # print "all_lots: " + all_lots
-        # txt001 = "aa"
+       
         txt001 = """
 # ################################################################
 # Dans bdd(production) pour la commande("""+cmd001
@@ -1408,146 +1582,151 @@ class Our_Tools(threading.Thread):
 
         Our_Tools.long_print()
         # lot_scan IN (" + all_lots + ")  AND
+
+
+
+
+
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        self.doing_suppr_gpao_unique(
+            suppr_total = False
+            , cmd001 = cmd001
+            , all_lots = all_lots
+        )
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+        #######################################################
+
         # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
         # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE lot_scan IN (" + all_lots + ")  AND idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
 
-        delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        if (suppr_total == 0):
-            delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
-        delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+        # delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
+        # delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        # if (suppr_total == 0):
+            # delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
+        # delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+#         
+# 
+        # delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
+        # delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
+        # if suppr_total == 0:
+            # delete_query_prod002 += " lot_scan IN (" + all_lots + ")  AND"
+        # delete_query_prod002 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+# 
+        # delete_query_prod003 = "DELETE FROM image_numerisation WHERE id_lot_numerisation IN "
+        # delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE"
+        # if suppr_total == 0:
+            # delete_query_prod003 += " lot_scan IN (" + all_lots + ")  AND"
+        # delete_query_prod003 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+# 
+# 
+        # delete_query_prod004 = "DELETE FROM fichesuiveuse_numerisation WHERE id_lot_numerisation IN "
+        # delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+        # if suppr_total == 0:
+            # delete_query_prod004 += " lot_scan IN (" + all_lots + ")  AND"
+        # delete_query_prod004 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
+# 
+        # delete_query_prod005 = "DELETE FROM lot_numerisation WHERE "
+        # if suppr_total == 0:
+            # delete_query_prod005 += " lot_scan IN (" + all_lots + ")  AND"
+        # delete_query_prod005 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
+# 
+        # list_query_delete_prod = [
+            # delete_query_prod001, 
+            # delete_query_prod002, 
+            # delete_query_prod003,
+            # delete_query_prod004, 
+            # delete_query_prod005
+        # ]
+
         
-
-        delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
-        delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
-        if suppr_total == 0:
-            delete_query_prod002 += " lot_scan IN (" + all_lots + ")  AND"
-        delete_query_prod002 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-
-        delete_query_prod003 = "DELETE FROM image_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod003 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE"
-        if suppr_total == 0:
-            delete_query_prod003 += " lot_scan IN (" + all_lots + ")  AND"
-        delete_query_prod003 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-
-
-        delete_query_prod004 = "DELETE FROM fichesuiveuse_numerisation WHERE id_lot_numerisation IN "
-        delete_query_prod004 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        if suppr_total == 0:
-            delete_query_prod004 += " lot_scan IN (" + all_lots + ")  AND"
-        delete_query_prod004 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
-
-        delete_query_prod005 = "DELETE FROM lot_numerisation WHERE "
-        if suppr_total == 0:
-            delete_query_prod005 += " lot_scan IN (" + all_lots + ")  AND"
-        delete_query_prod005 += " idcommande_reception IN ('"+cmd001+"','0"+cmd001+"');"
-
-        list_query_delete_prod = [
-            delete_query_prod001, 
-            delete_query_prod002, 
-            delete_query_prod003,
-            delete_query_prod004, 
-            delete_query_prod005
-        ]
-
-        i = 0
-        for query_prod in list_query_delete_prod:
-            # print "delete_query_prod00"+ str(i) +": " + query_prod
-            self.logging_n_print( 
-                txt = query_prod + "\n", 
-                type_log = "info"
-            )
-
-            #eto
-            self.pg_not_select(
-                query01 = query_prod,
-                host = "192.168.10.5",
-                db = "production",
-                log_query = True
-                , auto_commit = True
-            )
-
-            i += 1
-            Our_Tools.long_print()
-
 
 
 
         # lot_client IN (" + all_lots + ") AND
-        delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
-        if suppr_total == 0:
-            delete_query_sdsi001 += "lot_client IN (" + all_lots + ") AND"
-        delete_query_sdsi001 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        
-        delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE "
-        if suppr_total == 0:
-            delete_query_sdsi002 += "lot_client IN (" + all_lots + ") AND"
-        delete_query_sdsi002 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE "
-        if suppr_total == 0:
-            delete_query_sdsi004 += "lot_client IN (" + all_lots + ") AND"
-        delete_query_sdsi004 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
-        
-        delete_query_sdsi005 = "DELETE FROM fichier WHERE "
-        if suppr_total == 0:
-            delete_query_sdsi005 += "lot_client IN (" + all_lots + ") AND"
-        
-        delete_query_sdsi005 += " idcommande IN ('"+cmd001+"','0"+cmd001+"');"
+        # delete_query_sdsi001 = "DELETE FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        # if suppr_total == 0:
+            # delete_query_sdsi001 += "lot_client IN (" + all_lots + ") AND"
+        # delete_query_sdsi001 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+#         
+        # delete_query_sdsi002 = "DELETE FROM fichierimage WHERE idprep IN (select idprep FROM fichier WHERE "
+        # if suppr_total == 0:
+            # delete_query_sdsi002 += "lot_client IN (" + all_lots + ") AND"
+        # delete_query_sdsi002 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        # # delete_query_sdsi003 = "DELETE FROM fichierimage_base64 WHERE idprep IN (SELECT idprep FROM fichier WHERE lot_client IN (" + all_lots + ") AND idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+        # delete_query_sdsi004 = "DELETE FROM preparation WHERE idprep IN (SELECT idprep FROM fichier WHERE "
+        # if suppr_total == 0:
+            # delete_query_sdsi004 += "lot_client IN (" + all_lots + ") AND"
+        # delete_query_sdsi004 += " idcommande IN ('"+cmd001+"','0"+cmd001+"'));"
+#         
+        # delete_query_sdsi005 = "DELETE FROM fichier WHERE "
+        # if suppr_total == 0:
+            # delete_query_sdsi005 += "lot_client IN (" + all_lots + ") AND"
+#         
+        # delete_query_sdsi005 += " idcommande IN ('"+cmd001+"','0"+cmd001+"');"
+# 
+        # list_query_delete_sdsi = [
+            # delete_query_sdsi001, 
+            # delete_query_sdsi002, 
+            # # delete_query_sdsi003,
+            # delete_query_sdsi004, 
+            # delete_query_sdsi005
+        # ]
 
-        list_query_delete_sdsi = [
-            delete_query_sdsi001, 
-            delete_query_sdsi002, 
-            # delete_query_sdsi003,
-            delete_query_sdsi004, 
-            delete_query_sdsi005
-        ]
-
-        i = 0
-        txt001 = """
-##################################################################
-# Dans bdd(sdsi) pour la commande("""+cmd001
-
-        txt001 += " _ suppr_total" if (suppr_total == 1) else ""
-
-        txt001 +=""")
-##################################################################
+        # i = 0
+        # txt001 = """
+# ##################################################################
+# # Dans bdd(sdsi) pour la commande("""+cmd001
+# 
+        # txt001 += " _ suppr_total" if (suppr_total == 1) else ""
+# 
+        # txt001 +=""")
+# ##################################################################
+# # 
+# # 
+# 
+         # """
+        # self.logging_n_print( 
+            # txt = txt001 ,
+            # type_log = "info")
+        # for query_sdsi in list_query_delete_sdsi:
+            # # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
+            # self.logging_n_print( 
+                # txt = query_sdsi + "\n", 
+                # type_log = "info"
+            # )
+# 
+            # #eto
+            # self.pg_not_select(
+                # query01 = query_sdsi,
+                # host = "192.168.10.5",
+                # db = "sdsi",
+                # log_query = True
+                # , auto_commit = True
+            # )
+# 
+            # # i += 1
+            # Our_Tools.long_print()
 # 
 # 
-
-         """
-        self.logging_n_print( 
-            txt = txt001 ,
-            type_log = "info")
-        for query_sdsi in list_query_delete_sdsi:
-            # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
-            self.logging_n_print( 
-                txt = query_sdsi + "\n", 
-                type_log = "info"
-            )
-
-            #eto
-            self.pg_not_select(
-                query01 = query_sdsi,
-                host = "192.168.10.5",
-                db = "sdsi",
-                log_query = True
-                , auto_commit = True
-            )
-
-            i += 1
-            Our_Tools.long_print()
-
-
-
-        long_void = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-        self.logging_n_print( 
-            txt = long_void,
-            type_log = "info")
-
-        print long_void
-        print "Fin"
-        sys.exit(0) 
+# 
+        # long_void = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        # self.logging_n_print( 
+            # txt = long_void,
+            # type_log = "info")
+# 
+        # print long_void
+        # print "Fin"
+        # sys.exit(0) 
 
     @staticmethod
     def read_one_cell_from_xl(
@@ -1562,7 +1741,8 @@ class Our_Tools(threading.Thread):
 
         try:
             res = sheet_read.cell_value(y, x)
-
+            if isinstance(res, float):
+                res = '{:.0f}'.format(res)
             return res
         except IndexError:
             msg = "Valeur manquant pour fichier(" + xl_file + "), tab_index("+ sheet_index +")" + ", y = " + y + ", x = " + x
@@ -1571,6 +1751,72 @@ class Our_Tools(threading.Thread):
             )
             return False
             pass
+
+        pass
+
+
+    def refactor_sgc_operation_codebarre(
+            self
+            , has_code_barre_operation = 'has_code_barre_operation'
+            , nom_prestation = 'nom_prestation'
+    ):
+
+        if has_code_barre_operation == '1':
+            # print "Traitement code barre"
+            # max_code_barre_id_plus_1
+            req_max_code_barre_id_et_sgc_chp_inter_plus_1 = 'SELECT max(sgc_codebarre.sgc_codebarre_id)+1 codebarre,  max(sgc_champs_interdep.sgc_champs_interdep_id)+1 interdep FROM sgc_champs_interdep, sgc_codebarre'
+            list_max_code_barre_id_et_sgc_chp_inter_plus_1 = self.pg_select(
+                host = parser.get('pg_10_5_production', 'ip_host'),
+                database01 = parser.get('pg_10_5_production', 'database'),
+                query = req_max_code_barre_id_et_sgc_chp_inter_plus_1
+            )
+            max_code_barre_id_plus_1 = list_max_code_barre_id_et_sgc_chp_inter_plus_1[0][0]
+            max_sgc_chp_inter_plus_1 = list_max_code_barre_id_et_sgc_chp_inter_plus_1[0][1]
+            # print "type(max_code_barre_id_plus_1): ", type(max_code_barre_id_plus_1)
+            # print "max_sgc_chp_inter_plus_1: ", max_sgc_chp_inter_plus_1
+
+
+
+            list_numero_code_barre = Our_Tools.read_one_col_of_sheet_xl(
+                xl_file = self.sgc_xlsx
+                , sheet_index_to_read = 3
+                , x = 0
+            )
+
+            list_nom_code_barre = Our_Tools.read_one_col_of_sheet_xl(
+                xl_file = self.sgc_xlsx
+                , sheet_index_to_read = 3
+                , x = 1
+            )
+
+            # print "list_numero_code_barre: ", list_numero_code_barre
+            # # [u'azer', u'qsdf', u'wxcv']
+            # print "list_nom_code_barre: ", list_nom_code_barre
+
+            # max_code_barre_id_plus_1
+            req_code_barre = "insert into sgc_codebarre values ('"
+
+            for i in list_numero_code_barre:
+                req_code_barre += str (max_code_barre_id_plus_1) + "', '" + i + "', '"+ nom_prestation + "'),\n"
+                max_code_barre_id_plus_1 += 1
+                pass
+            req_code_barre = req_code_barre[:-2]
+            # print "req_code_barre: ", req_code_barre
+
+
+            self.pg_not_select(
+                host = parser.get('pg_10_5_production', 'ip_host')
+                , db = parser.get('pg_10_5_production', 'database')
+                , query01 = req_code_barre
+                , log_query = True
+                , auto_commit = False
+                , test001 = True
+            )
+
+        elif has_code_barre_operation == '0':
+            print "CodeBarre Null"
+        else:
+            print "Unknown val for code barre"
 
         pass
 
@@ -2615,19 +2861,20 @@ class Our_Tools(threading.Thread):
         pass
 
     @staticmethod
-    def read_chp_s1(self
-        , xl_file = "sgc_setting001.xlsx"
-        , sheet_index_s1 = 1
+    def read_one_col_of_sheet_xl(
+        xl_file = "sgc_setting001.xlsx"
+        , sheet_index_to_read = 1
         , x = 0
+        , from_y = 2
     ):
         workbook_read = xlrd.open_workbook(xl_file)
-        sheet_read = workbook_read.sheet_by_index(sheet_index_s1)
+        sheet_read = workbook_read.sheet_by_index(sheet_index_to_read)
         res = []
-        for i in range(2, sheet_read.nrows):
+        for i in range(from_y, sheet_read.nrows):
             data = Our_Tools.read_one_cell_from_xl(
                 xl_file = xl_file
-                , sheet_index = sheet_index_s1
-                , x = 0
+                , sheet_index = sheet_index_to_read
+                , x = x
                 , y = i
             )
             res.append(data)
@@ -2641,6 +2888,16 @@ class Our_Tools(threading.Thread):
     ):
 
         self.sgc_xlsx = "sgc_setting001.xlsx"
+
+
+        self.c_sql = "for_sgc\\c.sql"
+        self.c_sql_output = "for_sgc\\c_output.sql"
+        self.s1_sql = "for_sgc\\s1.sql"
+        self.s1_sql_output = "for_sgc\\s1_output.sql"
+        self.q_sql = "for_sgc\\q.sql"
+        self.q_sql_output = "for_sgc\\q_output.sql"
+        self.r_sql = "for_sgc\\r.sql"
+        self.r_sql_output = "for_sgc\\r_output.sql"
 
         # Tadidio fa any am farany vao manao Commit
         # # fa ny logging dia mande fona na tsy tonga any am farany aza ny program
@@ -2690,14 +2947,14 @@ class Our_Tools(threading.Thread):
         # # # #
         # # # @tab(Tout les Champs S1)
         # # # # creation anle table(s1, c, q, r)
-        # # # # # vakiana loon ny tab(Tout les champs S1)
+        # # # # # vakiana loon ny tab(Tout les champs S1) [VITA]
         # # # # # amboarina ny champs_miova_table_s1
         # # # # # ho an_ny champs_miova_table_c = champs_miova_table_s1
         # # # # # amboarina ny champs_miova_table_q
         # # # # # # champs_miova_table_s1 fa miala ny (numvoieXX, chaineXX)
         # # # # # # champs_miova_table_s1 fa miala ny (email2)
         # # # # # # champs_miova_table_s1 fa "email1" dia renomenna ho "email"
-        # # # # # # champs_miova_table_s1 fa ajoutena "code_pays" apres "pays"
+        # # # # # # champs_miova_table_s1 fa ajoutena "code_pays" apres "pays" [VITA]
         # # #
         # # #
         # # # @tab(Code Barre)
@@ -2709,6 +2966,9 @@ class Our_Tools(threading.Thread):
         # # # # #
         # # # # #
         # # # # # amboarina ny __requete_code_barre__ > to table(sgc_codebarre)@10.5
+        # # # # # #
+        # # # # # # vakina ny tab(code_barre) >>> __list_codebarre__
+        # # # # # # 
         # # # # # # alefaso ary am production@10.5 ilay __requete_code_barre__
 
 
@@ -2735,10 +2995,6 @@ class Our_Tools(threading.Thread):
 
 
 
-        # # # @tab(Referentiel)
-        # # # # ny tanjona dia mambotra anle __query2_for_def_onExtract__
-        # # # #
-        # # # # ny enjana amty ilay __req_misy_case_when__
 
         workbook_write = xlsxwriter.Workbook(self.sgc_xlsx)
         header_format_red = workbook_write.add_format({'bold': True,
@@ -2777,7 +3033,9 @@ class Our_Tools(threading.Thread):
         sheet_config_sgc.write(5, 0, 'Table Prod ', header_format_blue)
 
         sheet_config_sgc.write(7, 0, 'Existance de Traitement Code Barre ', header_format_blue)
+        sheet_config_sgc.write(7, 2, '1 si il y a Code_Barre aa faire... 0 Sinon ', header_format_blue)
         sheet_config_sgc.write(8, 0, 'Traitement Interdependance Automatique ', header_format_blue)
+        sheet_config_sgc.write(8, 2, '1 si OUI... 0 si NON', header_format_blue)
 
         sheet_config_sgc.write(10, 0, 'vivetic_prestation_id', header_format_blue)
         sheet_config_sgc.write(11, 0, 'sous_dossier_id', header_format_blue)
@@ -2843,7 +3101,13 @@ class Our_Tools(threading.Thread):
 
         
         sheet_referentiel.write(0, 4, 'Referentiel hanamboarana anle __query2_for_def_onExtract__', header_format_red)
-        sheet_referentiel.write(1, 0, 'Commencee juste en bas!', header_format_blue)
+        sheet_referentiel.write(1, 0, 'Suit les Instructions en bas!', header_format_blue)
+
+        sheet_referentiel.write(2, 0, 'Dossier', header_format_blue)
+        sheet_referentiel.write(2, 1, 'Objet', header_format_blue)
+        sheet_referentiel.write(2, 2, 'Groupe de donnees', header_format_blue)
+        sheet_referentiel.write(2, 3, 'Code de donnee', header_format_blue)
+        sheet_referentiel.write(2, 4, 'Valeur', header_format_blue)
 
         ################ END Mameno anle libelle anle sheet_referentiel
 
@@ -2860,6 +3124,8 @@ class Our_Tools(threading.Thread):
             , y = 2
             , x = 1
         )
+        # print "client: ", client
+        # # client:  SOGEC
 
         code_prestation = Our_Tools.read_one_cell_from_xl(
             xl_file = self.sgc_xlsx
@@ -2867,6 +3133,8 @@ class Our_Tools(threading.Thread):
             , y = 3
             , x = 1
         )
+        # print "code_prestation: ", code_prestation
+        # # code_prestation:  SGC
 
         nom_prestation = Our_Tools.read_one_cell_from_xl(
             xl_file = self.sgc_xlsx
@@ -2875,6 +3143,11 @@ class Our_Tools(threading.Thread):
             , x = 1
         )
 
+        nom_prestation = "azeropazeproiazeurpoia" if (nom_prestation == '') else nom_prestation
+
+        # print "nom_prestation: ", nom_prestation
+        # # nom_prestation:  AQ01
+
         table_prod = Our_Tools.read_one_cell_from_xl(
             xl_file = self.sgc_xlsx
             , sheet_index = 0
@@ -2882,12 +3155,17 @@ class Our_Tools(threading.Thread):
             , x = 1
         )
 
+        # print "table_prod: ", table_prod
+        # # table_prod:  sgaq01
+
         has_code_barre_operation = Our_Tools.read_one_cell_from_xl(
             xl_file = self.sgc_xlsx
             , sheet_index = 0
             , y = 7
             , x = 1
         )
+        print "has_code_barre_operation: ", has_code_barre_operation
+        # # has_code_barre_operation:  1
 
         is_operation_code_barre_automatique = Our_Tools.read_one_cell_from_xl(
             xl_file = self.sgc_xlsx
@@ -2895,6 +3173,8 @@ class Our_Tools(threading.Thread):
             , y = 8
             , x = 1
         )
+        # print "is_operation_code_barre_automatique: ", is_operation_code_barre_automatique
+        
 
         # print "client: ", client
         # print "code_prestation: ", code_prestation
@@ -2912,8 +3192,24 @@ class Our_Tools(threading.Thread):
         # vivetic_prestation_id = self.rows_pg_10_5__prod[0][0]
         # sous_dossier_id = self.rows_pg_10_5__prod[0][1]
 
-        vivetic_prestation_id = lg_vv_prest_id__sous_dossier[0][0]
-        sous_dossier_id = lg_vv_prest_id__sous_dossier[0][1]
+        try:
+            vivetic_prestation_id = lg_vv_prest_id__sous_dossier[0][0]
+            sous_dossier_id = lg_vv_prest_id__sous_dossier[0][1]
+        except IndexError:
+            Our_Tools.long_print(num = 10)
+            Our_Tools.print_green(
+                txt = "vivetic_prestation_id, sous_dossier_id"
+                , new_line = False
+            )
+            Our_Tools.print_red(
+                txt = "manquants"
+                , new_line = True
+            )
+            print "Voici la requete pour prendre (vivetic_prestation_id, sous_dossier_id)"
+            print "- ", req_vv_prestation_id__sous_dossier_id
+            sys.exit(0)
+
+
         # print "vivetic_prestation_id: ", vivetic_prestation_id
         # print 'sous_dossier_id: ', sous_dossier_id
 
@@ -2997,14 +3293,225 @@ class Our_Tools(threading.Thread):
 
 
 
-        list_chp_s1 = Our_Tools.read_chp_s1(
+        list_chp_s1 = Our_Tools.read_one_col_of_sheet_xl(
             xl_file = self.sgc_xlsx
-            , sheet_index_s1 = 1
+            , sheet_index_to_read = 1
         )
 
-        print "list_chp_s1", list_chp_s1
+        # print "list_chp_s1", list_chp_s1
+
+        chps_s1_for_query = ""
+        for chp_s1 in list_chp_s1:
+            lg_query = chp_s1 + " character varying, \n"
+            chps_s1_for_query += lg_query
+
+
+        # print "chps_s1_for_query: ", chps_s1_for_query
+        
+
+        chps_c_for_query = chps_s1_for_query
+
+        chps_q_for_query = chps_s1_for_query.replace('numvoie character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('chaine1 character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('numvoie1 character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('chaine2 character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('numvoie2 character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('chaine3 character varying,', '')
+        chps_q_for_query = chps_q_for_query.replace('numvoie3 character varying,', '')
+
+        # print "Ehhh909593484503893902039"
+        # raw_input()
+
+        chps_q_for_query = chps_q_for_query.replace(
+            'pays character varying,', 
+            'pays character varying,\ncode_pays character varying,'
+        )
+
+
+        chps_r_for_query = chps_q_for_query
+
+        self.replace_in_file(
+            path_file_input = self.s1_sql,
+            path_file_output = self.s1_sql_output,
+            replacements = {
+                "____table_prod____": table_prod,
+                "-- miova654321654": chps_s1_for_query
+            }
+        )
+
+
+        self.replace_in_file(
+            path_file_input = self.c_sql,
+            path_file_output = self.c_sql_output,
+            replacements = {
+                "____table_prod____": table_prod,
+                "-- miova654321654": chps_c_for_query
+            }
+        )
+
+        self.replace_in_file(
+            path_file_input = self.q_sql,
+            path_file_output = self.q_sql_output,
+            replacements = {
+                "____table_prod____": table_prod,
+                "-- miova654321654": chps_q_for_query
+            }
+        )
+
+        self.replace_in_file(
+            path_file_input = self.r_sql,
+            path_file_output = self.r_sql_output,
+            replacements = {
+                "____table_prod____": table_prod,
+                "-- miova654321654": chps_r_for_query
+            })
+
+
+        content_s1_sql = Our_Tools.read_file_line_by_line(self.s1_sql_output)
+        content_c_sql = Our_Tools.read_file_line_by_line(self.c_sql_output)
+        content_q_sql = Our_Tools.read_file_line_by_line(self.q_sql_output)
+        content_r_sql = Our_Tools.read_file_line_by_line(self.r_sql_output)
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = content_s1_sql
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = content_c_sql
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = content_q_sql
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = content_r_sql
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+
+
+        # >>>>>>>>>>>>>>>>>> LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> LAVA LAVA ian io methode io aa >>>> Refactorena
+        self.refactor_sgc_operation_codebarre(
+            has_code_barre_operation = has_code_barre_operation
+            , nom_prestation = nom_prestation
+        )
+        # >>>>>>>>>>>>>>>>>> END LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> END LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> END LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> END LAVA LAVA ian io methode io aa >>>> Refactorena
+        # >>>>>>>>>>>>>>>>>> END LAVA LAVA ian io methode io aa >>>> Refactorena
+        
+
+
+
+
+        # operation Referentiel
+        # # tsy ilaina akoor
+
+        # list_var_objet_unique = Our_Tools.read_one_col_of_sheet_xl(
+            # xl_file = self.sgc_xlsx
+            # , sheet_index_to_read = 4
+            # , x = 1
+            # , from_y = 3
+        # )
+# 
+        # list_grp_donnees = Our_Tools.read_one_col_of_sheet_xl(
+            # xl_file = self.sgc_xlsx
+            # , sheet_index_to_read = 4
+            # , x = 2
+            # , from_y = 3
+        # )
+# 
+        # list_code_donnees = Our_Tools.read_one_col_of_sheet_xl(
+            # xl_file = self.sgc_xlsx
+            # , sheet_index_to_read = 4
+            # , x = 3
+            # , from_y = 3
+        # )
+# 
+        # list_valeur = Our_Tools.read_one_col_of_sheet_xl(
+            # xl_file = self.sgc_xlsx
+            # , sheet_index_to_read = 4
+            # , x = 1
+            # , from_y = 3
+        # )
+# 
+        # # print "list_var_unique: ", list_var_objet_unique
+        # # # [u'Canal de Participation', u'Canal de Participation', u'FORF
+# 
+        # list_var_objet_unique = list(set(list_var_objet_unique))
+
+
+
+        # print "list_var_unique: ", list_var_unique
+
+        query_update_passe_s1 = "update passe set tableprod='"+self.table_prod001+"_s1' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape ilike '%SAISIE%';"
+        query_update_passe_c = "update passe set tableprod='"+self.table_prod001+"_c' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='CONTROLE GROUPE';"
+        query_update_passe_q = "update passe set tableprod='"+self.table_prod001+"_q' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='ASSEMBLAGE/UNIFORMISATION';"
+
+        list_queries_upd_passe = [
+            query_update_passe_s1,
+            query_update_passe_c,
+            query_update_passe_q
+        ]
+
+        # END operation Referentiel
+
+
+
+        # m_a_j passe
+
+        query_update_passe_s1 = "UPDATE passe SET tableprod='"+table_prod+"_s1' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='SAISIE 1';"
+        query_update_passe_c = "UPDATE passe SET tableprod='"+table_prod+"_c' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='CONTROLE GROUPE';"
+        query_update_passe_q = "UPDATE passe SET tableprod='"+table_prod+"_q' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='ASSEMBLAGE/UNIFORMISATION';"
+
+        list_queries_upd_passe = [
+            query_update_passe_s1,
+            query_update_passe_c,
+            query_update_passe_q
+        ]
+
+        for q in list_queries_upd_passe:
+            self.pg_not_select(
+                 host = parser.get('pg_10_5_production', 'ip_host')
+                , db = parser.get('pg_10_5_production', 'database')
+                , query01 = q
+                , log_query = True
+                , auto_commit = False
+            )
+            pass
+
+
+        # END m_a_j passe
+        sys.exit(0)
 
         
+
+
+
+
+
 
 
 
@@ -3013,8 +3520,8 @@ class Our_Tools(threading.Thread):
 
         sys.exit(0)
         print "tonga ato334567889990"
-        self.commit_specific(connection = "pg_10_5_production")
-        self.commit_specific(connection = "pg_10_5_sdsi")
+        # self.commit_specific(connection = "pg_10_5_production")
+        # self.commit_specific(connection = "pg_10_5_sdsi")
 
         self.table_prod001 = table_prod
 
@@ -3432,6 +3939,39 @@ where idcommande ilike 'crh%'
         else:
             print "tsis tab code barre"
             pass
+
+    @staticmethod
+    def file_creation_if_missing(
+        path_file = "all_confs.txt"
+    ):
+        if (os.path.exists(path_file)):
+
+            pass
+        else:
+            open(path_file, 'a').close()
+        pass
+
+    def ftp_connection(
+            self
+            , ftp_server = parser.get("ftp_10_13", "ip_server")
+            , ftp_login = parser.get("ftp_10_13", "login")
+            , ftp_pass = parser.get("ftp_10_13", "password")
+    ):
+
+        self.ftp = FTP(ftp_server)
+        self.ftp.login(
+            user = ftp_login
+            , passwd = ftp_pass
+        )
+
+        # Our_Tools.write_append_to_file(
+#             
+        # )
+
+        pass
+
+    def ftp_quit(self):
+        self.ftp.quit()
 
     def export_one_query_select_to_excel(self,
         server001 = parser.get('pg_10_5_production', 'ip_host'),
@@ -4026,7 +4566,7 @@ where idcommande ilike 'crh%'
 
     @staticmethod
     def print_red(
-        txt = "this is a test",
+            txt = "this is a test",
             new_line = True
     ):
         default_colors = get_text_attr()
@@ -4306,6 +4846,13 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'file_creation_if_missing') 
+                ):
+                    Our_Tools.file_creation_if_missing(
+                        path_file = 'super_potatoe.txt'
+                    )
+                    pass
                 elif (
                     (args[0] == 'sequence_sgc') 
                 ):
