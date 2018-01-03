@@ -3291,7 +3291,7 @@ class Our_Tools(threading.Thread):
         req_m_a_j__date = "UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = " + str(vivetic_prestation_id) + " AND description ILIKE '%date%'"
         # print "req_m_a_j__date: ", req_m_a_j__date
 
-        
+
         self.pg_not_select(
             host = parser.get('pg_10_5_production', 'ip_host')
             , db = parser.get('pg_10_5_production', 'database')
@@ -3542,10 +3542,35 @@ class Our_Tools(threading.Thread):
 
         # end m_a_j... table(vivetic_prestation)
 
+
+
+        
+
+        # hnw anle ftp
+
+        
+        # atao copie ilay file_js_s > submit_form_sgcXXXX.js.. jere tsara ilay X am copie_farany
+        # renommena ilay file_js_s_XXX ho lasa submit_form_sgc555.js
+        # alefa any am SFTP ilay submit_form_sgc555.js
+
+        # >>>>> # atao copie ilay file_js_s > submit_form_sgcXXXX.js.. jere tsara ilay X am copie_farany
+        # >>>>> # renommena ilay file_js_s_XXX ho lasa submit_form_sgc555.js
+        Our_Tools.js_sgc_copy_n_send_to_sftp(
+            sous_dossier_id = int(sous_dossier_id)
+        ) 
+        # alefa any am SFTP ilay submit_form_sgc555.js
+
+
+
+
+        # renommena ilay file_js_s_XXX ho lasa submit_form_sgc555.js
+        # alefa any am SFTP ilay submit_form_sgc555.js
+
+
+        # end hnw anle ftp
         # end_sgc
         sys.exit(0)
 
-        
 
 
 
@@ -3553,431 +3578,10 @@ class Our_Tools(threading.Thread):
 
 
 
-
-        
-        
-
-        sys.exit(0)
-        print "tonga ato334567889990"
-        # self.commit_specific(connection = "pg_10_5_production")
-        # self.commit_specific(connection = "pg_10_5_sdsi")
-
-        self.table_prod001 = table_prod
-
-
-        self.path_prog = "E:\\DISK_D\\mamitiana\\kandra\\do_not_erase\\our_tools\\"
-        self.c_sql = self.path_prog + "AG22\\c.sql"
-        self.c_sql_output = self.path_prog + "AG22\\c_output.sql"
-        self.s1_sql = self.path_prog + "AG22\\s1.sql"
-        self.s1_sql_output = self.path_prog + "AG22\\s1_output.sql"
-        self.q_sql = self.path_prog + "AG22\\q.sql"
-        self.q_sql_output = self.path_prog + "AG22\\q_output.sql"
-        self.r_sql = self.path_prog + "AG22\\r.sql"
-        self.r_sql_output = self.path_prog + "AG22\\r_output.sql"
-
-        self.subm_js = "AG22\\submit_form_sfl159.js"
-
-        # apache@10.13
-        # 
-
-        # print "sgc"
-        self.xlsx_descripteur = r"AG22\AG08_DescripteurSaisie.xls"
-        self.xlsx_dsd = r"AG22\AG08_importation Sgc.xls"
-        # fichier dsd = fichier_importation
-        self.ctrl_standard = r"AG22\CONTROLE_STANDARD.sql"
-
-
-
-
-        workbook_read_dsd = xlrd.open_workbook(self.xlsx_dsd)
-
-        sheet_read_dsd = workbook_read_dsd.sheet_by_index(0)
-        #                                          y   x
-        fields_at_s1 = [sheet_read_dsd.cell_value(row, 0) for row in range(1, sheet_read_dsd.nrows)]
-
-        chg_fields_s1 = ' character varying(254), \n'.join(fields_at_s1)
-        chg_fields_s1 += ' character varying(254),\n'
-
-        # print chg_fields_s1
-        # # date_cachet_poste character varying(254),
-        # # civilite character varying(254),
-        # # nom character varying(254),
-        # # prenom character varying(254),
-        # # cp character varying(254),
-        # # ...
-        
-        chg_fields_c = chg_fields_s1
-
-        chg_fields_q = chg_fields_s1.replace('numvoie character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('chaine1 character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('numvoie1 character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('chaine2 character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('numvoie2 character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('chaine3 character varying(254),', '')
-        chg_fields_q = chg_fields_q.replace('numvoie3 character varying(254),', '')
-
-        # print chg_fields_q
-        # mtov am "chg_fields_s1" fa nesorina ny
-        # # (numvoie chaine1 numvoie1 chaine2 numvoie2 chaine3 numvoie3)
-
-        chg_fields_r = chg_fields_q
-
-        self.replace_in_file(
-            path_file_input = self.s1_sql,
-            path_file_output = self.s1_sql_output,
-            replacements = {
-                "____table_prod____": self.table_prod001,
-                "-- miova654321654": chg_fields_s1
-            })
-
-        self.replace_in_file(
-            path_file_input = self.c_sql,
-            path_file_output = self.c_sql_output,
-            replacements = {
-                "____table_prod____": self.table_prod001,
-                "-- miova654321654": chg_fields_c
-            })
-
-        self.replace_in_file(
-            path_file_input = self.q_sql,
-            path_file_output = self.q_sql_output,
-            replacements = {
-                "____table_prod____": self.table_prod001,
-                "-- miova654321654": chg_fields_q
-            })
-
-        self.replace_in_file(
-            path_file_input = self.r_sql,
-            path_file_output = self.r_sql_output,
-            replacements = {
-                "____table_prod____": self.table_prod001,
-                "-- miova654321654": chg_fields_r
-            })
-
-        content_s1_sql = Our_Tools.read_file_line_by_line(self.s1_sql_output)
-        # print content_s1_sql
-        # sys.exit(0)
-
-
-        # try:
-            # self.pg_not_select(
-                    # query01 = content_s1_sql,
-                    # host = "192.168.10.5",
-                    # db = "production")
-# 
-        # except psycopg2.ProgrammingError:
-            # print "programming error"
-# 
-            # txt001 = "On dirait que la table("+self.table_prod001+"_s1) existe deja dans la bdd(production)"
-            # Our_Tools.print_red(
-                # txt = txt001
-            # )
-            # pass
-
-        raw_input("Creation de table("+self.table_prod001+"_s1)")
-        self.create_table_prod(query_prod = content_s1_sql)
-        
-        
-        
-
-
-
-
-
-
-        # raw_input()
-
-        content_c_sql = Our_Tools.read_file_line_by_line(self.c_sql_output)
-        raw_input("Creation de table(" + self.table_prod001 + "_c)")
-        self.create_table_prod(query_prod = content_c_sql)
-        # print content_c_sql
-
-        # raw_input()
-
-        content_q_sql = Our_Tools.read_file_line_by_line(self.q_sql_output)
-        # print content_q_sql
-        raw_input("Creation de table(" + self.table_prod001 + "_q)")
-        self.create_table_prod(query_prod = content_q_sql)
-        
-        txt001 = "Les tables "+self.table_prod001+"_s1, "+self.table_prod001+"_s1, "+self.table_prod001+"_s1"
-        txt001 += " sont creees"
-
-        Our_Tools.print_green(txt001)
-
-        # sys.exit(0)
-        
-
-
-
-
-        query_update_passe_s1 = "update passe set tableprod='"+self.table_prod001+"_s1' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='SAISIE 1';"
-        query_update_passe_c = "update passe set tableprod='"+self.table_prod001+"_c' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='CONTROLE GROUPE';"
-        query_update_passe_q = "update passe set tableprod='"+self.table_prod001+"_q' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='ASSEMBLAGE/UNIFORMISATION';"
-
-        list_queries_upd_passe = [
-            query_update_passe_s1,
-            query_update_passe_c,
-            query_update_passe_q
-        ]
-
-        Our_Tools.long_print()
-        Our_Tools.print_green('Voici le requete de la m_a_j de la table_passe')
-        raw_input('')
-
-        for row in list_queries_upd_passe:
-            print row
-
-        Our_Tools.print_green('Voici les lignes qui vont etre modifiees dans table_passe@sdsi')
-
-        Our_Tools.long_print()
-        Our_Tools.print_green('Voici les requete pour verifier la table_passe')
-        raw_input('')
-        raw_input("")
 
 
         
-        query_select_before_upd_passe_s1 = "select * from passe where idcommande like 'SGC%' and idsousdossier='SAISIE 1'"
-        query_select_before_upd_passe_c = "select * from passe where idcommande like 'SGC%' and idsousdossier='CONTROLE GROUPE'"
-        query_select_before_upd_passe_q = "select * from passe where idcommande like 'SGC%' and idsousdossier='ASSEMBLAGE/UNIFORMISATION'"
-
-        """
-        -- select * from passe where idcommande like 'SGC%' and idetape='SAISIE 1' and idcommande ilike ''
-
--- select distinct idcommande from passe order by idcommande asc;
-
-select 
--- distinct 
-idcommande, idsousdossier
-from passe 
-where idcommande ilike 'crh%' 
--- and idcommande like '%crh%'"""
-
-        self.execute_list_queries_not_select(list_queries_upd_passe)
-
-        # sys.exit(0)
-
-        self.long_print()
-        print "query_update_passe_s1 @ sdsi: \n" + query_update_passe_s1
-        print 
-        print "query_update_passe_c @ sdsi: \n" + query_update_passe_c
-        print 
-        print "query_update_passe_q @ sdsi: \n" + query_update_passe_q
-
-        self.long_print()
-
-        query_prendre_viv_prest_id_sous_doss = "SELECT vivetic_prestation_id, sous_dossier_id "
-        query_prendre_viv_prest_id_sous_doss += " FROM vivetic_prestation "
-        query_prendre_viv_prest_id_sous_doss += "WHERE code_prestation = 'SGC'"
-        query_prendre_viv_prest_id_sous_doss += " AND nom_prestation like '"+self.sous_dossier01+"'"
-        print "query_prendre_viv_prest_id_sous_doss  @ production: "  
-        print query_prendre_viv_prest_id_sous_doss 
-
-
-
-        #ato002
-        # vivetic_prestation_id01 = 1593
-        self.pg_select(
-            query = query_prendre_viv_prest_id_sous_doss,
-            host = "192.168.10.5",
-            database01 = "production"
-            )
-        try:
-            vivetic_prestation_id01 = self.rows_pg_10_5__prod[0][0]
-        except IndexError:
-            self.long_print()
-            Our_Tools.print_red ("N_a pas pu prendre vivetic_prestation_id ET sous_dossier_id")
-            print
-            print "On dirait que l'etape Importation n'est pas encore finit"
-            print
-            Our_Tools.print_green (query_prendre_viv_prest_id_sous_doss)
-            sys.exit(0)
-            pass
-        sous_dossier_id01 = self.rows_pg_10_5__prod[0][1]
-
-        print "vivetic_prestation_id01"
-        print vivetic_prestation_id01
-
-        print "sous_dossier_id01"
-        print sous_dossier_id01
-        # sous_dossier_id01 = 299
-
-        self.long_print()
-
-        query_upd_input_mask = "UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_type_id = 30 "
-        query_upd_input_mask += "AND description ILIKE 'date%' AND vivetic_prestation_id = " + str(vivetic_prestation_id01)
-
-        print "query_upd_input_mask @ production"
-        print query_upd_input_mask
-
-
-        # self.pg_not_select(
-            # query01 = "",            
-            # host = "127.0.0.1",
-            # db = "sdsi"
-        # )
-
-        # sys.exit(0)
-        self.long_print()
-        # print "query_upd_input_mask: "
-        # print query_upd_input_mask
-        # # UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_type = 30 AND description ILIKE 'date%' AND vivetic_prestation_id = 1593
-
-        #ato002
-        print "manao copy anle js... FA mbola TSY renomee... sady mbola en local"
-        # shutil.copy(self.subm_js, self.subm_js + '__')
-
-        subm_js_file_cp = self.subm_js.rsplit('\\', 1)[0] 
-        subm_js_file_cp += '\\'
-        subm_js_file_cp += self.subm_js.rsplit('\\', 1)[1][:-6] 
-        subm_js_file_cp += str(sous_dossier_id01)
-        subm_js_file_cp += self.subm_js.rsplit('\\', 1)[1][-3:] 
-
-        print "subm_js_file_cp: " 
-        print subm_js_file_cp
-        #ato002$
-        print "renomena ilay js_vaovao... mbola en local aa"
-        # os.rename(self.subm_js + '__', subm_js_file_cp)
-
-        path_cp_js_saisie = '/var/www/localhost/htdocs/test/version2/saisie/'
-        path_cp_js_saisie += 'js/submit_script'
-
-        path_cp_js_controle = '/var/www/localhost/htdocs/test/version2/online_controle/'
-        path_cp_js_controle += 'js/submit_script'
         
-        path_cp_js_rejet = '/var/www/localhost/htdocs/test/version2/online_rejet/'
-        path_cp_js_rejet += 'js/submit_script'
-        
-        print "asina anle js_saisie"
-        print path_cp_js_saisie
-        print "mnw copie anle js_saisie"
-        # shutil.copy(subm_js_file_cp, path_cp_js_saisie)
-
-
-        print
-        print
-
-        print "asina anle js_controle"
-        print path_cp_js_controle
-        print "mnw copie anle js_controle"
-        # shutil.copy(subm_js_file_cp, path_cp_js_controle)
-
-        print
-        print
-
-        print "asina anle js_rejet"
-        print path_cp_js_rejet
-        print "mnw copie anle js_rejet"
-        # shutil.copy(subm_js_file_cp, path_cp_js_rejet)
-
-        # for obj, sh_n in Our_Tools.get_xls_tab_name():
-            # print sh_n
-
-        print "vita dol ny copie js mankan am serveur"
-
-
-
-        self.long_print(num = 10)
-        print "ande hnw anle code_barre RAH ohatra ka misy"
-
-        all_tabs_xl_descript = Our_Tools.get_xls_tab_name(
-                path_file_xls = self.xlsx_descripteur
-            )
-
-        # 'code'
-        print 'all_tabs_xl_descript'
-        print all_tabs_xl_descript
-
-        tab_code_barre_num = 0
-        present_tab_code_barre = False
-
-        # ande hitady we misy code_barre v ilay descripteur.xlsx
-        # raw_input('Ande hnw resaka codebarre')
-        for tab01 in all_tabs_xl_descript:
-            if (re.search('code', tab01, re.IGNORECASE)) and (re.search('barre', tab01, re.IGNORECASE)):
-                present_tab_code_barre = True
-                num_tab_code_barre = tab_code_barre_num
-            else:
-                pass
-            tab_code_barre_num += 1
-
-
-        if present_tab_code_barre:
-            print "misy tab code barre"
-
-            print "num_tab_code_barre"
-            print num_tab_code_barre
-            # sys.exit(0)
-
-            workbook_read = xlrd.open_workbook(self.xlsx_descripteur)
-            sheet_read = workbook_read.sheet_by_index(num_tab_code_barre)
-            # print "sheet_read.cell_value(9, 0)"
-            # print sheet_read.cell_value(9, 0)
-            # # 8806088725918
-
-            query_maka_plus_grand_id_code_barre = "SELECT sgc_codebarre_id FROM sgc_codebarre "
-            query_maka_plus_grand_id_code_barre += "WHERE sgc_codebarre_id = "
-            query_maka_plus_grand_id_code_barre += "(SELECT MAX(sgc_codebarre_id) FROM sgc_codebarre)"
-
-            self.pg_select(
-                query = query_maka_plus_grand_id_code_barre,
-                host = "192.168.10.5",
-                database01 = "production"
-            )
-
-            sgc_max_codebarre_id = self.rows_pg_10_5__prod[0][0]
-
-            # print "sgc_max_codebarre_id"
-            # print sgc_max_codebarre_id
-            # # 7464
-            # sys.exit(0)
-
-            print "sheet_read.nrows"
-            print sheet_read.nrows
-            list_code_barre = [sheet_read.cell_value(row, 0) for row in range(0, sheet_read.nrows)]
-
-            # print "datas_code_barre"
-            # print datas_code_barre
-            # # [8806086428293.0, 8806088775883.0, 8806088952, ...
-
-            
-
-            query_insert_codebarre = 'INSERT INTO sgc_codebarre VALUES '
-
-            # print "list_code_barre"
-            # print list_code_barre
-            # sys.exit(0)
-            for code_barre in list_code_barre:
-                # print "type (code_barre)"
-                # print type(code_barre)
-                # print type('{:.0f}'.format(code_barre))
-                # # str
-                # print "type(sgc_max_codebarre_id)"
-                # print type(sgc_max_codebarre_id)
-                # sys.exit(0)
-                sgc_max_codebarre_id = sgc_max_codebarre_id + 1
-                if isinstance(code_barre, float):
-                    query_insert_codebarre +="("+str(sgc_max_codebarre_id)+", '"+'{:.0f}'.format(code_barre)+"', 'AL75'),"
-                elif isinstance(code_barre, unicode):
-                    query_insert_codebarre +="("+str(sgc_max_codebarre_id)+", '"+str(code_barre)+"', 'AL75'),"
-            print "query_insert_codebarre @ production"
-            print query_insert_codebarre
-
-            query_insert_codebarre = query_insert_codebarre[:-1]
-            # # INSERT INTO sgc_codebarre VALUES (7465, '8806086428293', 'AL75'),(746
-
-            # #ato002
-            # self.pg_not_select(
-                # query01 = query_insert_codebarre,
-                # host = "192.168.10.5",
-                # db = "sdsi")
-
-            sys.exit(0)
-
-            print 
-            pass
-        else:
-            print "tsis tab code barre"
-            pass
 
     @staticmethod
     def file_creation_if_missing(
@@ -4026,12 +3630,61 @@ where idcommande ilike 'crh%'
                 # print "DL OK"
 
     @staticmethod
+    def js_sgc_copy_n_send_to_sftp(
+            sous_dossier_id = 456
+            , test001 = True
+    ):
+        file_js_s = 'for_sgc/js_s/submit_form_sgcXXXX.js'
+        file_js_c = 'for_sgc/js_c/submit_form_sgcXXXX.js'
+        file_js_r = 'for_sgc/js_r/submit_form_sgcXXXX.js'
+
+        file_js_s_copy = file_js_s[:-7]
+        # for_sgc/js_s/submit_form_sgcXXXX.js
+        file_js_c_copy = file_js_c[:-7]
+        file_js_r_copy = file_js_r[:-7]
+
+        shutil.copy(file_js_s, file_js_s_copy)
+        shutil.copy(file_js_c, file_js_c_copy)
+        shutil.copy(file_js_r, file_js_r_copy)
+
+
+
+        shutil.copy(file_js_s_copy, file_js_s_copy + str(sous_dossier_id) + ".js")
+        shutil.copy(file_js_c_copy, file_js_c_copy + str(sous_dossier_id) + ".js")
+        shutil.copy(file_js_r_copy, file_js_r_copy + str(sous_dossier_id) + ".js")
+
+        os.remove(file_js_s_copy)
+        os.remove(file_js_c_copy)
+        os.remove(file_js_r_copy)
+
+
+        if test001 == False:
+            Our_Tools.put_to_sftp(
+                ftp_server = parser.get("sftp_13_a", "ip_server")
+                , ftp_login = parser.get("sftp_13_a", "login")
+                , ftp_pass = parser.get("sftp_13_a", "password")
+                , local_file = file_js_s_copy + str(sous_dossier_id) + ".js"
+                , remote_dir = parser.get("sftp_13_a", "dir001")
+                , port = int(parser.get("sftp_13_a", "port"))
+            )
+        else:
+            print "send to sftp: "
+            print "- ftp_server = " + parser.get("sftp_13_a", "ip_server")
+            print "- ftp_login = " + parser.get("sftp_13_a", "login")
+            print "- ftp_password = " + parser.get("sftp_13_a", "password")
+            print "- local_file = " + file_js_s_copy + str(sous_dossier_id) + ".js"
+            print "- remote_dir = " + parser.get("sftp_13_a", "dir001")
+            print "- port = " + parser.get("sftp_13_a", "port")
+        pass
+
+    @staticmethod
     def put_to_sftp(
         ftp_server = parser.get("sftp_32_a", "ip_server")
         , ftp_login = parser.get("sftp_32_a", "login")
         , ftp_pass = parser.get("sftp_32_a", "password")
         , local_file = 'E:\\db_study.sql'
         , remote_dir = '/home/iam/PROD/SOGEC/livraison/AO69/'
+        , port = int(parser.get("sftp_32_a", "port"))
     ):
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None   
@@ -4040,12 +3693,11 @@ where idcommande ilike 'crh%'
                 ftp_server
                 , username=ftp_login
                 , password=ftp_pass
-                , port=22
+                , port=port
                 , cnopts=cnopts
         ) as sftp:
 
             with sftp.cd(remote_dir):
-            # print "Connection OK"
                 sftp.put(local_file)
         
         pass
@@ -4975,6 +4627,11 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_sgc_js') 
+                ):
+                    Our_Tools.js_sgc_copy_n_send_to_sftp()
+                    pass
                 elif (
                     (args[0] == 'prestation_chps') 
                     and (len(sys.argv) != 6)
