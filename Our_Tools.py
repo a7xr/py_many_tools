@@ -2212,7 +2212,17 @@ class Our_Tools(threading.Thread):
         Our_Tools.print_green (txt = "Option: -T update_lot_client_du_cmd")
         print "Pour faire un m_a_j d_un lot_client"
         print "- Un fichier_excel va s_ouvrir et tout va etre dedans"
+
+
+        Our_Tools.long_print(num = 5)
+
+        Our_Tools.print_green (txt = "Option: -T prestation_chps client001 code_prestation001 nom_prestation001")
+        print "Pour afficher le(prestation_id, sous_dossier_id)... et tout les champs du (prestation_id, sous_dossier_id)"
+        print "-"
+        print "- ex: -T SOGEC SGC AQ13"
         
+
+        # end_usage
 
     @staticmethod
     def display_pic(
@@ -3581,7 +3591,66 @@ class Our_Tools(threading.Thread):
 
 
         
+    @staticmethod
+    def operation_livraison(
+        nom_prestation = 'AQ01'
+        , table_prod = 'sgaq01'
+        , date_today = '21 10 2017'
+        , vivetic_prestation_id = '1706'
+    ):
+
+        # mnw copie anle LivraisonXXYY ho lasa LivraisonAQ01
+        # miditra ao anatinle AQ01/
+        # # renommena ilay SGC_XXYY_.. >>> SGC_AQ01_...
+        # # am setup.py
+        # # # SGC_XXYY_... > SGC_AQ01_...
+        # # am SGC_AQ01_... 
+        # # # ##miova32132132132132 > __table_prod__... sgaq13
+        # # # ##miova654987321654987 > __nom_prestation__.... AQ13
+        # # # ##miova_daty3216543213230001 > __date_today__
+        # # # ##miova2314445551122333333 > _vivetic_prestation_id_... 1706
+
+        folder_livr_original = 'for_sgc/Livraison_XXYY'
+        folder_livr_to_manip = folder_livr_original[:-4] + str(nom_prestation)
+        Our_Tools.copy_dir_content(
+            path_src = folder_livr_original
+            , path_target = folder_livr_to_manip
+        )
+
         
+
+        file_setup = folder_livr_to_manip + "/setup.py"
+
+        shutil.copy(file_setup, file_setup + "__")
+        os.remove(file_setup)
+        Our_Tools.replace_in_file(
+            path_file_input = file_setup + '__'
+            , path_file_output = file_setup
+            , replacements = {
+                'XXYY': nom_prestation
+            }
+        )
+        os.remove(file_setup + "__")
+
+        file_livraison = folder_livr_to_manip + "/SGC_XXYY_ASSEMBLAGE.py"
+        shutil.copy(file_livraison, file_livraison + "__")
+        os.remove(file_livraison)
+        Our_Tools.replace_in_file(
+            path_file_input = file_livraison + '__'
+            , path_file_output = file_livraison
+            , replacements = {
+                '##miova32132132132132': table_prod
+                , '##miova654987321654987': nom_prestation
+                , '##miova_daty3216543213230001': date_today
+                , '##miova2314445551122333333': vivetic_prestation_id
+            }
+        )
+        os.remove(file_livraison + "__")
+
+        shutil.copy(file_livraison, file_livraison[:-19] + '_' + nom_prestation + '_ASSEMBLAGE.py')
+        os.remove(file_livraison)
+
+        pass
 
     @staticmethod
     def file_creation_if_missing(
@@ -4627,6 +4696,11 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_copy_dir_sgc') 
+                ):
+                    Our_Tools.operation_livraison()
+                    pass
                 elif (
                     (args[0] == 'test_sgc_js') 
                 ):
