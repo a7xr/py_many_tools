@@ -374,20 +374,94 @@ class Thread001(threading.Thread): # done for Mahaitia_Demand
 
 class Our_Tools(threading.Thread):
 
+    def prestation_chps(
+        self
+        , code_prestation = "SGC"
+        , client = "SOGEC"
+        , nom_prestation = "AQ13"
+    ):
+        # testena we SGC sa SFL ny code_prestation
+        # # si code_prestation == SGC > table_jerena = vivetic_prestation
+        # # si code_prestation == SFL > table_jerena = sgc_prestation
+        # # si code_prestation == autre >> mbola tsy voa_geree
+        #
+        # prestation_id = (client, code_prestation, nom_prestation)
+        # sous_dossier_id = 
+        #
+        # si code_prestation = SGC > vivetic_champs... upto prestation_id
+        # si code_prestation = SFL > sgc_champs... upto prestation_id
+
+        type001 = ""
+        if (code_prestation == 'SGC'):
+            type001 = "vivetic"
+            pass
+        elif (code_prestation == 'SFL'):
+            type001 = "sgc"            
+            pass
+        else:
+            print "Not yet managed"
+            sys.exit(0)
+            pass
+
+        table_jerena = type001 + "_prestation"
+        req_presta_sous_doss = "SELECT "+type001+"_prestation_id AS prestation_id, sous_dossier_id AS sous_dossier_id FROM " + table_jerena + " WHERE nom_prestation = '" + nom_prestation + "' AND client = '" + client + "' AND code_prestation = '" + code_prestation + "' "
+        # print "req_presta_sous_doss: ", req_presta_sous_doss
+        # # req_presta_sous_doss:  SELECT vivetic_prestation_id as prestation_id, sous_dossier_id as sous_dossier_id from vivetic_pr estation where nom_prestation = 'AQ13' and client = 'SOGEC' and code_prestation = 'SGC'
+        prest_id__sous_doss_id = self.pg_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , database01 = parser.get('pg_10_5_production', 'database')
+            , query = req_presta_sous_doss
+            , msg_if_error = ""
+        )
+
+        prestation_id = prest_id__sous_doss_id[0][0]
+        sous_dossier_id = prest_id__sous_doss_id[0][1]
+
+        print "prestation_id: "
+        Our_Tools.print_green (txt = prestation_id)
+        # # 1706
+        print "sous_dossier_id: "
+        Our_Tools.print_green (txt = sous_dossier_id)
+        # # 324
+
+        req_chps = "SELECT * FROM "+type001+"_champs WHERE " + type001 + "_prestation_id = "+ str(prestation_id)+"; "
+
+        chps = self.pg_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , database01 = parser.get('pg_10_5_production', 'database')
+            , query = req_chps
+            , msg_if_error = ""
+        )
+
+        # print "chps6549876531231: ", chps
+        # # [(73415, 'date_cachet_poste', 'Date cachet de
+
+        Our_Tools.long_print(num = 5)
+        for lg_chp in chps:
+            print "Libellee: ", lg_chp[1]
+            print "Description: ", lg_chp[2]
+            print ""
+        pass
+
     def doing_suppr_gpao_unique(
         self
-        , suppr_total = False
+        , suppr_total = 0
         , cmd001 = "cmd001"
         , all_lots = "all_lots01"
     ):
         delete_query_prod001 = "DELETE FROM pli_numerisation WHERE id_lot_numerisation IN "
         delete_query_prod001 += "(SELECT id_lot_numerisation FROM lot_numerisation WHERE "
+
+        print "suppr_total0345676: ", suppr_total
+        print "type(suppr_total): ", type(suppr_total)
+        # raw_input()
+
         if (suppr_total == 0):
             delete_query_prod001 += "lot_scan IN (" + all_lots + ")  AND"
         delete_query_prod001 +=" idcommande_reception IN ('"+cmd001+"','0"+cmd001+"'));"
         
-
-
+        print "delete_query_prod001654987987: ", delete_query_prod001
+        # raw_input()
 
         delete_query_prod002 = "DELETE FROM pli_numerisation_anomalie WHERE id_lot_numerisation IN "
         delete_query_prod002 += "(SELECT id_lot_numerisation FROM lot_numerisation where "
@@ -428,18 +502,19 @@ class Our_Tools(threading.Thread):
         i = 0
         for query_prod in list_query_delete_prod:
             # print "delete_query_prod00"+ str(i) +": " + query_prod
-            self.logging_n_print( 
-                txt = query_prod + "\n", 
-                type_log = "info"
-            )
+            # self.logging_n_print( 
+                # txt = query_prod + "\n", 
+                # type_log = "info"
+            # )
 
-            #eto
+            
             self.pg_not_select(
                 query01 = query_prod,
                 host = "192.168.10.5",
                 db = "production",
                 log_query = True
                 , auto_commit = True
+                , test001 = False
             )
 
             i += 1
@@ -492,9 +567,9 @@ class Our_Tools(threading.Thread):
 # 
 
          """
-        self.logging_n_print( 
-            txt = txt001 ,
-            type_log = "info")
+        # self.logging_n_print( 
+            # txt = txt001 ,
+            # type_log = "info")
         for query_sdsi in list_query_delete_sdsi:
             # print "delete_query_sdsi00"+ str(i) +": " + query_sdsi
             # self.logging_n_print( 
@@ -504,11 +579,12 @@ class Our_Tools(threading.Thread):
 
             #eto
             self.pg_not_select(
-                query01 = query_sdsi,
-                host = "192.168.10.5",
-                db = "sdsi",
-                log_query = True
+                query01 = query_sdsi
+                , host = parser.get('pg_10_5_sdsi', 'ip_host')
+                , db = parser.get('pg_10_5_sdsi', 'database')
+                , log_query = True
                 , auto_commit = True
+                , test001 = False
             )
 
             # i += 1
@@ -517,9 +593,9 @@ class Our_Tools(threading.Thread):
 
 
         long_void = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
-        self.logging_n_print( 
-            txt = long_void,
-            type_log = "info")
+        # self.logging_n_print( 
+            # txt = long_void,
+            # type_log = "info")
 
         print long_void
         print "Fin"
@@ -528,38 +604,38 @@ class Our_Tools(threading.Thread):
 
     def select_after_suppr_gpao_unique(
             self
-            , suppr_total = False
+            , suppr_total = 0
             , cmd001 = "cmd001"
             , all_lots = "all_lots01"
         ):
 
         sel_req_prod001 = "SELECT * FROM pli_numerisation WHERE id_lot_numerisation IN  (SELECT id_lot_numerisation FROM lot_numerisation WHERE "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_prod001 += "lot_scan IN (" + all_lots + ") AND"
         sel_req_prod001 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
         sel_req_prod002 = "select * from pli_numerisation_anomalie where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_prod002 += "lot_scan IN (" + all_lots + ") AND"
         sel_req_prod002 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
         sel_req_prod003 = "select * from image_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_prod003 += "lot_scan IN (" + all_lots + ") AND"
         sel_req_prod003 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
 
         sel_req_prod004 = "select * from fichesuiveuse_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_prod004 += "lot_scan IN (" + all_lots + ") AND"
         sel_req_prod004 += " idcommande_reception IN ('" + cmd001 + "'));"
 
 
         sel_req_prod005 = "select * from lot_numerisation where id_lot_numerisation in  (select id_lot_numerisation from lot_numerisation where "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_prod005 += "lot_scan IN (" + all_lots + ") AND"
         sel_req_prod005 += " idcommande_reception IN ('" + cmd001 + "'));"
 
@@ -587,32 +663,26 @@ class Our_Tools(threading.Thread):
 
 
         sel_req_sdsi001 = "SELECT * FROM pousse WHERE idprep IN (SELECT idprep FROM fichier WHERE "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_sdsi001 += "lot_client IN (" + all_lots + ") AND "
         sel_req_sdsi001 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
 
 
         sel_req_sdsi002 = "select * from fichierimage where idprep in (select idprep from fichier where "
-        if suppr_total == False:
+        if suppr_total == 0:
             sel_req_sdsi002 += "lot_client IN (" + all_lots + ") AND "
         sel_req_sdsi002 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
 
-        sel_req_sdsi003 = "select * from fichierimage where idprep in (select idprep from fichier where "
-        if suppr_total == False:
+        sel_req_sdsi003 = "select * from preparation where idprep in (select idprep from fichier where "
+        if suppr_total == 0:
             sel_req_sdsi003 += "lot_client IN (" + all_lots + ") AND "
         sel_req_sdsi003 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
 
 
-        sel_req_sdsi004 = "select * from fichierimage where idprep in (select idprep from fichier where "
-        if suppr_total == False:
+        sel_req_sdsi004 = "select * from fichier where idprep in (select idprep from fichier where "
+        if suppr_total == 0:
             sel_req_sdsi004 += "lot_client IN (" + all_lots + ") AND "
         sel_req_sdsi004 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
-
-
-        sel_req_sdsi005 = "select * from fichierimage where idprep in (select idprep from fichier where "
-        if suppr_total == False:
-            sel_req_sdsi005 += "lot_client IN (" + all_lots + ") AND "
-        sel_req_sdsi005 += "idcommande IN ('"+cmd001+"', '0"+cmd001+"'));"
 
 
 
@@ -622,13 +692,12 @@ class Our_Tools(threading.Thread):
             , sel_req_sdsi002
             , sel_req_sdsi003
             , sel_req_sdsi004
-            , sel_req_sdsi005
         ]
 
 
 
         for req_select_sdsi in list_sel_req_sdsi:
-            txt_to_add001 = "sdsi@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": " + req_select_sdsi
+            txt_to_add001 = "sdsi@" + parser.get('pg_10_5_sdsi', 'ip_host') + ": \n" + req_select_sdsi
             Our_Tools.write_append_to_file(
                 path_file = self.log_query_db,
                 txt_to_add = txt_to_add001
@@ -1534,7 +1603,8 @@ class Our_Tools(threading.Thread):
     def suppression_gpao_unique(
             self
             , save_check_query = False
-            , suppr_total = 0):
+            , suppr_total = 0
+    ):
         print "suppression_gpao_unique"
         # print "parser.get('pg_10_5_production', 'ip_host')"
         # print parser.get('pg_10_5_production', 'ip_host')
@@ -1698,15 +1768,16 @@ class Our_Tools(threading.Thread):
         #######################################################
         #######################################################
         #######################################################
+        
         self.doing_suppr_gpao_unique(
-            suppr_total = False
+            suppr_total = suppr_total
             , cmd001 = cmd001
             , all_lots = all_lots
         )
 
         if save_check_query:
             self.select_after_suppr_gpao_unique(
-                suppr_total = False
+                suppr_total = suppr_total
                 , cmd001 = cmd001
                 , all_lots = all_lots
             )
@@ -1787,10 +1858,10 @@ class Our_Tools(threading.Thread):
             # print "list_nom_code_barre: ", list_nom_code_barre
 
             # max_code_barre_id_plus_1
-            req_code_barre = "insert into sgc_codebarre values ('"
+            req_code_barre = "insert into sgc_codebarre values '"
 
             for i in list_numero_code_barre:
-                req_code_barre += str (max_code_barre_id_plus_1) + "', '" + i + "', '"+ nom_prestation + "'),\n"
+                req_code_barre += "('"+str (max_code_barre_id_plus_1) + "', '" + i + "', '"+ nom_prestation + "'),\n"
                 max_code_barre_id_plus_1 += 1
                 pass
             req_code_barre = req_code_barre[:-2]
@@ -1839,9 +1910,11 @@ class Our_Tools(threading.Thread):
                 self.cursor_pg_10_5__bdd_sdsi = self.connect_pg_10_5_sdsi.cursor()
                 print "Connection OK au pg10.5 bdd(sdsi)"
 
-            self.cursor_pg_10_5__bdd_sdsi.execute(query01.encode('ISO-8859-1'))
+            if test001 == False:
+                self.cursor_pg_10_5__bdd_sdsi.execute(query01.encode('ISO-8859-1'))
 
             if (auto_commit == True):
+                print "Commited SDSI"
                 self.connect_pg_10_5_sdsi.commit()
                 pass
             else:
@@ -1866,7 +1939,8 @@ class Our_Tools(threading.Thread):
                 self.cursor_pg_localhost_saisie = self.connect_pg_localhost_saisie.cursor()
                 print "Connection ok au bdd(saisie)@localhost"
 
-            self.cursor_pg_localhost_saisie.execute(query01.encode('ISO-8859-1'))
+            if test001 == False:
+                self.cursor_pg_localhost_saisie.execute(query01.encode('ISO-8859-1'))
             
 
             pass
@@ -1919,10 +1993,11 @@ class Our_Tools(threading.Thread):
             # print "Execute2334579944678906453"
             if test001 == False:
                 self.cursor_pg_10_5__bdd_prod.execute(query01.encode('ISO-8859-1'))
+                print 'test == False'
 
 
             if (auto_commit == True):
-                # print "Commit12347689997654"
+                print "Commit12347689997654"
                 self.connect_pg_10_5__prod.commit()
                 pass
             else:
@@ -3216,6 +3291,7 @@ class Our_Tools(threading.Thread):
         req_m_a_j__date = "UPDATE vivetic_champs SET input_mask = '99/99/9999' WHERE vivetic_prestation_id = " + str(vivetic_prestation_id) + " AND description ILIKE '%date%'"
         # print "req_m_a_j__date: ", req_m_a_j__date
 
+        
         self.pg_not_select(
             host = parser.get('pg_10_5_production', 'ip_host')
             , db = parser.get('pg_10_5_production', 'database')
@@ -3425,76 +3501,22 @@ class Our_Tools(threading.Thread):
 
 
 
-        # operation Referentiel
-        # # tsy ilaina akoor
-
-        # list_var_objet_unique = Our_Tools.read_one_col_of_sheet_xl(
-            # xl_file = self.sgc_xlsx
-            # , sheet_index_to_read = 4
-            # , x = 1
-            # , from_y = 3
-        # )
-# 
-        # list_grp_donnees = Our_Tools.read_one_col_of_sheet_xl(
-            # xl_file = self.sgc_xlsx
-            # , sheet_index_to_read = 4
-            # , x = 2
-            # , from_y = 3
-        # )
-# 
-        # list_code_donnees = Our_Tools.read_one_col_of_sheet_xl(
-            # xl_file = self.sgc_xlsx
-            # , sheet_index_to_read = 4
-            # , x = 3
-            # , from_y = 3
-        # )
-# 
-        # list_valeur = Our_Tools.read_one_col_of_sheet_xl(
-            # xl_file = self.sgc_xlsx
-            # , sheet_index_to_read = 4
-            # , x = 1
-            # , from_y = 3
-        # )
-# 
-        # # print "list_var_unique: ", list_var_objet_unique
-        # # # [u'Canal de Participation', u'Canal de Participation', u'FORF
-# 
-        # list_var_objet_unique = list(set(list_var_objet_unique))
-
-
-
-        # print "list_var_unique: ", list_var_unique
-
-        query_update_passe_s1 = "update passe set tableprod='"+self.table_prod001+"_s1' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape ilike '%SAISIE%';"
-        query_update_passe_c = "update passe set tableprod='"+self.table_prod001+"_c' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='CONTROLE GROUPE';"
-        query_update_passe_q = "update passe set tableprod='"+self.table_prod001+"_q' where idcommande like 'SGC%' and idsousdossier='"+self.sous_dossier01+"' and idetape='ASSEMBLAGE/UNIFORMISATION';"
-
-        list_queries_upd_passe = [
-            query_update_passe_s1,
-            query_update_passe_c,
-            query_update_passe_q
-        ]
-
-        # END operation Referentiel
-
-
-
         # m_a_j passe
 
-        query_update_passe_s1 = "UPDATE passe SET tableprod='"+table_prod+"_s1' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='SAISIE 1';"
-        query_update_passe_c = "UPDATE passe SET tableprod='"+table_prod+"_c' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='CONTROLE GROUPE';"
-        query_update_passe_q = "UPDATE passe SET tableprod='"+table_prod+"_q' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape='ASSEMBLAGE/UNIFORMISATION';"
+        query_update_passe_s1 = "UPDATE passe SET tableprod='"+table_prod+"_s1' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape ilike '%SAISIE%';"
+        query_update_passe_c = "UPDATE passe SET tableprod='"+table_prod+"_c' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape ilike '%CONTROLE GROUPE%';"
+        query_update_passe_q = "UPDATE passe SET tableprod='"+table_prod+"_q' WHERE idcommande LIKE 'SGC%' AND idsousdossier='"+ nom_prestation +"' AND idetape ilike '%ASSEMBLAGE%';"
 
         list_queries_upd_passe = [
-            query_update_passe_s1,
-            query_update_passe_c,
-            query_update_passe_q
+            query_update_passe_s1
+            , query_update_passe_c
+            , query_update_passe_q
         ]
 
         for q in list_queries_upd_passe:
             self.pg_not_select(
-                 host = parser.get('pg_10_5_production', 'ip_host')
-                , db = parser.get('pg_10_5_production', 'database')
+                 host = parser.get('pg_10_5_sdsi', 'ip_host')
+                , db = parser.get('pg_10_5_sdsi', 'database')
                 , query01 = q
                 , log_query = True
                 , auto_commit = False
@@ -3503,6 +3525,24 @@ class Our_Tools(threading.Thread):
 
 
         # END m_a_j passe
+
+        # m_a_j... table(vivetic_prestation)
+
+        req_m_a_j__vv_prestation = "update vivetic_prestation set table_prod = " + table_prod + " where vivetic_prestation_id = " + str(vivetic_prestation_id)
+        print "req_m_a_j__vv_prestation; ", req_m_a_j__vv_prestation
+
+        self.pg_not_select(
+            host = parser.get('pg_10_5_production', 'ip_host')
+            , db = parser.get('pg_10_5_production', 'database')
+            , query01 = req_m_a_j__vv_prestation
+            , log_query = True
+            , auto_commit = False
+            , test001 = True
+        )
+
+        # end m_a_j... table(vivetic_prestation)
+
+        # end_sgc
         sys.exit(0)
 
         
@@ -3992,7 +4032,6 @@ where idcommande ilike 'crh%'
         , ftp_pass = parser.get("sftp_32_a", "password")
         , local_file = 'E:\\db_study.sql'
         , remote_dir = '/home/iam/PROD/SOGEC/livraison/AO69/'
-    
     ):
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None   
@@ -4882,7 +4921,7 @@ def main():
                 and (sys.argv[1] == '-s')
                 and (sys.argv[2] == '--total')
             ):
-                # print "suppr_total"
+                print "suppr_total"
                 # sys.exit(0)
                 script001 = Our_Tools()
                 script001.suppression_gpao_unique(
@@ -4936,6 +4975,23 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'prestation_chps') 
+                    and (len(sys.argv) != 6)
+                ):
+                    print "Argument manquants"
+                    pass
+                elif (
+                    (args[0] == 'prestation_chps') 
+                    and (len(sys.argv) == 6)
+                ):
+                    our_tools = Our_Tools()
+                    our_tools.prestation_chps(
+                        client = sys.argv[3]
+                        , code_prestation = sys.argv[4]
+                        , nom_prestation = sys.argv[5]
+                    )
+                    pass
                 elif (
                     (args[0] == 'test_sftp003') 
                 ):
