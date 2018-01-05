@@ -3099,14 +3099,13 @@ class Our_Tools(threading.Thread):
         sheet_interdependance = workbook_write.add_worksheet('Interdependance')
         sheet_code_barre = workbook_write.add_worksheet('Code Barre')
         sheet_referentiel = workbook_write.add_worksheet('Referentiel')
+        sheet_livraison_sgc = workbook_write.add_worksheet('Champs Livraison SGC')
 
         cell_format_union = workbook_write.add_format({'align': 'center',
             'valign': 'vcenter',
             'border': 1}
         )
-        sheet_config_sgc.merge_range('E1:H1', "", 
-            cell_format_union)
-
+        sheet_config_sgc.merge_range('E1:H1', "", cell_format_union)
 
         ################ Mameno anle libelle anle sheet_config_sgc
 
@@ -3117,6 +3116,8 @@ class Our_Tools(threading.Thread):
         sheet_config_sgc.write(5, 0, 'Table Prod ', header_format_blue)
 
         sheet_config_sgc.write(7, 0, 'Existance de Traitement Code Barre ', header_format_blue)
+        sheet_config_sgc.merge_range('C8:F8', "", cell_format_union)
+        sheet_config_sgc.merge_range('C9:F9', "", cell_format_union)
         sheet_config_sgc.write(7, 2, '1 si il y a Code_Barre aa faire... 0 Sinon ', header_format_blue)
         sheet_config_sgc.write(8, 0, 'Traitement Interdependance Automatique ', header_format_blue)
         sheet_config_sgc.write(8, 2, '1 si OUI... 0 si NON', header_format_blue)
@@ -3125,6 +3126,7 @@ class Our_Tools(threading.Thread):
         sheet_config_sgc.write(11, 0, 'sous_dossier_id', header_format_blue)
 
         sheet_config_sgc.set_column('A:A', 40)
+        sheet_config_sgc.set_column('B:B', 30)
 
         ################ END Mameno anle libelle anle sheet_config_sgc
 
@@ -3195,7 +3197,13 @@ class Our_Tools(threading.Thread):
 
         ################ END Mameno anle libelle anle sheet_referentiel
 
+        ################ Mameno anle libelle anle sheet_livraison_sgc
+        sheet_livraison_sgc.merge_range('E1:M1', "", cell_format_union )
+        sheet_livraison_sgc.merge_range('A3:C3', "", cell_format_union)
+        sheet_livraison_sgc.write(0, 4, 'Les Champs pour requete Livraison_SGC', header_format_red)
+        sheet_livraison_sgc.write(2, 0, 'Commencez juste en bas', header_format_blue)
 
+        ################ END Mameno anle libelle anle sheet_livraison_sgc
 
         # workbook_write.save("test76344.xlsx")
         workbook_write.close()
@@ -3568,32 +3576,91 @@ class Our_Tools(threading.Thread):
         Our_Tools.js_sgc_copy_n_send_to_sftp(
             sous_dossier_id = int(sous_dossier_id)
         ) 
-        # alefa any am SFTP ilay submit_form_sgc555.js
+        
+        self.operation_livraison(
+            xl_file = self.sgc_xlsx
+            , nom_prestation = nom_prestation
+            , table_prod = table_prod
+            , date_today = '21 10 2017'
+            , vivetic_prestation_id = vivetic_prestation_id
+        )
 
-
-
-
-        # renommena ilay file_js_s_XXX ho lasa submit_form_sgc555.js
-        # alefa any am SFTP ilay submit_form_sgc555.js
-
-
-        # end hnw anle ftp
         # end_sgc
         sys.exit(0)
 
 
 
 
+    @staticmethod
+    def delete_uniq_elem_in_list(
+        list001 = ['a', 'b']
+        , val_to_del = 'a'
+    ):
+        del list001 [
+            Our_Tools.get_index_of_unique_elem_in_list(
+                    list001 = list001
+                    , val_to_search = val_to_del
+                )
+        ]
+        return list001
+        pass
 
 
+    @staticmethod
+    def get_index_of_unique_elem_in_list(
+        list001 = [4, 5, 6]
+        , val_to_search = 4
+    ):
+        return [i for i,x in enumerate(list001) if x == val_to_search][0]
+            
+    @staticmethod
+    def do_sql_export_livraison_sgc(
+        chps_livraison = [
+            'date_cachet_poste', 'civilite', 'nom', 'prenom', 'adr1', 'adr2', 'adr3', 'adr4', 'cp', 'ville', 'code_pays', 'email', 'mobile', 'j_accepte_de_recevoir', 'remboursement_timbre', 'presence_facture_ou_tc', 'presence_enseigne', 'presence_achat_etui', 'date_sur_ticket_de_caisse', 'montant_ttc_etui', 'montant_ht_etui', 'presence_code_barre_etui', 'original_code_barre_etui', 'saisie_code_barre_etui', 'iban', 'bic', 'presence_bulletin', 'codage_facture', 'codage_forfait', 'index_image'
+        ]
+        , step = 'exporter_1'
+    ):
+        res = ''
+        if step == 'exporter_1':    ##miova55544466656465   ##miova77778892223534355
+            del chps_livraison[
+                Our_Tools.get_index_of_unique_elem_in_list(
+                    list001 = chps_livraison
+                    , val_to_search = 'code_pays'
+                )
+            ]
+            for chp in chps_livraison:
+                res += '            sqlExport += "\\"'+ chp + '\\","\n'
+                pass
+            return res
 
+        elif step == 'onExtract_1':     ##miova56632266440012120133255
+            for chp in chps_livraison:
+                res += '        sqlExport += "\\"'+ chp + '\\","\n'
+                pass
+            return res
+            pass
 
+        elif step == 'onExtract_2':     ##miova688764532134445669987
+            # this is going to be a challenge
+            for chp in chps_livraison:
+                res += '        sqlExport += "\\"'+ chp + '\\","\n'
+                pass
+            res += 'Extraction_002'
+            return res
+            pass
+
+        else:
+            print 'Not managed 2788890044333'
+
+        pass
 
 
         
-    @staticmethod
+    
     def operation_livraison(
-        nom_prestation = 'AQ01'
+        self
+        , xl_file = 'sgc_setting001.xlsx'
+        , nom_prestation = 'AQ01'
         , table_prod = 'sgaq01'
         , date_today = '21 10 2017'
         , vivetic_prestation_id = '1706'
@@ -3605,10 +3672,10 @@ class Our_Tools(threading.Thread):
         # # am setup.py
         # # # SGC_XXYY_... > SGC_AQ01_...
         # # am SGC_AQ01_... 
-        # # # ##miova32132132132132 > __table_prod__... sgaq13
-        # # # ##miova654987321654987 > __nom_prestation__.... AQ13
-        # # # ##miova_daty3216543213230001 > __date_today__
-        # # # ##miova2314445551122333333 > _vivetic_prestation_id_... 1706
+        # # # ##miova_table_prod_32132132132132 > __table_prod__... sgaq13
+        # # # ##miova_nom_prestation_654987321654987 > __nom_prestation__.... AQ13
+        # # # ##miova_date_3216543213230001 > __date_today__
+        # # # ##miova_prestat_id2314445551122333333 > _vivetic_prestation_id_... 1706
 
         folder_livr_original = 'for_sgc/Livraison_XXYY'
         folder_livr_to_manip = folder_livr_original[:-4] + str(nom_prestation)
@@ -3639,16 +3706,85 @@ class Our_Tools(threading.Thread):
             path_file_input = file_livraison + '__'
             , path_file_output = file_livraison
             , replacements = {
-                '##miova32132132132132': table_prod
-                , '##miova654987321654987': nom_prestation
-                , '##miova_daty3216543213230001': date_today
-                , '##miova2314445551122333333': vivetic_prestation_id
+                '##miova_table_prod_32132132132132': table_prod
+                , '##miova_nom_prestation_654987321654987': nom_prestation
+                , '##miova_date_3216543213230001': date_today
+                , '##miova_prestat_id2314445551122333333': str(vivetic_prestation_id)
             }
         )
         os.remove(file_livraison + "__")
 
         shutil.copy(file_livraison, file_livraison[:-19] + '_' + nom_prestation + '_ASSEMBLAGE.py')
         os.remove(file_livraison)
+
+
+
+
+        # mnw resaka livraison_sgc
+        # # mnw anle resaka sqlExport@def_exporter(...)
+        # # alaina dol loo ny chps pour livraison
+        # tadidio fa am def_exporter() dia code_pays IRERY no ao
+        chps_livraison = Our_Tools.read_one_col_of_sheet_xl(
+                xl_file = xl_file
+                , sheet_index_to_read = 5
+                , x = 0
+                , from_y = 3
+        )
+        # print "chps_livraison: ", chps_livraison
+        # # [u'chp11', u'chp12', u'chp13', u'chp14', u', ...
+
+
+        # esorina tao anaty chps_livraison ny code_pays
+        
+
+        ##miova55544466656465
+        ##miova77778892223534355
+        chps_livraison_exporter_1 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'exporter_1'
+        )
+        # print "chps_livraison_exporter_1: " + str(chps_livraison_exporter_1)
+        # # sqlExport += "\"chp02\","
+        # # # ...
+        # # sqlExport += "\"chp09\","
+
+        ##miova56632266440012120133255
+        chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'onExtract_1'
+        )
+        
+        ##miova688764532134445669987
+        chps_livraison_extraction_2 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'onExtract_2'
+        )
+
+
+        file_livraison_01 = 'for_sgc/Livraison_' + nom_prestation + '/SGC_' + nom_prestation + '_ASSEMBLAGE.py'
+        # # for_sgc/Livraison_AQ01/SGC_AQ01_ASSEMBLAGE.py
+        shutil.copy(file_livraison_01, file_livraison_01 + "__")
+        os.remove(file_livraison_01)
+        self.replace_in_file(
+            path_file_input = file_livraison_01 + "__",
+            path_file_output = file_livraison_01,
+            replacements = {
+                "##miova56632266440012120133255": str(chps_livraison_extraction_1)
+                , "##miova688764532134445669987": str(chps_livraison_extraction_2)
+                , "##miova55544466656465": str(chps_livraison_exporter_1)
+                , "##miova77778892223534355": str(chps_livraison_exporter_1)
+            }
+        )
+
+        os.remove(file_livraison_01 + "__")
+        # shutil.copy(file_livraison, file_livraison[:-19] + '_' + nom_prestation + '_ASSEMBLAGE.py')
+        # os.remove(file_livraison_01)
+
+
+        
+
+
+        # end mnw resaka livraison_sgc
 
         pass
 
