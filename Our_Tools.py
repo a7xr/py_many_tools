@@ -3613,16 +3613,36 @@ class Our_Tools(threading.Thread):
 
 
     @staticmethod
+    def delete_uniq_elem_in_list_v01(
+        list_content = ['a', 'b', 'c']
+        , val_to_del = 'a'
+    ):
+
+        try:
+            index_val_to_del = list_content.index(val_to_del)
+            del list_content[index_val_to_del]
+            return list_content
+        except Exception as e:
+            # print e
+            return list_content
+            pass
+
+        pass
+
+    @staticmethod
     def delete_uniq_elem_in_list(
         list001 = ['a', 'b']
         , val_to_del = 'a'
     ):
+        
+        list001.insert(0, 'tmp1315458997')
         del list001 [
             Our_Tools.get_index_of_unique_elem_in_list(
                     list001 = list001
                     , val_to_search = val_to_del
-                )
+            )
         ]
+        del list001 [ 0 ]
         return list001
         pass
 
@@ -3633,13 +3653,14 @@ class Our_Tools(threading.Thread):
         , val_to_search = 4
     ):
         # print 'list001_65464987: ', list001
+        # list001.insert(0, 'tmp1315458997')
         try:
             res = [i for i,x in enumerate(list001) if x == val_to_search][0]
         except IndexError:
-            print 'tik tak doo... 6548979865465'
-            raw_input()
+            # print 'tik tak doo... 6548979865465'
+            # raw_input()
 
-            res = 5000000
+            res = 0
         return res
             
     @staticmethod
@@ -3678,18 +3699,24 @@ class Our_Tools(threading.Thread):
             # # # date_cachet_poste, civilite, nom, prenom, adr1, adr2, adr3, adr4, cp, ville, pays, email1,
 
 
-            del chps_livraison[
-                Our_Tools.get_index_of_unique_elem_in_list(
-                    list001 = chps_livraison
-                    , val_to_search = 'date_cachet_poste'
-                )
-            ]
-            del chps_livraison[
-                Our_Tools.get_index_of_unique_elem_in_list(
-                    list001 = chps_livraison
-                    , val_to_search = 'civilite'
-                )
-            ]
+
+
+
+
+
+            # del chps_livraison[
+                # Our_Tools.get_index_of_unique_elem_in_list(
+                    # list001 = chps_livraison
+                    # , val_to_search = 'date_cachet_poste'
+                # )
+            # ]
+            # del chps_livraison[
+                # Our_Tools.get_index_of_unique_elem_in_list(
+                    # list001 = chps_livraison
+                    # , val_to_search = 'civilite'
+                # )
+            # ]
+
 
             # chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list(
                 # list_content = chps_livraison
@@ -3699,6 +3726,13 @@ class Our_Tools(threading.Thread):
                     # 'cp', 'ville', 'pays', 'email'
                 # ]
             # )
+
+            chps_livraison = Our_Tools.delete_uniq_elem_in_list_v01(
+                list_content = chps_livraison
+                , val_to_del = 'date_cachet_poste'
+            )
+
+
             
             for chp in chps_livraison:
                 res += '        sqlExport += "\\"'+ chp + '\\","\n'
@@ -4919,6 +4953,27 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_delete_uniq_elem_in_list_v01') # misy erreur
+                ):
+                    a = Our_Tools.delete_uniq_elem_in_list_v01(
+                        list_content = [3, 4, 5, 6]
+                        , val_to_del = 3
+                    )
+
+                    print a
+                    pass
+                elif (
+                    (args[0] == 'test_delete_uniq_elem_in_list') # misy erreur
+                ):
+                    o = Our_Tools.delete_uniq_elem_in_list(
+                        list001 = [2, 3, 4, 5, 6]
+                        , val_to_del = 'R'
+                    )
+
+                    print o
+
+                    pass
                 elif (
                     (args[0] == 'test_copy_dir_sgc') 
                 ):
