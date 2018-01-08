@@ -1798,6 +1798,7 @@ class Our_Tools(threading.Thread):
         , sheet_index = 0
         , y = 2
         , x = 0
+        , give_default_value_if_void = 1
     ):
         workbook_read = xlrd.open_workbook(xl_file)
         sheet_read = workbook_read.sheet_by_index(sheet_index)
@@ -1807,6 +1808,8 @@ class Our_Tools(threading.Thread):
             res = sheet_read.cell_value(y, x)
             if isinstance(res, float):
                 res = '{:.0f}'.format(res)
+            if give_default_value_if_void == 1:
+                res = 'Default'
             return res
         except IndexError:
             msg = "Valeur manquant pour fichier(" + xl_file + "), tab_index("+ sheet_index +")" + ", y = " + y + ", x = " + x
@@ -3590,6 +3593,22 @@ class Our_Tools(threading.Thread):
 
 
 
+    @staticmethod
+    def delete_list_of_uniq_elem_in_list(
+        list_content = ['a', 'b', 'c', 'd', 'e', 'f']
+        , list_to_del = ['a', 'f']
+    ):
+        for val_to_del in list_to_del:
+            del list_content [
+                Our_Tools.get_index_of_unique_elem_in_list(
+                        list001 = list_content
+                        , val_to_search = val_to_del
+                )
+            ]
+            pass
+        return list_content
+        pass
+
 
     @staticmethod
     def delete_uniq_elem_in_list(
@@ -3621,7 +3640,7 @@ class Our_Tools(threading.Thread):
         , step = 'exporter_1'
     ):
         res = ''
-        if step == 'exporter_1':    ##miova55544466656465   ##miova77778892223534355
+        if step == 'exporter_1':    ##miova_exporter_1_569160   ##miova_exporter_1_7576189
             del chps_livraison[
                 Our_Tools.get_index_of_unique_elem_in_list(
                     list001 = chps_livraison
@@ -3633,19 +3652,35 @@ class Our_Tools(threading.Thread):
                 pass
             return res
 
-        elif step == 'onExtract_1':     ##miova56632266440012120133255
+        elif step == 'onExtract_1':     ##miova_extract_1_56632266440012120133255
             for chp in chps_livraison:
                 res += '        sqlExport += "\\"'+ chp + '\\","\n'
                 pass
             return res
             pass
 
-        elif step == 'onExtract_2':     ##miova688764532134445669987
+        elif step == 'onExtract_2':     ##miova_extract_2_68876453213444
             # this is going to be a challenge
+            # # mail miakatra tsy miova
+            # # apres mail no mtov amle exporter_1
+            # # ireto dia esorina 
+            # # # date_cachet_poste, civilite, nom, prenom, adr1, adr2, adr3, adr4, cp, ville, pays, email1,
+
+            chps_livraison = Our_Tools.delete_uniq_elem_in_list
+
+            chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list(
+                list_content = chps_livraison
+                , list_to_del = [
+                    'date_cachet_poste', 'civilite', 'nom', 'prenom', 
+                    'adr1', 'adr2', 'adr3', 'adr4', 
+                    'cp', 'ville', 'pays', 'email'
+                ]
+            )
+            
             for chp in chps_livraison:
                 res += '        sqlExport += "\\"'+ chp + '\\","\n'
                 pass
-            res += 'Extraction_002'
+            # res += 'Extraction_002'
             return res
             pass
 
@@ -3676,6 +3711,7 @@ class Our_Tools(threading.Thread):
         # # # ##miova_nom_prestation_654987321654987 > __nom_prestation__.... AQ13
         # # # ##miova_date_3216543213230001 > __date_today__
         # # # ##miova_prestat_id2314445551122333333 > _vivetic_prestation_id_... 1706
+        # # # ##
 
         folder_livr_original = 'for_sgc/Livraison_XXYY'
         folder_livr_to_manip = folder_livr_original[:-4] + str(nom_prestation)
@@ -3702,6 +3738,32 @@ class Our_Tools(threading.Thread):
         file_livraison = folder_livr_to_manip + "/SGC_XXYY_ASSEMBLAGE.py"
         shutil.copy(file_livraison, file_livraison + "__")
         os.remove(file_livraison)
+
+        chps_livraison = Our_Tools.read_one_col_of_sheet_xl(
+                xl_file = xl_file
+                , sheet_index_to_read = 5
+                , x = 0
+                , from_y = 3
+        )
+        Our_Tools.long_print(num = 50)
+        print "chps_livraison: ", chps_livraison
+        sys.exit(0)
+
+        chps_livraison_exporter_1 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'exporter_1'
+        )
+
+        chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'onExtract_1'
+        )
+
+        chps_livraison_extraction_2 = Our_Tools.do_sql_export_livraison_sgc(
+            chps_livraison = chps_livraison
+            , step = 'onExtract_2'
+        )
+
         Our_Tools.replace_in_file(
             path_file_input = file_livraison + '__'
             , path_file_output = file_livraison
@@ -3710,78 +3772,15 @@ class Our_Tools(threading.Thread):
                 , '##miova_nom_prestation_654987321654987': nom_prestation
                 , '##miova_date_3216543213230001': date_today
                 , '##miova_prestat_id2314445551122333333': str(vivetic_prestation_id)
+
+                , '##miova_exporter_1_569160': str(chps_livraison_exporter_1)
+                , '##miova_exporter_1_7576189': str(chps_livraison_exporter_1)
+
+                , '##miova_extract_1_56632266440012120133255': str(chps_livraison_extraction_1)
+                , '####miova_extract_2_68876453213444': str(chps_livraison_extraction_2)
             }
         )
         os.remove(file_livraison + "__")
-
-        shutil.copy(file_livraison, file_livraison[:-19] + '_' + nom_prestation + '_ASSEMBLAGE.py')
-        os.remove(file_livraison)
-
-
-
-
-        # mnw resaka livraison_sgc
-        # # mnw anle resaka sqlExport@def_exporter(...)
-        # # alaina dol loo ny chps pour livraison
-        # tadidio fa am def_exporter() dia code_pays IRERY no ao
-        chps_livraison = Our_Tools.read_one_col_of_sheet_xl(
-                xl_file = xl_file
-                , sheet_index_to_read = 5
-                , x = 0
-                , from_y = 3
-        )
-        # print "chps_livraison: ", chps_livraison
-        # # [u'chp11', u'chp12', u'chp13', u'chp14', u', ...
-
-
-        # esorina tao anaty chps_livraison ny code_pays
-        
-
-        ##miova55544466656465
-        ##miova77778892223534355
-        chps_livraison_exporter_1 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'exporter_1'
-        )
-        # print "chps_livraison_exporter_1: " + str(chps_livraison_exporter_1)
-        # # sqlExport += "\"chp02\","
-        # # # ...
-        # # sqlExport += "\"chp09\","
-
-        ##miova56632266440012120133255
-        chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'onExtract_1'
-        )
-        
-        ##miova688764532134445669987
-        chps_livraison_extraction_2 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'onExtract_2'
-        )
-
-
-        file_livraison_01 = 'for_sgc/Livraison_' + nom_prestation + '/SGC_' + nom_prestation + '_ASSEMBLAGE.py'
-        # # for_sgc/Livraison_AQ01/SGC_AQ01_ASSEMBLAGE.py
-        shutil.copy(file_livraison_01, file_livraison_01 + "__")
-        os.remove(file_livraison_01)
-        self.replace_in_file(
-            path_file_input = file_livraison_01 + "__",
-            path_file_output = file_livraison_01,
-            replacements = {
-                "##miova56632266440012120133255": str(chps_livraison_extraction_1)
-                , "##miova688764532134445669987": str(chps_livraison_extraction_2)
-                , "##miova55544466656465": str(chps_livraison_exporter_1)
-                , "##miova77778892223534355": str(chps_livraison_exporter_1)
-            }
-        )
-
-        os.remove(file_livraison_01 + "__")
-        # shutil.copy(file_livraison, file_livraison[:-19] + '_' + nom_prestation + '_ASSEMBLAGE.py')
-        # os.remove(file_livraison_01)
-
-
-        
 
 
         # end mnw resaka livraison_sgc
@@ -4230,6 +4229,56 @@ class Our_Tools(threading.Thread):
             format='%(asctime)s : %(levelname)s : %(message)s'
         )
 
+        self.file_some_tools_xlsx = ".\some_tools.xlsx"
+
+
+        pass
+
+    def some_tools_xlsx(self):
+
+        # manokatra anle xlsx
+        # mamaky anle xlsx
+        # # ny chp voloo am some_tools.xlsx dia tkn ho type_integer
+        # # ny hatao ao dia suppression_gpao_unique loo
+
+        workbook_write = xlsxwriter.Workbook(self.file_some_tools_xlsx)
+        header_format_red = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#c80815',
+                            'border': 1}
+        )
+
+
+        header_format_blue = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#4d8fac',
+                            'border': 1})
+
+        sheet_config_some_tools = workbook_write.add_worksheet('Config Tools')
+        sheet_aide = workbook_write.add_worksheet('Aide')
+
+        cell_format_union = workbook_write.add_format({'align': 'center',
+            'valign': 'vcenter',
+            'border': 1}
+        )
+
+        sheet_config_some_tools.set_column('A:A', 40)
+        sheet_config_some_tools.set_column('B:B', 30)
+        sheet_config_some_tools.set_column('C:C', 20)
+
+        sheet_config_some_tools.merge_range('E1:I1', "", cell_format_union)
+        
+        sheet_config_some_tools.write(0, 4, 'Configuration des Outils', header_format_red)
+        sheet_config_some_tools.write(2, 0, 'Nom d\'Action', header_format_blue)
+        sheet_config_some_tools.write(2, 1, 'Valeur d\'Action', header_format_blue)
+        sheet_config_some_tools.write(2, 2, 'Les Parametres', header_format_blue)
+
+        workbook_write.close()
+        os.system(self.file_some_tools_xlsx)
+
+        print 'coco'
         pass
 
     @staticmethod
@@ -4723,7 +4772,7 @@ class Our_Tools(threading.Thread):
                             if ((pattern_search in line) and (wrote_file_path == True)) :
                                 print str(line_number) +": "+ line
 
-def main():
+def main001():
     try:
         #opts, args = getopt.getopt(sys.argv[1:],"hle:t:p:cu:", ["help","listen","execute","target","port","command","upload"])
         opts, args = getopt.gnu_getopt(sys.argv[1:],
@@ -5223,6 +5272,12 @@ def main():
         elif option in ("-z", "--zeta"):
             print "option: " + option
             print "val: ", sys.argv[2:]
+
+def main():
+    # ti akrai ti dia hanokatra excel akray ngeza b k eo no igerena ny retra2
+    our_tools = Our_Tools()
+    our_tools.some_tools_xlsx()
+    pass
 
 if __name__ == '__main__':
     main()
