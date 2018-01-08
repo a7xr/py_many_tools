@@ -1808,8 +1808,9 @@ class Our_Tools(threading.Thread):
             res = sheet_read.cell_value(y, x)
             if isinstance(res, float):
                 res = '{:.0f}'.format(res)
-            if give_default_value_if_void == 1:
-                res = 'Default'
+            if ((give_default_value_if_void == 1) and (len(res) == 0)):
+                res = 'Erreur dans "xl_file": ' + str(xl_file)+', "sheet_index": ' + str(sheet_index) + ", x = " + str(x) + ", y = " + str(y)
+                res += '\n- Contenu du cellule vide'
             return res
         except IndexError:
             msg = "Valeur manquant pour fichier(" + xl_file + "), tab_index("+ sheet_index +")" + ", y = " + y + ", x = " + x
@@ -3227,6 +3228,7 @@ class Our_Tools(threading.Thread):
             , sheet_index = 0
             , y = 3
             , x = 1
+            , give_default_value_if_void = 0
         )
         # print "code_prestation: ", code_prestation
         # # code_prestation:  SGC
@@ -3630,6 +3632,7 @@ class Our_Tools(threading.Thread):
         list001 = [4, 5, 6]
         , val_to_search = 4
     ):
+        print 'list001_65464987: ', list001
         return [i for i,x in enumerate(list001) if x == val_to_search][0]
             
     @staticmethod
@@ -3641,6 +3644,7 @@ class Our_Tools(threading.Thread):
     ):
         res = ''
         if step == 'exporter_1':    ##miova_exporter_1_569160   ##miova_exporter_1_7576189
+            print "chps_livraison456231321: ", chps_livraison
             del chps_livraison[
                 Our_Tools.get_index_of_unique_elem_in_list(
                     list001 = chps_livraison
@@ -3746,13 +3750,16 @@ class Our_Tools(threading.Thread):
                 , from_y = 3
         )
         Our_Tools.long_print(num = 50)
-        print "chps_livraison: ", chps_livraison
-        sys.exit(0)
+        # print "chps_livraison: ", chps_livraison
+        # # [u'chp_liv01', u'chp_liv02', u'chp_liv03', u'chp_liv04', u'chp_liv05, ....
+        
 
         chps_livraison_exporter_1 = Our_Tools.do_sql_export_livraison_sgc(
             chps_livraison = chps_livraison
             , step = 'exporter_1'
         )
+
+        print "chps_livraison_exporter_1_6549879813: ", chps_livraison_exporter_1
 
         chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
             chps_livraison = chps_livraison
@@ -4772,7 +4779,7 @@ class Our_Tools(threading.Thread):
                             if ((pattern_search in line) and (wrote_file_path == True)) :
                                 print str(line_number) +": "+ line
 
-def main001():
+def main():
     try:
         #opts, args = getopt.getopt(sys.argv[1:],"hle:t:p:cu:", ["help","listen","execute","target","port","command","upload"])
         opts, args = getopt.gnu_getopt(sys.argv[1:],
@@ -5273,7 +5280,7 @@ def main001():
             print "option: " + option
             print "val: ", sys.argv[2:]
 
-def main():
+def main001():
     # ti akrai ti dia hanokatra excel akray ngeza b k eo no igerena ny retra2
     our_tools = Our_Tools()
     our_tools.some_tools_xlsx()
