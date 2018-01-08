@@ -3632,8 +3632,15 @@ class Our_Tools(threading.Thread):
         list001 = [4, 5, 6]
         , val_to_search = 4
     ):
-        print 'list001_65464987: ', list001
-        return [i for i,x in enumerate(list001) if x == val_to_search][0]
+        # print 'list001_65464987: ', list001
+        try:
+            res = [i for i,x in enumerate(list001) if x == val_to_search][0]
+        except IndexError:
+            print 'tik tak doo... 6548979865465'
+            raw_input()
+
+            res = 5000000
+        return res
             
     @staticmethod
     def do_sql_export_livraison_sgc(
@@ -3670,16 +3677,28 @@ class Our_Tools(threading.Thread):
             # # ireto dia esorina 
             # # # date_cachet_poste, civilite, nom, prenom, adr1, adr2, adr3, adr4, cp, ville, pays, email1,
 
-            chps_livraison = Our_Tools.delete_uniq_elem_in_list
 
-            chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list(
-                list_content = chps_livraison
-                , list_to_del = [
-                    'date_cachet_poste', 'civilite', 'nom', 'prenom', 
-                    'adr1', 'adr2', 'adr3', 'adr4', 
-                    'cp', 'ville', 'pays', 'email'
-                ]
-            )
+            del chps_livraison[
+                Our_Tools.get_index_of_unique_elem_in_list(
+                    list001 = chps_livraison
+                    , val_to_search = 'date_cachet_poste'
+                )
+            ]
+            del chps_livraison[
+                Our_Tools.get_index_of_unique_elem_in_list(
+                    list001 = chps_livraison
+                    , val_to_search = 'civilite'
+                )
+            ]
+
+            # chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list(
+                # list_content = chps_livraison
+                # , list_to_del = [
+                    # 'date_cachet_poste', 'civilite', 'nom', 'prenom', 
+                    # 'adr1', 'adr2', 'adr3', 'adr4', 
+                    # 'cp', 'ville', 'pays', 'email'
+                # ]
+            # )
             
             for chp in chps_livraison:
                 res += '        sqlExport += "\\"'+ chp + '\\","\n'
@@ -3759,35 +3778,47 @@ class Our_Tools(threading.Thread):
             , step = 'exporter_1'
         )
 
-        print "chps_livraison_exporter_1_6549879813: ", chps_livraison_exporter_1
+        # print "chps_livraison_exporter_1_6549879813:\n ", chps_livraison_exporter_1
+        # # sqlExport += "\"chp_liv01\","
+        # # # ...
+        # # sqlExport += "\"chp_liv01\","
 
         chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
             chps_livraison = chps_livraison
             , step = 'onExtract_1'
         )
-
+        # print "chps_livraison_extraction_1_4723268017839: \n"
+        # print chps_livraison_extraction_1
+        # #  sqlExport += "\"chp_liv01\","
+        # # sqlExport += "\"chp_liv02\","
+        # # sqlExport += "\"chp_liv03\","
+# 
         chps_livraison_extraction_2 = Our_Tools.do_sql_export_livraison_sgc(
             chps_livraison = chps_livraison
             , step = 'onExtract_2'
         )
 
-        Our_Tools.replace_in_file(
-            path_file_input = file_livraison + '__'
-            , path_file_output = file_livraison
-            , replacements = {
-                '##miova_table_prod_32132132132132': table_prod
-                , '##miova_nom_prestation_654987321654987': nom_prestation
-                , '##miova_date_3216543213230001': date_today
-                , '##miova_prestat_id2314445551122333333': str(vivetic_prestation_id)
+        print "chps_livraison_extraction_2_4723268: \n"
+        print chps_livraison_extraction_2
 
-                , '##miova_exporter_1_569160': str(chps_livraison_exporter_1)
-                , '##miova_exporter_1_7576189': str(chps_livraison_exporter_1)
 
-                , '##miova_extract_1_56632266440012120133255': str(chps_livraison_extraction_1)
-                , '####miova_extract_2_68876453213444': str(chps_livraison_extraction_2)
-            }
-        )
-        os.remove(file_livraison + "__")
+        # Our_Tools.replace_in_file(
+            # path_file_input = file_livraison + '__'
+            # , path_file_output = file_livraison
+            # , replacements = {
+                # '##miova_table_prod_32132132132132': table_prod
+                # , '##miova_nom_prestation_654987321654987': nom_prestation
+                # , '##miova_date_3216543213230001': date_today
+                # , '##miova_prestat_id2314445551122333333': str(vivetic_prestation_id)
+# 
+                # , '##miova_exporter_1_569160': str(chps_livraison_exporter_1)
+                # , '##miova_exporter_1_7576189': str(chps_livraison_exporter_1)
+# 
+                # , '##miova_extract_1_56632266440012120133255': str(chps_livraison_extraction_1)
+                # , '####miova_extract_2_68876453213444': str(chps_livraison_extraction_2)
+            # }
+        # )
+        # os.remove(file_livraison + "__")
 
 
         # end mnw resaka livraison_sgc
