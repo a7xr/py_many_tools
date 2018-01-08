@@ -3593,7 +3593,20 @@ class Our_Tools(threading.Thread):
         # end_sgc
         sys.exit(0)
 
-
+    @staticmethod
+    def delete_list_of_uniq_elem_in_list_v01(
+        list_content = ['a', 'b', 'c', 'd', 'e', 'f']
+        , list_to_del = ['a', 'f']
+    ):
+        for val_to_del in list_to_del:
+            list_content = Our_Tools.delete_uniq_elem_in_list_v01(
+                list_content = list_content
+                , val_to_del = val_to_del
+            )
+            pass
+        return list_content
+        pass
+        pass
 
     @staticmethod
     def delete_list_of_uniq_elem_in_list(
@@ -3662,6 +3675,8 @@ class Our_Tools(threading.Thread):
 
             res = 0
         return res
+
+
             
     @staticmethod
     def do_sql_export_livraison_sgc(
@@ -3692,31 +3707,6 @@ class Our_Tools(threading.Thread):
             pass
 
         elif step == 'onExtract_2':     ##miova_extract_2_68876453213444
-            # this is going to be a challenge
-            # # mail miakatra tsy miova
-            # # apres mail no mtov amle exporter_1
-            # # ireto dia esorina 
-            # # # date_cachet_poste, civilite, nom, prenom, adr1, adr2, adr3, adr4, cp, ville, pays, email1,
-
-
-
-
-
-
-
-            # del chps_livraison[
-                # Our_Tools.get_index_of_unique_elem_in_list(
-                    # list001 = chps_livraison
-                    # , val_to_search = 'date_cachet_poste'
-                # )
-            # ]
-            # del chps_livraison[
-                # Our_Tools.get_index_of_unique_elem_in_list(
-                    # list001 = chps_livraison
-                    # , val_to_search = 'civilite'
-                # )
-            # ]
-
 
             # chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list(
                 # list_content = chps_livraison
@@ -3727,10 +3717,19 @@ class Our_Tools(threading.Thread):
                 # ]
             # )
 
-            chps_livraison = Our_Tools.delete_uniq_elem_in_list_v01(
+            
+
+            chps_livraison = Our_Tools.delete_list_of_uniq_elem_in_list_v01(
                 list_content = chps_livraison
-                , val_to_del = 'date_cachet_poste'
+                , list_to_del = [
+                    'date_cachet_poste', 'civilite', 'nom', 'prenom', 
+                    'adr1', 'adr2', 'adr3', 'adr4', 
+                    'cp', 'ville', 'pays', 'email'
+                ]
             )
+
+            print "chps_livraison65411223121233355: ", chps_livraison
+            
 
 
             
@@ -3807,55 +3806,16 @@ class Our_Tools(threading.Thread):
         # # [u'chp_liv01', u'chp_liv02', u'chp_liv03', u'chp_liv04', u'chp_liv05, ....
         
 
-        chps_livraison_exporter_1 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'exporter_1'
+
+        # print "chps_livraison42133975111201314", chps_livraison
+        chps_livraison_exporter = Our_Tools.delete_list_of_uniq_elem_in_list_v01(
+                list_content = chps_livraison
+                , list_to_del = [
+                    'code_pays'
+                    , 'coco'
+                ]
         )
-
-        # print "chps_livraison_exporter_1_6549879813:\n ", chps_livraison_exporter_1
-        # # sqlExport += "\"chp_liv01\","
-        # # # ...
-        # # sqlExport += "\"chp_liv01\","
-
-        chps_livraison_extraction_1 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'onExtract_1'
-        )
-        # print "chps_livraison_extraction_1_4723268017839: \n"
-        # print chps_livraison_extraction_1
-        # #  sqlExport += "\"chp_liv01\","
-        # # sqlExport += "\"chp_liv02\","
-        # # sqlExport += "\"chp_liv03\","
-# 
-        chps_livraison_extraction_2 = Our_Tools.do_sql_export_livraison_sgc(
-            chps_livraison = chps_livraison
-            , step = 'onExtract_2'
-        )
-
-        print "chps_livraison_extraction_2_4723268: \n"
-        print chps_livraison_extraction_2
-
-
-        # Our_Tools.replace_in_file(
-            # path_file_input = file_livraison + '__'
-            # , path_file_output = file_livraison
-            # , replacements = {
-                # '##miova_table_prod_32132132132132': table_prod
-                # , '##miova_nom_prestation_654987321654987': nom_prestation
-                # , '##miova_date_3216543213230001': date_today
-                # , '##miova_prestat_id2314445551122333333': str(vivetic_prestation_id)
-# 
-                # , '##miova_exporter_1_569160': str(chps_livraison_exporter_1)
-                # , '##miova_exporter_1_7576189': str(chps_livraison_exporter_1)
-# 
-                # , '##miova_extract_1_56632266440012120133255': str(chps_livraison_extraction_1)
-                # , '####miova_extract_2_68876453213444': str(chps_livraison_extraction_2)
-            # }
-        # )
-        # os.remove(file_livraison + "__")
-
-
-        # end mnw resaka livraison_sgc
+        print "chps_livraison_exporter6542223344: ", chps_livraison_exporter
 
         pass
 
@@ -4953,6 +4913,15 @@ def main():
                 if args[0] == 'p':
                     p = Person()
                     print p
+                elif (
+                    (args[0] == 'test_delete_list_of_uniq_elem_in_list_v01') # misy erreur
+                ):
+                    l = Our_Tools.delete_list_of_uniq_elem_in_list_v01(
+                        list_content = ['a', 'b', 'c', 'd', 'e', 'f']
+                        , list_to_del = ['a', 'f', 'n']
+                    )
+                    print l
+                    pass
                 elif (
                     (args[0] == 'test_delete_uniq_elem_in_list_v01') # misy erreur
                 ):
