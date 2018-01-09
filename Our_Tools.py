@@ -3699,7 +3699,7 @@ class Our_Tools(threading.Thread):
                 pass
             return res
 
-        elif step == 'onExtract_1':     ##miova_extract_1_56632266440012120133255
+        elif step == 'onExtract_1':     ##miova_extract_1_56632266440012120133255 
             for chp in chps_livraison:
                 res += '        sqlExport += "\\"'+ chp + '\\","\n'
                 pass
