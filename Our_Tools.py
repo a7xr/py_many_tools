@@ -4914,6 +4914,11 @@ def main():
                     p = Person()
                     print p
                 elif (
+                    (args[0] == 'test_beautiful_soup001') # misy erreur
+                ):
+                    print "this is a test"
+                    pass
+                elif (
                     (args[0] == 'test_delete_list_of_uniq_elem_in_list_v01') # misy erreur
                 ):
                     l = Our_Tools.delete_list_of_uniq_elem_in_list_v01(
