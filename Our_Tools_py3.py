@@ -3,12 +3,20 @@ import re
 import sys
 import getopt
 import threading
+import tweepy
 
 from bs4 import BeautifulSoup
 import requests
 
 import configparser
 
+import os
+import sys
+import twitter
+from twitter.oauth import write_token_file, read_token_file
+from twitter.oauth_dance import oauth_dance
+
+import json
 
 from ctypes import windll, Structure, c_short, c_ushort, byref
 SHORT = c_short
@@ -91,6 +99,166 @@ config = configparser.ConfigParser()
 config.read('all_confs.txt')
 
 class Our_Tools_py3(threading.Thread):
+
+    def twitter_retweet001(self):
+        # https://stackoverflow.com/questions/38872195/tweepy-exclude-retweets
+        
+        import csv #Import csv
+        import os
+
+        # Consumer keys and access tokens, used for OAuth
+        consumer_key = config['twitter001']['CONSUMER_KEY']
+        consumer_secret = config['twitter001']['CONSUMER_SECRET']
+        access_token = config['twitter001']['access_token']
+        access_token_secret = config['twitter001']['access_token_secret']
+
+        # OAuth process, using the keys and tokens
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+
+
+        api = tweepy.API(auth)
+        # Open/Create a file to append data
+        csvFile = open('docker1.csv', 'a')
+        #Use csv Writer
+        csvWriter = csv.writer(csvFile)
+
+
+        ids = set()
+        i = 0
+        rate_limit = 5 # afaik, this should NOT go beyond 2335
+        # # you have to wait 
+
+        search = "java"
+
+        result_tweet_search = tweepy.Cursor(
+        	api.search, q=search, 
+        	include_entities=True
+        ).items()
+
+        # https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy?rq=1
+        while True:
+		    try:
+		        tweet = result_tweet_search.next()
+		        # Insert into db
+		    except tweepy.TweepError:
+		        time.sleep(60 * 15)
+		        continue
+		    except StopIteration:
+		        break
+
+        for tweet in tweepy.Cursor(api.search, 
+                            q="docker", 
+                            Since="2016-08-09", 
+                            #until="2014-02-15", 
+                            lang="en").items(rate_limit):
+            print (tweet)
+            # there will be a rate_limit = 2335
+            
+            # if not tweet.retweeted:
+            #     print (tweet.retweeted)
+            #     print (i)
+            #     i += 1
+        pass
+    
+    def twitter_auth001(self):
+        CONSUMER_KEY = config['twitter001']['CONSUMER_KEY']
+        CONSUMER_SECRET = config['twitter001']['CONSUMER_SECRET']
+        OAUTH_TOKEN = config['twitter001']['access_token']
+        OAUTH_TOKEN_SECRET = config['twitter001']['access_token_secret']
+
+        self.auth = twitter.oauth.OAuth(OAUTH_TOKEN, OAUTH_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+        self.twitter_api = twitter.Twitter(auth=self.auth)
+
+        # print (twitter_api)
+        # # <twitter.api.Twitter object at 0x0000027CDC91BEF0>
+
+        WORLD_WOE_ID = 1
+        US_WOE_ID = 23424977
+
+        world_trends = self.twitter_api.trends.place(_id=WORLD_WOE_ID)
+        us_trends = self.twitter_api.trends.place(_id=US_WOE_ID)
+        
+        # print (world_trends)
+        # # [{'trends': [{'name': '#KarneGünü', 'url': 'http://twitter.com/search?q=%23KarneG%C3%BCn%C3%BC', 'promoted_content': None, 'query': '%23KarneG%C3%BCn%C3%BC', 'tweet_volume': 12103}, {'name': 
+        print (us_trends)
+        # # [
+        # # # {'trends': [
+        # # # # {
+        # # # # # 'name': '#ReleaseTheMemo', 
+        # # # # # 'url': 'http://twitter.com/search?q=%23ReleaseTheMemo', 
+        # # # # # 'promoted_content': None, 
+        # # # # # 'query': '%23ReleaseTheMemo', 
+        # # # # # 'tweet_volume': 888816
+        # # # # }, {'name': '#FridayFeeling', 'url': 'http://twit
+        pass
+
+    @staticmethod
+    def test_twitter_trending_topics():
+        t = twitter.Twitter(domain='api.twitter.com', api_version='1')
+
+        print (json.dumps(t.trends(), indent=1))
+
+        pass
+
+    @staticmethod
+    def oauth_login(app_name='',
+        consumer_key='',
+        consumer_secret='',
+        token_file='out/twitter.oauth'
+    ):
+        try:
+            (access_token, access_token_secret) = read_token_file(token_file)
+        except IOError as e:
+            (access_token, access_token_secret) = oauth_dance(
+                app_name, consumer_key, consumer_secret)
+            if not os.path.isdir('out'):
+                os.mkdir('out')
+            write_token_file(token_file, access_token, access_token_secret)
+            print ("OAuth Success. Token file stored to: ", token_file)
+
+        print ('Authentication OK')
+
+
+
+
+        # # otrn we mtad anze resaka important ao am FB ao
+        # # tsy nety ito
+        # t = twitter.Twitter(domain='api.twitter.com', api_version='1')
+# 
+        # print (json.dumps(t.trends(), indent=1))
+
+
+
+        # Q = ' '.join(sys.argv[1])
+        Q = 'python java'
+        MAX_PAGES = 15
+        RESULTS_PER_PAGE = 100
+        twitter_search = twitter.Twitter(domain="search.twitter.com")
+
+        print (twitter_search)
+
+        search_results = []
+        for page in range(1,MAX_PAGES+1):
+            search_results += twitter_search.search(q=Q, rpp=RESULTS_PER_PAGE, page=page)['results']
+        print (json.dumps(search_results, indent=1))
+
+        # return twitter.Twitter(
+            # domain='api.twitter.com', api_version='1',
+            # auth=twitter.oauth.OAuth(access_token, access_token_secret,
+                # consumer_key, consumer_secret
+            # )
+        # )
+
+    @staticmethod
+    def import_twitter_api():
+        import os
+        import sys
+        import twitter
+        from twitter.oauth import write_token_file, read_token_file
+        from twitter.oauth_dance import oauth_dance
+        print ('Imported Twitter_api')
+        pass
 
     @staticmethod
     def get_some_part_of_page(
@@ -210,6 +378,39 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'twitter_retweet001')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        our_tools_py3.twitter_retweet001()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_twitter_api002')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        our_tools_py3.twitter_auth001()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_twitter_api001')
+    ):
+        # Our_Tools_py3.import_twitter_api()
+
+        APP_NAME = config['twitter001']['APP_NAME']
+        CONSUMER_KEY = config['twitter001']['CONSUMER_KEY']
+        CONSUMER_SECRET = config['twitter001']['CONSUMER_SECRET']
+        Our_Tools_py3.oauth_login(
+            APP_NAME, CONSUMER_KEY, CONSUMER_SECRET
+        )
+
+        # Our_Tools_py3.test_twitter_trending_topics()
+
+        pass
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
