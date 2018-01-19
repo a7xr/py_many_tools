@@ -205,7 +205,7 @@ def main():
         )
     except getopt.GetoptError as err:
         print (str(err))
-        Our_Tools_py3.usage()
+        Our_Tools_py3.usage() 
 
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
