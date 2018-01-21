@@ -5,7 +5,7 @@ import getopt
 import threading
 import tweepy
 
-import pandas
+import pandas as pd
 
 from bs4 import BeautifulSoup
 import requests
@@ -104,7 +104,11 @@ class Our_Tools_py3(threading.Thread):
 
     @staticmethod
     def pandas001():
-        
+        dataset = pd.read_csv(r'movie_reviews.csv')
+        # print (dataset)
+        # #                                                   review sentiment
+        # # 0      One of the other reviewers has mentioned that ...  positive
+        # # 1      A wonderful little production. <br /><br />The...  positive
         pass
 
     def twitter_retweet001(self):
@@ -139,20 +143,20 @@ class Our_Tools_py3(threading.Thread):
         search = "java"
 
         result_tweet_search = tweepy.Cursor(
-        	api.search, q=search, 
-        	include_entities=True
+            api.search, q=search, 
+            include_entities=True
         ).items()
 
         # https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy?rq=1
         while True:
-		    try:
-		        tweet = result_tweet_search.next()
-		        # Insert into db
-		    except tweepy.TweepError:
-		        time.sleep(60 * 15)
-		        continue
-		    except StopIteration:
-		        break
+            try:
+                tweet = result_tweet_search.next()
+                # Insert into db
+            except tweepy.TweepError:
+                time.sleep(60 * 15)
+                continue
+            except StopIteration:
+                break
 
         # for tweet in tweepy.Cursor(api.search, 
         #                     q="docker", 
@@ -390,7 +394,7 @@ def main():
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_pandas001')
     ):
-        
+        Our_Tools_py3.pandas001()
         pass
     elif (
         (len (sys.argv) == 3) 
