@@ -2486,7 +2486,7 @@ class Our_Tools(threading.Thread):
             # # si pas de connection aa sdsi@10.5... alors on fait une connection
             try:
                 self.connect_pg_10_5_sdsi
-            except AttributeError:  
+            except AttributeError:
                 self.connection_pg(    # on fait une connection aa la base car elle est inexistant
                     server01 = parser.get('pg_10_5_sdsi', 'ip_host'),
                     user01=parser.get('pg_10_5_sdsi', 'username'),

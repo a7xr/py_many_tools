@@ -4,6 +4,7 @@ import re
 import sys
 import getopt
 import csv
+import logging
 
 import pprint
 import threading
@@ -107,61 +108,131 @@ config.read('all_confs.txt')
 class Our_Tools_py3(threading.Thread):
 
     def connect_db(self  
-            , server01 = config['mysql_localhost_db001']['ip_host']
-            , user01 = config['mysql_localhost_db001']['username']
-            , password01 = config['mysql_localhost_db001']['password']
-            , database01 = config['mysql_localhost_db001']['database']
-            , port = config['mysql_localhost_db001']['port']
+            , server01 = config['mysql_localhost_tw_app001']['ip_host']
+            , user01 = config['mysql_localhost_tw_app001']['username']
+            , password01 = config['mysql_localhost_tw_app001']['password']
+            , database01 = config['mysql_localhost_tw_app001']['database']
+            , port = config['mysql_localhost_tw_app001']['port']
             , type = "mysql"
     ):
         try:
             if((type == "mysql") 
-                and (database01 == config['mysql_localhost_db001']['database'])
-                and (server01 == config['mysql_localhost_db001']['ip_host'])
+                and (database01 == config['mysql_localhost_tw_app001']['database'])
+                and (server01 == config['mysql_localhost_tw_app001']['ip_host'])
             ):
-                self.connect_mysql_local_tw_ap01 = MySQLdb.Connection(
+                self.connect_mysql_local_tw_app01 = MySQLdb.Connection(
                     host=server01,
                     user=user01,
                     passwd=password01,
                     port=int(port),
                     db=database01
                 )
+                self.cursor_mysql_local_tw_app001 = self.connect_mysql_local_tw_app01.cursor()
                 print ("Connection OK with mysql")
+                txt = database01 + "@" + server01 + ": Connection OK, ( " + type +" )"
+                Our_Tools_py3.write_append_to_file(
+                    path_file = "log_db.txt"
+                    , txt_to_add = txt
+                )
+        except Exception as mysql_error:
+            logging.exception("message")
+            pass
+        pass
 
     @staticmethod
     def write_append_to_file(
-            path_file = path_prg + "test_append.txt",
+            path_file = "test_append.txt",
             txt_to_add = "this is anotehr test",
     ):
 
-        if os.path.exists(path_file):
+        print(txt_to_add, file = open(path_file, "a"))
+        return
+        # if os.path.exists(path_file):
+            # pass
+        # else:
+            # Our_Tools_py3.print_green(
+                    # txt = "Le fichier que vous voulez ajouter",
+                    # new_line = False)
+#             
+            # Our_Tools_py3.print_red(
+                    # txt = "n_existe pas",
+                    # new_line = True)
+# 
+            # Our_Tools_py3.print_green(
+                    # txt = "Creation du fichier " + path_file,
+                    # new_line = False
+            # )
+# 
+            # open_file = open(path_file, 'ab')
+#             
+        # open_file = open(path_file, 'ab')
+#         
+        # with open_file:
+            # # print "ato ndrai"
+            # open_file.write('\n' + txt_to_add)
+
+    def pg_select(
+        self
+        , query01 = "select * from table001"
+        , host = config['mysql_localhost_tw_app001']['ip_host']
+        , db = config['mysql_localhost_tw_app001']['database']
+
+    ):
+        results = None
+        if (
+            (host == config['mysql_localhost_tw_app001']['ip_host']) 
+            and (db == config['mysql_localhost_tw_app001']['database'])
+        ):
+            try:
+                self.connect_mysql_local_tw_app01
+            except AttributeError:
+                self.connect_db(
+                    server01 = config['mysql_localhost_tw_app001']['ip_host']
+                    , user01 = config['mysql_localhost_tw_app001']['username']
+                    , password01 = config['mysql_localhost_tw_app001']['password']
+                    , database01 = config['mysql_localhost_tw_app001']['database']
+                    , port = config['mysql_localhost_tw_app001']['port']
+                    , type = "mysql"
+                )
+                self.cursor_mysql_local_tw_app001.execute(query01)
+            results = self.cursor_mysql_local_tw_app001.fetchall()
+            # print ("results: ", results)
+        return results
+        pass
+    
+    def pg_not_select(self
+            , query01 = "insert into table001(id) values (4)"
+            , host = config['mysql_localhost_tw_app001']['ip_host']
+            , db = config['mysql_localhost_tw_app001']['database']
+            , log_query = False
+            , auto_commit = False
+            , test001 = True
+    ):
+        if( 
+                (host == config['mysql_localhost_tw_app001']['ip_host']) 
+                and (db == config['mysql_localhost_tw_app001']['database'])
+        ):
+            try:
+                self.connect_mysql_local_tw_app01
+            except AttributeError:
+                self.connect_db(
+                    server01 = config['mysql_localhost_tw_app001']['ip_host']
+                    , user01 = config['mysql_localhost_tw_app001']['username']
+                    , password01 = config['mysql_localhost_tw_app001']['password']
+                    , database01 = config['mysql_localhost_tw_app001']['database']
+                    , port = config['mysql_localhost_tw_app001']['port']
+                    , type = "mysql"
+                )
+            except Exception as mysql_error:
+                logging.exception("message")
+
+            if test001 == False:
+                self.cursor_mysql_local_tw_app001.execute(query01)
+            if auto_commit == True:
+                self.connect_mysql_local_tw_app01.commit()
+
             pass
-        else:
-            Our_Tools.print_green(
-                    txt = "Le fichier que vous voulez ajouter",
-                    new_line = False)
-            
-            Our_Tools.print_red(
-                    txt = "n_existe pas",
-                    new_line = True)
 
-            Our_Tools.print_green(
-                    txt = "Creation du fichier " + path_file,
-                    new_line = False
-            )
-
-            open_file = open(path_file, 'ab')
-            
-        open_file = open(path_file, 'ab')
-        
-        with open_file:
-            # print "ato ndrai"
-            open_file.write('\n' + txt_to_add)
-
-                pass
-        except Exception as mysql_error:
-            print(mysql_error)
-            pass
         pass
 
     @staticmethod
@@ -482,6 +553,31 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+    
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mysql002')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        res_query = our_tools_py3.pg_select()
+        for line in res_query:
+            print (line)
+            # for val in line:
+            #     print (val)
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mysql001')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        our_tools_py3.pg_not_select(
+            test001 = False
+            , query01 = "alter table table001 add column pname text"
+            , auto_commit = True
+        )
+        print ('tonga ato')
+        pass
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
