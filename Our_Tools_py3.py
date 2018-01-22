@@ -6,6 +6,9 @@ import getopt
 import csv
 import logging
 
+import threading
+
+
 import pprint
 import threading
 import tweepy
@@ -28,6 +31,72 @@ import json
 from ctypes import windll, Structure, c_short, c_ushort, byref
 SHORT = c_short
 WORD = c_ushort
+
+class Part_I_Twitt_App(threading.Thread):
+    def __init__(self):     # Part_I_Twitt_App
+        pass
+
+    @staticmethod
+    def csv_read_all(
+        path_file_csv = 'file001.csv',
+        delimiter = '|' 
+    ):
+        res = []
+        with open(path_file_csv) as csv_read:
+            reader = csv.reader(
+                csv_read, delimiter = delimiter)
+            for row in reader:
+                res.append(row)
+            # print "another_line"
+        return res
+
+
+    @staticmethod
+    def csv_read_content(path_file_csv = 'file001.csv',delimiter = '|'):
+        # print "coco"
+        # print res
+        res = []
+        list01 = Our_Tools.csv_read_all(
+            path_file_csv = path_file_csv,
+            delimiter = delimiter)[1:]
+        for elem in list01:
+            res.append(elem)
+        return res
+        # for elem in list01:
+            # print elem
+
+
+
+    def run(self):
+
+        pass
+    pass
+
+class Part_II_Twitt_App(threading.Thread):
+    def __init__(self):
+        pass
+
+    def run(self):
+        pass
+    pass
+
+class Part_III_Twitt_App(threading.Thread):
+    def __init__(self):
+        pass
+
+    def run(self):
+        pass
+
+    pass
+
+class Part_IV_Twitt_App(threading.Thread):
+    def __init__(self):
+        pass
+
+    def run(self):
+        pass
+
+    pass
 
 class COORD(Structure):
   """struct in wincon.h."""
@@ -553,7 +622,7 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
-    
+
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))

@@ -327,9 +327,7 @@ class CMail(object):
 
 
 
-
 class Thread001(threading.Thread): # done for Mahaitia_Demand
-    
 
     def set_configuration(self,
         exe = "out.xlsx",
