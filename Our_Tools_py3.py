@@ -1,7 +1,11 @@
 import os
+import MySQLdb
 import re
 import sys
 import getopt
+import csv
+
+import pprint
 import threading
 import tweepy
 
@@ -12,8 +16,8 @@ import requests
 
 import configparser
 
-import os
-import sys
+
+
 import twitter
 from twitter.oauth import write_token_file, read_token_file
 from twitter.oauth_dance import oauth_dance
@@ -102,26 +106,115 @@ config.read('all_confs.txt')
 
 class Our_Tools_py3(threading.Thread):
 
+    def connect_db(self  
+            , server01 = config['mysql_localhost_db001']['ip_host']
+            , user01 = config['mysql_localhost_db001']['username']
+            , password01 = config['mysql_localhost_db001']['password']
+            , database01 = config['mysql_localhost_db001']['database']
+            , port = config['mysql_localhost_db001']['port']
+            , type = "mysql"
+    ):
+        try:
+            if((type == "mysql") 
+                and (database01 == config['mysql_localhost_db001']['database'])
+                and (server01 == config['mysql_localhost_db001']['ip_host'])
+            ):
+                self.connect_mysql_local_tw_ap01 = MySQLdb.Connection(
+                    host=server01,
+                    user=user01,
+                    passwd=password01,
+                    port=int(port),
+                    db=database01
+                )
+                print ("Connection OK with mysql")
+
     @staticmethod
-    def pandas001():
-        dataset = pd.read_csv(r'movie_reviews.csv')
-        # print (dataset)
+    def write_append_to_file(
+            path_file = path_prg + "test_append.txt",
+            txt_to_add = "this is anotehr test",
+    ):
+
+        if os.path.exists(path_file):
+            pass
+        else:
+            Our_Tools.print_green(
+                    txt = "Le fichier que vous voulez ajouter",
+                    new_line = False)
+            
+            Our_Tools.print_red(
+                    txt = "n_existe pas",
+                    new_line = True)
+
+            Our_Tools.print_green(
+                    txt = "Creation du fichier " + path_file,
+                    new_line = False
+            )
+
+            open_file = open(path_file, 'ab')
+            
+        open_file = open(path_file, 'ab')
+        
+        with open_file:
+            # print "ato ndrai"
+            open_file.write('\n' + txt_to_add)
+
+                pass
+        except Exception as mysql_error:
+            print(mysql_error)
+            pass
+        pass
+
+    @staticmethod
+    def csv_read_content(path_file_csv = 'file001.csv',delimiter = '|'):
+        # print "coco"
+        # print res
+        res = []
+        list01 = Our_Tools.csv_read_all(
+            path_file_csv = path_file_csv,
+            delimiter = delimiter)[1:]
+        for elem in list01:
+            res.append(elem)
+        return res
+        # for elem in list01:
+            # print elem
+
+
+    @staticmethod
+    def csv_read_all(
+        path_file_csv = 'file001.csv',
+        delimiter = '|' 
+    ):
+        res = []
+        with open(path_file_csv) as csv_read:
+            reader = csv.reader(
+                csv_read, delimiter = delimiter)
+            for row in reader:
+                res.append(row)
+            # print "another_line"
+        return res
+
+    @staticmethod
+    def read_csv_from_pandas(
+        csv_file = r'file001.csv'
+        , delimiter = ','
+    ):
+        csv_content = pd.read_csv(
+            csv_file
+            , sep = delimiter
+        )
+        return csv_content
         # #                                                   review sentiment
         # # 0      One of the other reviewers has mentioned that ...  positive
         # # 1      A wonderful little production. <br /><br />The...  positive
-        pass
 
     def twitter_retweet001(self):
         # https://stackoverflow.com/questions/38872195/tweepy-exclude-retweets
-        
-        import csv #Import csv
-        import os
 
         # Consumer keys and access tokens, used for OAuth
         consumer_key = config['twitter001']['CONSUMER_KEY']
         consumer_secret = config['twitter001']['CONSUMER_SECRET']
-        access_token = config['twitter001']['access_token']
-        access_token_secret = config['twitter001']['access_token_secret']
+        access_token = config['twitter001']['ACCESS_TOKEN']
+        access_token_secret = config['twitter001']['ACCESS_TOKEN_SECRET']
 
         # OAuth process, using the keys and tokens
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
@@ -130,7 +223,7 @@ class Our_Tools_py3(threading.Thread):
 
         api = tweepy.API(auth)
         # Open/Create a file to append data
-        csvFile = open('docker1.csv', 'a')
+        csvFile = open('file001.csv', 'a')
         #Use csv Writer
         csvWriter = csv.writer(csvFile)
 
@@ -143,8 +236,9 @@ class Our_Tools_py3(threading.Thread):
         search = "java"
 
         result_tweet_search = tweepy.Cursor(
-            api.search, q=search, 
-            include_entities=True
+            api.search
+            , q = search
+            , include_entities = True
         ).items()
 
         # https://stackoverflow.com/questions/21308762/avoid-twitter-api-limitation-with-tweepy?rq=1
@@ -170,8 +264,7 @@ class Our_Tools_py3(threading.Thread):
             #     print (tweet.retweeted)
             #     print (i)
             #     i += 1
-        pass
-    
+       
     def twitter_auth001(self):
         CONSUMER_KEY = config['twitter001']['CONSUMER_KEY']
         CONSUMER_SECRET = config['twitter001']['CONSUMER_SECRET']
@@ -392,9 +485,34 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_connection_mysql01')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        our_tools_py3.connect_db()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_read_csv001')
+    ):
+        csv_content = Our_Tools_py3.csv_read_all(
+            delimiter = ','
+        )
+        print(csv_content)
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_pandas001')
     ):
-        Our_Tools_py3.pandas001()
+        csv_content = Our_Tools_py3.read_csv_from_pandas()
+        # print (type(csv_content))
+        # # <class 'pandas.core.frame.DataFrame'>
+        
+        # print (csv_content)
+
+        for row in csv_content:
+            print (row)
         pass
     elif (
         (len (sys.argv) == 3) 
