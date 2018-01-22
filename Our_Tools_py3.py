@@ -73,6 +73,38 @@ class Part_I_Twitt_App():
         print(txt, file = open(self.log_twitter_app, "a"))
         pass
 
+    def refactor_create_insert_table_word_search_query(
+        self
+        , create_table_word_search_query = ""
+    ):
+
+            self.our_tools_py3.db_not_select(
+                test001 = False
+                , query01 = create_table_word_search_query
+                , auto_commit = True
+            )
+            print ('table created')
+
+
+
+            twitter_to_search = Our_Tools_py3.csv_read_all(
+                path_file_csv = 'twitter_data001.csv'
+                , delimiter = ','
+            )
+            print ("twitter_to_search", twitter_to_search)
+            # # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
+
+            for line in twitter_to_search:
+                for val in line:
+                    insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
+                    # print ('insert_query: ', insert_query)
+                    self.our_tools_py3.db_not_select(
+                        query01 = insert_query
+                        , auto_commit = True
+                        , test001 = False
+                    )
+                    pass
+            pass
     def __del__(self):      # klass Part_I_Twitt_App
         self.our_tools_py3.disconnect_db(log = False)
         pass
@@ -128,33 +160,41 @@ class Part_I_Twitt_App():
             )
             print ('table dropped')
 
-            self.our_tools_py3.db_not_select(
-                test001 = False
-                , query01 = create_table_word_search_query
-                , auto_commit = True
+
+
+            self.refactor_create_insert_table_word_search_query(
+                create_table_word_search_query = create_table_word_search_query
+                # , 
             )
-            print ('table created')
 
-
-
-            twitter_to_search = Our_Tools_py3.csv_read_all(
-                path_file_csv = 'twitter_data001.csv'
-                , delimiter = ','
-            )
+            # self.our_tools_py3.db_not_select(
+                # test001 = False
+                # , query01 = create_table_word_search_query
+                # , auto_commit = True
+            # )
+            # print ('table created')
+# 
+# 
+# 
+            # twitter_to_search = Our_Tools_py3.csv_read_all(
+                # path_file_csv = 'twitter_data001.csv'
+                # , delimiter = ','
+            # )
             # print ("twitter_to_search", twitter_to_search)
-            # # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
-
-            for line in twitter_to_search:
-                for val in line:
-                    insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
-                    self.our_tools_py3.db_not_select(
-                        query01 = insert_query
-                        , auto_commit = False
-                        , test001 = True
-                    )
-                    pass
-            pass
-            print ('after insertion')
+            # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
+# 
+            # for line in twitter_to_search:
+                # for val in line:
+                    # insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
+                    # print ('insert_query: ', insert_query)
+                    # self.our_tools_py3.db_not_select(
+                        # query01 = insert_query
+                        # , auto_commit = True
+                        # , test001 = False
+                    # )
+                    # pass
+            # pass
+            print ('after insertion098787765')
         else:       # mbola tsy ao ny table__twitter_app
             # mbola tsy ao ny table__twitter_app d mnw insertion
             # # alaina dol loon ny avy any am csv
@@ -178,17 +218,14 @@ class Part_I_Twitt_App():
             )
             # print ("twitter_to_search", twitter_to_search)
             # # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
-
             for line in twitter_to_search:
                 for val in line:
                     insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
                     self.our_tools_py3.db_not_select(
                         query01 = insert_query
-                        , auto_commit = False
-                        , test001 = True
+                        , auto_commit = True
+                        , test001 = False
                     )
-                    pass
-            pass
             print ('after insertion33246357')
 
         pass
@@ -227,11 +264,36 @@ class Part_I_Twitt_App():
     
 
 class Part_II_Twitt_App(threading.Thread):
-    def __init__(self): # klas Part_II_Twitt_App
-        
+    def __init__(self): # klass Part_II_Twitt_App
+        self.log_twitter_app = 'log_twitter_app.txt'
+        self.our_tools_py3 = Our_Tools_py3()
+
+        self.server = config['mysql_localhost_tw_app001']['ip_host']
+        self.user = config['mysql_localhost_tw_app001']['username']
+        self.password = config['mysql_localhost_tw_app001']['password']
+        self.database = config['mysql_localhost_tw_app001']['database']
+        self.port = config['mysql_localhost_tw_app001']['port']
+        self.type = "mysql"
+
+        # mnw connection isakn partie satria independant izy ireo
+        self.our_tools_py3.connect_db(
+            server01 = self.server
+            , user01 = self.user
+            , password01 = self.password
+            , database01 = self.database
+            , port = self.port
+            , type = self.type
+            , log = False   
+        )
+
         pass
 
-    def run(self):  # klas Part_II_Twitt_App
+    def run(self):  # klass Part_II_Twitt_App
+        # # mamaky anle zvt avy anaty table__twitter_word_search
+        # # jerena isakn avy any am content(table__twitter_word_search)
+        # # # mtady anzai tsy_retweet
+        # # # izay tsy_retweet dia sauvena : created_at id_str text user.name user.followers_count coordinates reply_count retweet_count entities.hashtags
+
         pass
     pass
 
