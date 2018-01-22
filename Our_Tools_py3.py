@@ -5,7 +5,9 @@ import sys
 import getopt
 import csv
 import logging
-
+import sys
+import datetime
+from datetime import date
 import threading
 
 
@@ -32,8 +34,163 @@ from ctypes import windll, Structure, c_short, c_ushort, byref
 SHORT = c_short
 WORD = c_ushort
 
-class Part_I_Twitt_App(threading.Thread):
-    def __init__(self):     # Part_I_Twitt_App
+class Part_I_Twitt_App():
+    # ty tkn mjery we efa misy v ilay table_word_to_search_in_twitter
+    # # rah efa misy table_word_to_search_in_twitter
+    # # # suppr table_word_to_search_in_twitter
+    # # # mnw creation table__twitter_word_search
+    # # # insertion am table__twitter_word_search
+    # # # 
+    # # rah mbola tsis:
+    # # # mnw creation table__twitter_word_search
+    # # # insertion am table__twitter_word_search
+    #
+    # ty tkn tsis thread
+    def __init__(self):     # klass Part_I_Twitt_App
+        
+        self.log_twitter_app = 'log_twitter_app.txt'
+
+        self.our_tools_py3 = Our_Tools_py3()
+        # self.our_tools_py3.connect_db()
+
+        self.server = config['mysql_localhost_tw_app001']['ip_host']
+        self.user = config['mysql_localhost_tw_app001']['username']
+        self.password = config['mysql_localhost_tw_app001']['password']
+        self.database = config['mysql_localhost_tw_app001']['database']
+        self.port = config['mysql_localhost_tw_app001']['port']
+        self.type = "mysql"
+
+        self.our_tools_py3.connect_db(
+            server01 = self.server
+            , user01 = self.user
+            , password01 = self.password
+            , database01 = self.database
+            , port = self.port
+            , type = self.type
+            , log = False   
+        )
+        txt = str(datetime.datetime.now()) + ": db(" + self.database + '@' + self.server + ": Connection OK ( " + self.type + " )"
+        print(txt, file = open(self.log_twitter_app, "a"))
+        pass
+
+    def __del__(self):      # klass Part_I_Twitt_App
+        self.our_tools_py3.disconnect_db(log = False)
+        pass
+
+    def run(self):  # klass Part_I_Twitt_App... This does NOT extend from Threading
+
+        # print (config['mysql_localhost_tw_app001']['ip_host'])
+        # print (config['mysql_localhost_tw_app001']['database'])
+        # sys.exit(0)
+        # foo = "True" if test else "False" 
+        is_table_twitter_app = 0 if (
+            len(
+                self.our_tools_py3.db_select(
+                            # query01 = 'SELECT * from table001 limit 1'
+                            query01 = "SHOW TABLES LIKE 'twitter_word_search'"
+                            , host = config['mysql_localhost_tw_app001']['ip_host']
+                            , db = config['mysql_localhost_tw_app001']['database']
+                )
+            ) == 0 
+        ) else 1
+        #   print ("res001: ", res001)
+
+        create_table_word_search_query = """
+                create table twitter_word_search(
+                    word_search varchar(75)
+                )
+        """
+
+        create_table_twitter_app_query = """
+                create table twitter_app(
+                    created_at DATETIME,
+                    id_str varchar(200) DEFAULT NULL,
+                    text text,
+                    `user.name` varchar(200) DEFAULT NULL,
+                    `user.followers_count` int(5),
+                    coordinates varchar(200) DEFAULT NULL,
+                    reply_count int(5),
+                    retweet_count int(5),
+                    `entities.hashtags` varchar(200) DEFAULT NULL
+                )
+        """
+
+        # print ('is_table_twitter_app: ', is_table_twitter_app)
+        # # 1
+        if is_table_twitter_app == 1:       # # rah efa misy table_word_to_search_in_twitter
+
+            print('table(twitter_word_search) exists already')
+            # sys.exit(0)
+            self.our_tools_py3.db_not_select(
+                test001 = False
+                , query01 = "drop table twitter_word_search"
+                , auto_commit = True
+            )
+            print ('table dropped')
+
+            self.our_tools_py3.db_not_select(
+                test001 = False
+                , query01 = create_table_word_search_query
+                , auto_commit = True
+            )
+            print ('table created')
+
+
+
+            twitter_to_search = Our_Tools_py3.csv_read_all(
+                path_file_csv = 'twitter_data001.csv'
+                , delimiter = ','
+            )
+            # print ("twitter_to_search", twitter_to_search)
+            # # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
+
+            for line in twitter_to_search:
+                for val in line:
+                    insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
+                    self.our_tools_py3.db_not_select(
+                        query01 = insert_query
+                        , auto_commit = False
+                        , test001 = True
+                    )
+                    pass
+            pass
+            print ('after insertion')
+        else:       # mbola tsy ao ny table__twitter_app
+            # mbola tsy ao ny table__twitter_app d mnw insertion
+            # # alaina dol loon ny avy any am csv
+            # # isakn iray avy any am csv dia apdirn
+            # print ('ato amle 0')
+
+            
+
+            self.our_tools_py3.db_not_select(
+                test001 = False
+                , query01 = create_table_word_search_query
+                , auto_commit = True
+            )
+            print ('table created')
+
+
+
+            twitter_to_search = Our_Tools_py3.csv_read_all(
+                path_file_csv = 'twitter_data001.csv'
+                , delimiter = ','
+            )
+            # print ("twitter_to_search", twitter_to_search)
+            # # [['python'], ['java'], ['android'], ['cisco'], ['nuvus']]
+
+            for line in twitter_to_search:
+                for val in line:
+                    insert_query = 'INSERT INTO twitter_word_search (word_search) VALUES ("'+ str(val) +'")'
+                    self.our_tools_py3.db_not_select(
+                        query01 = insert_query
+                        , auto_commit = False
+                        , test001 = True
+                    )
+                    pass
+            pass
+            print ('after insertion33246357')
+
         pass
 
     @staticmethod
@@ -67,33 +224,31 @@ class Part_I_Twitt_App(threading.Thread):
 
 
 
-    def run(self):
-
-        pass
-    pass
+    
 
 class Part_II_Twitt_App(threading.Thread):
-    def __init__(self):
+    def __init__(self): # klas Part_II_Twitt_App
+        
         pass
 
-    def run(self):
+    def run(self):  # klas Part_II_Twitt_App
         pass
     pass
 
 class Part_III_Twitt_App(threading.Thread):
-    def __init__(self):
+    def __init__(self): # klass Part_III_Twitt_App
         pass
 
-    def run(self):
+    def run(self): # klass Part_III_Twitt_App
         pass
 
     pass
 
 class Part_IV_Twitt_App(threading.Thread):
-    def __init__(self):
+    def __init__(self): # klass Part_IV_Twitt_App
         pass
 
-    def run(self):
+    def run(self):      # klass Part_IV_Twitt_App
         pass
 
     pass
@@ -176,6 +331,33 @@ config.read('all_confs.txt')
 
 class Our_Tools_py3(threading.Thread):
 
+    def disconnect_db(
+        self
+        , log = True
+    ):
+        try:
+            del self.cursor_mysql_local_tw_app001
+            del self.connect_mysql_local_tw_app01
+            
+            if log == True:
+                txt = str(datetime.datetime.now()) + ": db(" + self.database + ')@' + self.server + ": Disconnected ( " + self.type + " )"
+                print(txt, file = open(self.log_file, "a"))
+
+        except NameError:
+            pass
+        except Exception:
+            pass
+        pass
+
+    def __del__(
+        self
+    ):  # klass Our_Tools_py3
+        self.disconnect_db()
+
+    def __init__(self):     # klass Our_Tools_py3(threading.Thread):
+        self.log_file = "general_log.txt"
+        pass
+
     def connect_db(self  
             , server01 = config['mysql_localhost_tw_app001']['ip_host']
             , user01 = config['mysql_localhost_tw_app001']['username']
@@ -183,7 +365,14 @@ class Our_Tools_py3(threading.Thread):
             , database01 = config['mysql_localhost_tw_app001']['database']
             , port = config['mysql_localhost_tw_app001']['port']
             , type = "mysql"
+            , log = True
     ):
+        self.server = server01
+        self.user = user01
+        self.database = database01
+        self.port = port
+        self.type = type
+
         try:
             if((type == "mysql") 
                 and (database01 == config['mysql_localhost_tw_app001']['database'])
@@ -198,11 +387,11 @@ class Our_Tools_py3(threading.Thread):
                 )
                 self.cursor_mysql_local_tw_app001 = self.connect_mysql_local_tw_app01.cursor()
                 print ("Connection OK with mysql")
-                txt = database01 + "@" + server01 + ": Connection OK, ( " + type +" )"
-                Our_Tools_py3.write_append_to_file(
-                    path_file = "log_db.txt"
-                    , txt_to_add = txt
-                )
+                
+                txt = str(datetime.datetime.now()) + ": db(" + database01 + ")@" + server01 + ": Connection OK, ( " + type +" )"
+                
+                if log == True:
+                    print(txt, file = open(self.log_file, "a"))
         except Exception as mysql_error:
             logging.exception("message")
             pass
@@ -215,32 +404,8 @@ class Our_Tools_py3(threading.Thread):
     ):
 
         print(txt_to_add, file = open(path_file, "a"))
-        return
-        # if os.path.exists(path_file):
-            # pass
-        # else:
-            # Our_Tools_py3.print_green(
-                    # txt = "Le fichier que vous voulez ajouter",
-                    # new_line = False)
-#             
-            # Our_Tools_py3.print_red(
-                    # txt = "n_existe pas",
-                    # new_line = True)
-# 
-            # Our_Tools_py3.print_green(
-                    # txt = "Creation du fichier " + path_file,
-                    # new_line = False
-            # )
-# 
-            # open_file = open(path_file, 'ab')
-#             
-        # open_file = open(path_file, 'ab')
-#         
-        # with open_file:
-            # # print "ato ndrai"
-            # open_file.write('\n' + txt_to_add)
-
-    def pg_select(
+        
+    def db_select(
         self
         , query01 = "select * from table001"
         , host = config['mysql_localhost_tw_app001']['ip_host']
@@ -263,13 +428,13 @@ class Our_Tools_py3(threading.Thread):
                     , port = config['mysql_localhost_tw_app001']['port']
                     , type = "mysql"
                 )
-                self.cursor_mysql_local_tw_app001.execute(query01)
+            self.cursor_mysql_local_tw_app001.execute(query01)
             results = self.cursor_mysql_local_tw_app001.fetchall()
             # print ("results: ", results)
         return results
         pass
     
-    def pg_not_select(self
+    def db_not_select(self
             , query01 = "insert into table001(id) values (4)"
             , host = config['mysql_localhost_tw_app001']['ip_host']
             , db = config['mysql_localhost_tw_app001']['database']
@@ -305,11 +470,14 @@ class Our_Tools_py3(threading.Thread):
         pass
 
     @staticmethod
-    def csv_read_content(path_file_csv = 'file001.csv',delimiter = '|'):
+    def csv_read_content(
+        path_file_csv = 'file001.csv',
+        delimiter = '|'
+    ):
         # print "coco"
         # print res
         res = []
-        list01 = Our_Tools.csv_read_all(
+        list01 = Our_Tools_py3.csv_read_all(
             path_file_csv = path_file_csv,
             delimiter = delimiter)[1:]
         for elem in list01:
@@ -626,10 +794,19 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_freelance001')
+    ):
+        part_I_twitt_app = Part_I_Twitt_App()
+        part_I_twitt_app.run()
+        pass
+
+    elif (
+        (len (sys.argv) == 3)
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mysql002')
     ):
         our_tools_py3 = Our_Tools_py3()
-        res_query = our_tools_py3.pg_select()
+        res_query = our_tools_py3.db_select()
         for line in res_query:
             print (line)
             # for val in line:
@@ -640,7 +817,7 @@ def main():
         and (sys.argv[2] == 'test_mysql001')
     ):
         our_tools_py3 = Our_Tools_py3()
-        our_tools_py3.pg_not_select(
+        our_tools_py3.db_not_select(
             test001 = False
             , query01 = "alter table table001 add column pname text"
             , auto_commit = True
