@@ -14,10 +14,7 @@ import threading
 import pprint
 import threading
 import tweepy
-from tweepy import Stream
-from tweepy import OAuthHandler
-from tweepy.streaming import StreamListener
-import json
+
 import pandas as pd
 
 from bs4 import BeautifulSoup
@@ -36,13 +33,6 @@ import json
 from ctypes import windll, Structure, c_short, c_ushort, byref
 SHORT = c_short
 WORD = c_ushort
-
-
-
-
-config = configparser.ConfigParser()
-config.read('all_confs.txt')
-
 
 class Part_I_Twitt_App():
     # ty tkn mjery we efa misy v ilay table_word_to_search_in_twitter
@@ -87,6 +77,7 @@ class Part_I_Twitt_App():
         self
         , create_table_word_search_query = ""
     ):
+
             self.our_tools_py3.db_not_select(
                 test001 = False
                 , query01 = create_table_word_search_query
@@ -266,38 +257,15 @@ class Part_I_Twitt_App():
             res.append(elem)
         return res
         # for elem in list01:
-            # print elem
+            # print elem    
 
 
 
     
-# ckey="5rUXEb6jeiYes7C2U7SnqtP4k"
-# csecret="9eJ5Rx90bDtKZwy26iDaiAlZWufYoCk1LG0BWQloEuU0Wbgypy"
-# atoken="388736813-itmVc2cck25tbAwHDi0jKHpADJvPQqSWP7SNER19"
-# asecret="VPbRndksZRn4rZXQZP1e26u7pqmnrZEeZSPoI1pl2iByx"
 
-ckey = config['twitter001']['CONSUMER_KEY']
-csecret = config['twitter001']['CONSUMER_SECRET']
-atoken = config['twitter001']['ACCESS_TOKEN']
-asecret = config['twitter001']['ACCESS_TOKEN_SECRET']
-
-class Part_II_Twitt_App(
-    threading.Thread
-):
-    def on_data(self, data):
-        print (data)
-        self.write_tweet_data_file.write(data)
-        return True
-        
-
-    def on_error(self, status):
-        print ("Error:", status)
-        pass
-
+class Part_II_Twitt_App(threading.Thread):
     def __init__(self): # klass Part_II_Twitt_App
         self.log_twitter_app = 'log_twitter_app.txt'
-
-        
         self.our_tools_py3 = Our_Tools_py3()
 
         self.server = config['mysql_localhost_tw_app001']['ip_host']
@@ -318,24 +286,7 @@ class Part_II_Twitt_App(
             , log = False   
         )
 
-
-        self.tweets_data_path = 'twitter_data.txt'
-        self.write_tweet_data_file = open(self.tweets_data_path, "w")
-
-        self.auth_twitter_app = OAuthHandler(ckey, csecret)
-        self.auth_twitter_app.set_access_token(atoken, asecret)
-
-        self.twitterStream = Stream(self.auth_twitter_app, self())
-        self.twitterStream.filter(track=["iPhone 7","Note 5"])
-
         pass
-
-    def __call__(self):
-        print ('__call__')
-        pass
-    def on_exception(self):
-        print('__onexception__')
-
 
     def run(self):  # klass Part_II_Twitt_App
         # # mamaky anle zvt avy anaty table__twitter_word_search
@@ -345,22 +296,6 @@ class Part_II_Twitt_App(
 
         pass
     pass
-
-
-
-    def draft(self):
-        # 
-        # "created_at":"Mon 
-        # "id_str":"
-        # "text":"RT @D
-        # "name":"._."
-        # "followers_count":5
-        # "coordinates":null
-        # "reply_count":8
-        # "retweet_count":1167
-        # {"hashtags":[{"text":"Dtimes", "qsdf": "azer"}, {..}}
-        pass
-
 
 class Part_III_Twitt_App(threading.Thread):
     def __init__(self): # klass Part_III_Twitt_App
@@ -450,6 +385,11 @@ def set_text_attr(color):
   SetConsoleTextAttribute(stdout_handle, color)
 
 
+
+
+
+config = configparser.ConfigParser()
+config.read('all_confs.txt')
 
 class Our_Tools_py3(threading.Thread):
 
@@ -912,15 +852,6 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
-
-    elif (
-        (len (sys.argv) == 3) 
-        and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_freelance002')
-    ):
-        part_I_twitt_app = Part_II_Twitt_App()
-        # part_I_twitt_app.run()
-        pass
 
     elif (
         (len (sys.argv) == 3) 
