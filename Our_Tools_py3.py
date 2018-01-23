@@ -9,6 +9,10 @@ import sys
 import datetime
 from datetime import date
 import threading
+from tweepy import Stream
+from tweepy import OAuthHandler
+from tweepy.streaming import StreamListener
+import json
 
 
 import pprint
@@ -33,6 +37,91 @@ import json
 from ctypes import windll, Structure, c_short, c_ushort, byref
 SHORT = c_short
 WORD = c_ushort
+
+
+config = configparser.ConfigParser()
+config.read('all_confs.txt')
+
+
+ckey = config['twitter001']['CONSUMER_KEY']
+csecret = config['twitter001']['CONSUMER_SECRET']
+atoken = config['twitter001']['ACCESS_TOKEN']
+asecret = config['twitter001']['ACCESS_TOKEN_SECRET']
+
+# tweets_data_path = 'twitter_data.txt'
+# write_file_twitter_data = open(tweets_data_path, "w")
+
+
+
+#Inherit stream listener to get the twitter data
+class Twitter_Listener(StreamListener):
+
+    def __init__(
+        self
+        , file_twitter_data = 'twitter_data.txt'
+        , words_to_search = ["iPhone 7","Note 5"]
+    ):
+        self.write_file_twitter_data = open(file_twitter_data, "w")
+        self.words_to_search = words_to_search
+        self.i = 0
+        pass
+
+    def collect_data_twitter(self):
+        auth = OAuthHandler(ckey, csecret)
+        auth.set_access_token(atoken, asecret)
+
+        twitterStream = Stream(auth, Twitter_Listener())
+        twitterStream.filter(
+            track = self.words_to_search
+        )
+        # print (type(twitterStream) + '2345676543444444', file = open('twitter_data.txt', 'a'))
+        sys.exit(0)
+        # twitterStream.retweet(async=True)
+
+        # print (type(twitterStream))
+        # sys.exit(0)
+
+        self.write_file_twitter_data.close()
+
+        pass
+
+    def on_status(self, status):
+        print('ato')
+        print(status.text)
+        # print ("status.retweeted_status: ", status.retweeted_status)
+        # if status.retweeted_status:
+            # print ("status.retweeted_status: ", status.retweeted_status)
+        # else:
+# 
+#             return
+
+    def on_data(self, data):
+        # print (data)
+            #Store twitter data in a text file  
+        # print (type(data))
+        # # <class 'str'>
+        # sys.exit(0)
+        print(self.i)
+        self.i += 1
+        if '"retweeted":false' in data:
+            print ("retweeted:false")
+        elif '"retweeted":true' in data:
+            print ("retweeted:true")
+
+        # self.write_file_twitter_data.write(data)
+
+        #You can also access data this way
+        #all_data = json.loads(data)
+        #tweet = all_data["text"]
+        #lang = all_data["lang"]
+        #username = all_data["user"]["screen_name"]
+        #print "username:%s, tweet:%s, language:%s" %(username, tweet, lang)
+
+        return True
+
+    def on_error(self, status):
+        print ("Error:", status)
+
 
 class Part_I_Twitt_App():
     # ty tkn mjery we efa misy v ilay table_word_to_search_in_twitter
@@ -294,6 +383,31 @@ class Part_II_Twitt_App(threading.Thread):
         # # # mtady anzai tsy_retweet
         # # # izay tsy_retweet dia sauvena : created_at id_str text user.name user.followers_count coordinates reply_count retweet_count entities.hashtags
 
+        words_to_search = self.our_tools_py3.db_select(
+                    # query01 = 'SELECT * from table001 limit 1'
+                    query01 = "select word_search from twitter_word_search"
+                    , host = config['mysql_localhost_tw_app001']['ip_host']
+                    , db = config['mysql_localhost_tw_app001']['database']
+        )
+
+        # print ('words_to_search: ', words_to_search)
+        # # (('python',), ('java',), ('android',)
+
+        list_to_search = []
+        for line in words_to_search:
+            list_to_search.append(line[0])
+            pass
+        # print ('list_to_search: ', list_to_search)
+        # # ['python', 'java', 'android',
+
+
+
+        # sys.exit(0)
+
+        l = Twitter_Listener(
+            words_to_search = list_to_search
+        )
+        l.collect_data_twitter()
         pass
     pass
 
@@ -387,9 +501,6 @@ def set_text_attr(color):
 
 
 
-
-config = configparser.ConfigParser()
-config.read('all_confs.txt')
 
 class Our_Tools_py3(threading.Thread):
 
@@ -852,6 +963,23 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_freelance003')
+    ):
+        part_2 = Part_II_Twitt_App()
+        part_2.run()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_freelance002')
+    ):
+        l = Twitter_Listener()
+        l.run()
+        pass
 
     elif (
         (len (sys.argv) == 3) 
