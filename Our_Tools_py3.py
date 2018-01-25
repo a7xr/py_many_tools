@@ -350,7 +350,7 @@ class Part_I_Twitt_App():
 
 
 
-    
+     
 
 class Part_II_Twitt_App(threading.Thread):
     def __init__(self): # klass Part_II_Twitt_App
