@@ -14,6 +14,8 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import json
 
+from Tools.Tools_MatPlotLib import MatPlotLib
+from Tools.Tools_Selenium import Tools_Selenium
 from Tools.Print_Color import Print_Color
 from Tools.Tools_SQL import MySQL
 
@@ -406,7 +408,175 @@ def main():
 
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
-        sys.exit(0)
+        sys.exit(0) 
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot021')
+    ):
+        MatPlotLib.test019()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot020')
+    ):
+        MatPlotLib.test018()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot019')
+    ):
+        MatPlotLib.test017()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot018')
+    ):
+        MatPlotLib.test016()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot017')
+    ):
+        MatPlotLib.test015()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot016')
+    ):
+        MatPlotLib.test014()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot015')
+    ):
+        MatPlotLib.test013()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot014')
+    ):
+        MatPlotLib.test012()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot013')
+    ):
+        MatPlotLib.test011()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot012')
+    ):
+        MatPlotLib.test010()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot011')
+    ):
+        MatPlotLib.test009()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot010')
+    ):
+        MatPlotLib.test008()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot009')
+    ):
+        MatPlotLib.test007()
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot008')
+    ):
+        MatPlotLib.test006()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot007')
+    ):
+        MatPlotLib.test005()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot006')
+    ):
+        MatPlotLib().draw_bar_from_list(vert_or_horiz = 'horiz')
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot005')
+    ):
+        MatPlotLib.test004()
+        
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot004')
+    ):
+        MatPlotLib.test003()
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot003')
+    ):
+        MatPlotLib.test002()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot002')
+    ):
+        matPlotLib = MatPlotLib()
+        matPlotLib.draw_plot()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_matplot001')
+    ):
+        MatPlotLib.test001()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_selenium001')
+    ):
+        tools_selenium = Tools_Selenium()
+        tools_selenium.init_selenium_chrome()
+        pass
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
