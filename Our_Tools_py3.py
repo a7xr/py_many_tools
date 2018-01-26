@@ -14,10 +14,11 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import json
 
+from Tools.Tools_Pics import Tools_Pics
 from Tools.Tools_MatPlotLib import MatPlotLib
 from Tools.Tools_Selenium import Tools_Selenium
 from Tools.Print_Color import Print_Color
-from Tools.Tools_SQL import MySQL
+from Tools.Tools_MySQL import MySQL
 
 from Freelance.Twitter001 import Twitter_Code
 from Machine_Learning.Machine_Learning import *
@@ -409,6 +410,63 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0) 
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_face_detect')
+    ):
+        Tools_Pics.face_detect()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_meanshift001')
+    ):
+        Tools_Pics.meanshift001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_capture_cam002')
+    ):
+        Tools_Pics.capture_camera002()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_read_video001')
+    ):
+        Tools_Pics.play_video_from_file()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_camera001')
+    ):
+        Tools_Pics.capture_camera001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_pics002')
+    ):
+        Tools_Pics.show_image002()
+        pass
+
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_pics001')
+    ):
+        Tools_Pics.show_image001()
+        pass
 
     elif (
         (len (sys.argv) == 3) 
