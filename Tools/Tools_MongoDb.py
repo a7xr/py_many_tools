@@ -69,7 +69,7 @@ class MongoDb:
             and (file_to_insert ==   'E:\\about eclipse.txt')
         ):
             # print('type(p)001: ', type(p))
-            # # <class 'dict'>
+            # # <class 'dict'> 
             # print ('p001: ', str(p))
             # # {'alias': 'alias001', 'phone': 'phone001'}
             self.local_db001.person.insert(p)
