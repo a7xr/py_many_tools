@@ -415,10 +415,96 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb008')
+    ):
+        res_query = MongoDb().action_select(
+            collection = 'file_inserted'
+            , action = 'find_file'
+            , patt_to_search_in_file_name = 'msg_41'
+        )
+        for val in res_query:
+            print('val: ', val )
+
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb007')
+    ):
+        MongoDb().action_not_select(
+            collection = 'file_inserted'
+            , action = 'insert_file'
+        )
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb006')
+    ):
+        MongoDb().action_not_select(
+            collection = 'user'
+            , action = 'insert_not_file'
+            , doc = {
+                'user_name': 'super potatoe'
+            }
+        )
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb005')
+    ):
+        res_query = MongoDb().action_select(
+            collection = 'person'
+            , action = 'find_not_file'
+            , doc = {
+                'alias': 'Mamitiana'
+            }
+        )
+        print ('res_query: ', res_query)
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb004')
+    ):
+        m = MongoDb()
+        m.connection()
+        res = m.action_select(
+            collection = 'person'
+            , doc = {
+                'alias': 'Mamitiana'
+            }
+        )
+        
+        for val in res:
+            print('val: ', val)
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb003')
+    ):
+        m = MongoDb()
+        m.connection()
+        m.action_not_select(
+            collection = 'user'
+            , doc = {
+                'user_name': 'user02'
+            }
+        )
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mongodb002')
     ):
         m = MongoDb()
-        m.connect()
+        m.connection()
         m.action_not_select()
 
     elif (
@@ -426,8 +512,7 @@ def main():
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mongodb001')
     ):
-        MongoDb().connect()
-
+        MongoDb().connection()
 
     elif (
         (len (sys.argv) == 3) 
