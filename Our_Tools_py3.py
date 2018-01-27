@@ -415,15 +415,29 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb009')
+    ):
+        MongoDb().action_not_select(
+            action = 'insert_not_file'
+            , collection = 'appli'
+            , doc_of_file_or__not_file = {
+                'path_exe': 'testing003'
+            }
+        )
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mongodb008')
     ):
         res_query = MongoDb().action_select(
             collection = 'file_inserted'
             , action = 'find_file'
-            , patt_to_search_in_file_name = 'msg_41'
+            , patt_to_search_in_file_name = 'msg'
         )
-        for val in res_query:
-            print('val: ', val )
+        # for val in res_query:
+        #     print('val: ', val )
 
         pass
 

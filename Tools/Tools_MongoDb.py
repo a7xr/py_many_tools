@@ -62,7 +62,7 @@ class MongoDb:
             'phone': 'phone001'
         }
         , patt_to_search_in_file_name = 'eclipse'
-        
+        , output_folder_for_file = "e:\\to_del\\"
     ):
         res_query = None
         res = []
@@ -97,28 +97,41 @@ class MongoDb:
                 ):
                     # list_files_inserted__from_reg_file_name \
                     regex001 = '.*' + patt_to_search_in_file_name + '.*'
-                    # res_query__files_info \
-                    res_query \
+                    # res_query \
+                    res_query__files_info \
                         = self.local_db001.file_inserted.find({
                             'file_name_origin': {'$regex': 
                                     str(regex001)
+                                    # {str(regex001)}
                                     , '$options':'i'
                             }
                         })
                     # print('res_query: ', res_query)
                     # # <pymongo.cursor.Cursor object at 0x000002289D165F60>
-                    if (res_query.count() == 1):
-                        # print('len is 1')
-                        
-                    else:
-                        print ('Not yet managed')
-                        print ('res_query.count(): ', res_query.count())
-                        sys.exit(0)
 
-                    # print('list_files_inserted__from_reg_file_name: ', list_files_inserted__from_reg_file_name)
-                    # print('res_query: ', res_query)
-                    # # <pymongo.cursor.Cursor object at 0x0000025B4F415F60>
-                    pass
+                    i = 0
+                    for f in res_query__files_info:
+                        # print ('type(f): ', type(f))
+                        # # <class 'dict'>
+                        # print (f['uid'])
+                        # # 59f4870fe97cac22f86e00de
+                        print('f (', i, '): ' , f)
+                        i += 1
+                        grid_file = self.fs_loc_db001.get(
+                            ObjectId(str(f['uid']))
+                        )
+                        # print("f['path_file_origin'].rsplit('\\', 1)[1]: ", f['path_file_origin'].rsplit('\\', 1)[1])
+                        # # msg_41.txt
+                        file_target = open(
+                            output_folder_for_file + f['path_file_origin'].rsplit('\\', 1)[1]
+                            , 'wb'
+                        )
+                        file_target.write(grid_file.read())
+                        file_target.close()
+                        print('finish')
+                        # print ('dict01: ', dict01)
+                        # # <gridfs.grid_file.GridOut object at 0x0000028120D249E8>
+                    
                 else: # the action is unknown
                     pass
                 pass
@@ -128,14 +141,6 @@ class MongoDb:
             pass
         pass
 
-        # if res_query != None: # misy zvt ny resultat anle requete
-        #     for doc01 in res_query:
-        #         print ("doc01")
-        #     pass
-        # else:
-        #     pass
-        # print('type(res_query)0001: ', type(res_query))
-        # # <class 'pymongo.cursor.Cursor'>
         for doc01 in res_query:
             res.append(doc01)
         return res
@@ -165,7 +170,7 @@ class MongoDb:
                         , database = database
                         , port01 = 27017
                     )
-                if (action == 'insert_not_file'):
+                if (action == 'insert_not_file'):   
                     if (collection == 'person'):
 
                         # print('type(p)001: ', type(p))
@@ -179,6 +184,12 @@ class MongoDb:
                         # print('p003: ', p)
                         # # {'alias': 'alias001', 'phone': 'phone001', '_id': ObjectId('5a6ae9562b29952464011e6b')}
                         print (txt)
+                    elif(collection == 'appli'): # action = 'insert_not_file', database == 'db001'
+                        # self.local_db001.appli.insert(doc_of_file_or__not_file)
+                        self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
+                        txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc_of_file_or__not_file) +')'
+                        print (txt)
+                        pass
                     elif (collection == 'user'):
                         self.local_db001.user.insert(doc_of_file_or__not_file)
                         txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc) +')'
