@@ -19,6 +19,7 @@ from Tools.Tools_MatPlotLib import MatPlotLib
 from Tools.Tools_Selenium import Tools_Selenium
 from Tools.Print_Color import Print_Color
 from Tools.Tools_MySQL import MySQL
+from Tools.Tools_MongoDb import MongoDb
 
 from Freelance.Twitter001 import Twitter_Code
 from Machine_Learning.Machine_Learning import *
@@ -414,9 +415,50 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb002')
+    ):
+        m = MongoDb()
+        m.connect()
+        m.action_not_select()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb001')
+    ):
+        MongoDb().connect()
+
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_face_detect003')
+    ):
+        Tools_Pics.face_detect_from_webcam()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_face_detect002')
+    ):
+        Tools_Pics.face_detect002()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_camshift001')
+    ):
+        Tools_Pics.camshift001()
+        pass
+
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_face_detect')
     ):
-        Tools_Pics.face_detect()
+        Tools_Pics.face_detect_from_pic()
         pass
 
     elif (
@@ -458,7 +500,6 @@ def main():
     ):
         Tools_Pics.show_image002()
         pass
-
 
     elif (
         (len (sys.argv) == 3) 
