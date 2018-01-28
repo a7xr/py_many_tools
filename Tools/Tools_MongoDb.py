@@ -85,6 +85,7 @@ class MongoDb:
             'phone': 'phone001'
         }
         , projection = {}
+        , limit_number = 10000000000000 # otrn mila anle mnw append_dict ito izay vao miainga
         , patt_to_search_in_file_name = 'eclipse'
         , output_folder_for_file = "e:\\to_del\\"
     ):
@@ -111,14 +112,19 @@ class MongoDb:
                     return
 
                 if(action == 'find_not_file'):
-
-                    # if(len(projection) > 0):
-                        
-
-                    res_query = self.local_db001.get_collection(collection).find(
-                        doc_of_file_or__not_file
-                        # , projection
-                    )
+                    # don_t know yet how to append a dictionary
+                    if (len(projection) == 0):
+                        res_query = self.local_db001.get_collection(collection).find(
+                            doc_of_file_or__not_file
+                            # , projection
+                        )
+                    else:
+                        res_query = self.local_db001.get_collection(collection).find(
+                            doc_of_file_or__not_file
+                            , projection
+                        )
+                    if (limit_number != 10000000000000):
+                        pass
                     # print ('res_query 820303933: ', res_query)
 
                     # print ('doc_of_file_or__not_file 9484: ', doc_of_file_or__not_file)
