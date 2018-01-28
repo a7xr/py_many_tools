@@ -150,6 +150,7 @@ class MongoDb:
         , like_appli_name = 'vlc'
         , file_to_exe = ''
     ):
+        
         pass
 
     def action_not_select(
@@ -181,47 +182,29 @@ class MongoDb:
                 if (collection not in list_collection):
                     print('Collection (' +collection+ ') is NOT in the list_of_collection ')
                     return
-                    
-                if (action == 'insert_not_file'):   
-                    if (collection == 'person'):
 
-                        # print('type(p)001: ', type(p))
-                        # # <class 'dict'> 
-                        # print ('p001: ', str(p))
-                        # # {'alias': 'alias001', 'phone': 'phone001'}
-                        self.local_db001.person.insert(doc_of_file_or__not_file)
-                        # print('type(p)002: ', type(p))
-                        # # <class 'dict'>
-                        txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc) +')'
-                        # print('p003: ', p)
-                        # # {'alias': 'alias001', 'phone': 'phone001', '_id': ObjectId('5a6ae9562b29952464011e6b')}
-                        print (txt)
-                    elif(collection == 'appli'): # action = 'insert_not_file', database == 'db001'
-                        # self.local_db001.appli.insert(doc_of_file_or__not_file)
-                        self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
-                        txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc_of_file_or__not_file) +')'
-                        print (txt)
-                        pass
-                    elif (collection == 'user'):
-                        self.local_db001.user.insert(doc_of_file_or__not_file)
-                        txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc) +')'
-                        print (txt)
-                        pass
-                    else: # tsy fantatra ilay collection izay anovana action
-                        print('Unknown Collection which we want to ', action)
+                if (action == 'insert_not_file'):   
+                    self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
+                    txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc_of_file_or__not_file) +')'
+                    print (txt)
+
+                # elif
+                
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
-                    and (collection == 'file_inserted')
                 ):
+                    # this next line is going to insert the file inside MongoDb
                     fileID = self.fs_loc_db001.put(
                         open(
                             doc_of_file_or__not_file['path_file_origin']
                             , 'rb'
                         )
                     )
+                    # this next_line is going to save the information about the file
+                    # # which we just inserted into the database
                     # print ('fileID: ', fileID)
                     # # 5a6c8cf42b2995113cd81aeb
-                    self.local_db001.file_inserted.insert({
+                    self.local_db001.get_collection(collection).insert({
                         'path_file_origin': doc_of_file_or__not_file['path_file_origin']
                         , 'uid': fileID
                         , 'file_name_origin': doc_of_file_or__not_file['path_file_origin'].rsplit('\\', 1)[1]

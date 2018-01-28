@@ -439,7 +439,7 @@ def main():
         res_query = MongoDb().action_select(
             # collection = 'file_inserted'
             action = 'find_file'
-            , patt_to_search_in_file_name = 'mp3'
+            , patt_to_search_in_file_name = 'Newral'
         )
         # for val in res_query:
         #     print('val: ', val )
@@ -454,7 +454,7 @@ def main():
             collection = 'file_inserted'
             , action = 'insert_file'
             , doc_of_file_or__not_file = {
-                'path_file_origin': r'E:\New folder\extracted\FOR HONOR\Twelve titans music - Earth avenger.mp3'
+                'path_file_origin': r'E:\New folder\extracted\FOR HONOR\Gothic Storm - Newral takeover.mp3'
                 , 'type': 'mp3'
             }
             , 
@@ -469,7 +469,7 @@ def main():
         MongoDb().action_not_select(
             collection = 'user'
             , action = 'insert_not_file'
-            , doc = {
+            , doc_of_file_or__not_file = {
                 'user_name': 'super potatoe'
             }
         )
