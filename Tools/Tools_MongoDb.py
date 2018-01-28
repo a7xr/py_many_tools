@@ -135,11 +135,12 @@ class MongoDb:
 
         os.remove(str(path_file[0]))
         print()
-        print(path_file[0] + ' has been run, then deleted')
-
-
-
+        print(path_file[0] + ' has been run, then deleted',)
         pass
+
+    # ny fichier mety modifiena atreto dia
+    # # .txt
+    def modify_file()
 
     def action_select(
         self
