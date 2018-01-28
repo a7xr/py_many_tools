@@ -6,7 +6,7 @@ import getopt
 import csv
 
 from Tools.Tools_Basic import Tools_Basic
-
+from Tools.Tools_System import Tools_System
 import sys
 import datetime
 from datetime import date
@@ -413,6 +413,21 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_system002')
+    ): 
+        s = Tools_System().get_file_from_mongodb()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_system001')
+    ): 
+        s = Tools_System().set_file_to_mongodb()
+        pass
 
     elif (
         (len (sys.argv) == 3) 
