@@ -6,6 +6,7 @@ import bson
 from bson.objectid import ObjectId
 import re
 import os
+import subprocess
 
 import configparser
 
@@ -71,6 +72,75 @@ class MongoDb:
             )
             pass
 
+    def exe_one_file(
+        self
+        , appli_name = 'vlc'
+        , file_name = 'Newral'
+    ):
+        # alaina loo le URI misy anle appli01
+        # alaina ilay URI misy anle file01
+
+        # tsy apiasaina ito code eto ambany eto ty rah windows no apiasaina
+        # mapiasa ternaire
+        # path_appli = self.action_select(
+        #     collection = 'appli'
+        #     , action = 'find_not_file'
+        #     , doc_of_file_or__not_file = {
+        #         'name_exe': appli_name
+        #     }
+        # )[0]['path_exe'] if (
+        #     len(
+        #         self.action_select(
+        #         collection = 'appli'
+        #         , action = 'find_not_file'
+        #         , doc_of_file_or__not_file = {
+        #             'name_exe': appli_name
+        #         }
+        #         )
+        #     ) == 1
+        # ) else 'Path_appli unknown or there are many'
+        # # print('path_appli: ', path_appli)
+        # # # C:\Program Files\VideoLAN\VLC\vlc.exe
+        # 
+        # if path_appli == 'Path_appli unknown or there are many':
+        #     print (path_appli + ' _ 3676445759432111')
+        #     return
+        #     pass
+
+
+
+        
+
+        path_file = self.action_select(
+            action = 'find_file'
+            , doc_of_file_or__not_file = {
+                'file_name_origin':{
+                    '$regex': '.*'+ file_name +'.*'
+                }
+            }
+        )
+        # print ('path_file 2467888: ', path_file)
+        # sys.exit(0)
+        if(len(path_file)!=1):
+            print ('Path_file unknown or there are many 47899333')
+            Print_Color.print_red(
+                txt = 'Going to run(' + str(path_file[0]) + ') ONLY'
+            )
+            # return
+
+        subprocess.check_output(
+            str(path_file[0])
+            , shell = True
+        )
+
+        os.remove(str(path_file[0]))
+        print()
+        print(path_file[0] + ' has been run, then deleted')
+
+
+
+        pass
+
     def action_select(
         self
         , server = 'localhost'
@@ -106,7 +176,7 @@ class MongoDb:
                     list_collection = self.local_db001.collection_names()
                 except pymongo.errors.OperationFailure:
                     print('Authentication@Connection to database Error _ 72621184')
-                        
+
                 if (collection not in list_collection):
                     print('Collection (' +collection+ ') is NOT in the list_of_collection ')
                     return
@@ -142,18 +212,23 @@ class MongoDb:
                     # list_files_inserted__from_reg_file_name \
                     regex001 = '.*' + patt_to_search_in_file_name + '.*'
                     # res_query \
+                    # res_query__files_info \
+                    #     = self.local_db001.get_collection(collection).find({
+                    #         'file_name_origin': {'$regex': 
+                    #             str(regex001)
+                    #             # {str(regex001)}
+                    #             , '$options':'i'
+                    #         }
+                    #     })
+
                     res_query__files_info \
-                        = self.local_db001.get_collection(collection).find({
-                            'file_name_origin': {'$regex': 
-                                str(regex001)
-                                # {str(regex001)}
-                                , '$options':'i'
-                            }
-                        })
+                        = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file
+                        )
                     # print('res_query: ', res_query)
                     # # <pymongo.cursor.Cursor object at 0x000002289D165F60>
 
                     i = 0
+                    res = []
                     for f in res_query__files_info:
                         # print ('type(f): ', type(f))
                         # # <class 'dict'>
@@ -168,6 +243,9 @@ class MongoDb:
                         # print("f['path_file_origin'].rsplit('\\', 1)[1]: ", f['path_file_origin'].rsplit('\\', 1)[1])
                         # # msg_41.txt
                         file_target_name = output_folder_for_file + f['path_file_origin'].rsplit('\\', 1)[1]
+
+                        res.append(file_target_name)
+
                         file_target = open(
                             file_target_name
                             , 'wb'
@@ -178,6 +256,7 @@ class MongoDb:
                         print('The output of your file is saved to: ', file_target_name)
                         # print ('dict01: ', dict01)
                         # # <gridfs.grid_file.GridOut object at 0x0000028120D249E8>
+                    return res
                     
                 else: # the action is unknown
                     pass
@@ -246,6 +325,8 @@ class MongoDb:
                         doc_of_file_or__not_file
                         # , safe = True # not working
                     )
+
+                    file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
                     self.fs_loc_db001.delete(
 
                     )
@@ -255,6 +336,7 @@ class MongoDb:
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
                 ):
+
                     # this next line is going to insert the file inside MongoDb
                     fileID = self.fs_loc_db001.put(
                         open(

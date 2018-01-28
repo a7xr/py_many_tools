@@ -5,6 +5,8 @@ import sys
 import getopt
 import csv
 
+from Tools.Tools_Basic import Tools_Basic
+
 import sys
 import datetime
 from datetime import date
@@ -410,7 +412,18 @@ def main():
 
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
-        sys.exit(0) 
+        sys.exit(0)
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_appli001')
+    ): 
+        app = MongoDb().exe_one_file(
+            file_name = 'eclipse'
+        )
+        # print ('app: ', app)
+        pass
 
     elif (
         (len (sys.argv) == 3) 
@@ -421,10 +434,10 @@ def main():
             action = 'insert_not_file'
             , collection = 'appli'
             , doc_of_file_or__not_file = {
-                'path_exe': r'C:\Program Files\VideoLAN\VLC\vlc.exe'
-                , 'name_exe': 'vlc'
+                'path_exe': r'C:\Windows\SysWOW64\mspaint.exe'
+                , 'name_exe': 'mspaint'
                 , 'version': """
-2.2.4 Weatherwax
+Version 1709 (OS Build 16299.192)
 """
                 , 'type_os': 'Windows'
             }
