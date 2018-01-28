@@ -417,6 +417,48 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_update_mongo001')
+    ): 
+        MongoDb().action_not_select(
+            action = 'update_not_file'
+            , collection = 'person'
+            , doc_of_file_or__not_file = (
+                {"alias":"alias001"},
+                {"$set":{"alias":"alias from update"}}
+            )
+        )
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_system005')
+    ): 
+        a = Tools_Basic().crawl_into_folder()
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_system004')
+    ): 
+        Tools_System().insert_folder()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_system003')
+    ): 
+        # walk_dir = r'E:\Serie'
+        walk_dir = r'E:\New folder'
+        for root, subdirs, files in os.walk(walk_dir):
+            for filename in files:
+                file_path = os.path.join(root, filename)
+                print('(full path: %s)' % (file_path))
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_system002')
     ): 
         s = Tools_System().get_file_from_mongodb()

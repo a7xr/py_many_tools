@@ -1,4 +1,5 @@
 from .Tools_MongoDb import MongoDb
+from .Tools_Basic import Tools_Basic
 import os
 
 # hnw anle we izay zvt tafiditra any anaty MongoDb dia 
@@ -6,6 +7,29 @@ import os
 # not sure if I have to do this
 class Tools_System:
     def __init__(self):
+        pass
+
+    # TODO going to insert a whole folder into mongodb
+    def insert_folder(
+        self
+        , walk_dir = 'E:\\New folder\\New folder\\'
+    ):
+        # I can use Tools_Basic.crawl_into_folder
+        # # but it is going to run to many loops
+        for root, subdirs, files in os.walk(walk_dir):
+            for filename in files:
+                path_file = os.path.join(root, filename)
+                # print("path_file.rsplit('.', 1)[1]: ", path_file.rsplit('.', 1)[1])
+                # # mp3
+                self.mongodb.action_not_select(
+                    action = 'insert_file'
+                    , collection = 'file_inserted'
+                    , doc_of_file_or__not_file = {
+                        'path_file_origin': path_file
+                        , 'type': path_file.rsplit('.', 1)[1]
+                    }
+                )
+                print('(full path: %s)' % (path_file))
         pass
 
     def connect_to_db(

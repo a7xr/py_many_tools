@@ -257,6 +257,7 @@ class MongoDb:
 
         pass
 
+    
     def action_select(
         self
         , server = 'localhost'
@@ -413,6 +414,11 @@ class MongoDb:
                     self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
                     txt = 'Inserted into: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
                     print (txt)
+
+                elif (action == 'update_not_file'):
+                    self.local_db001.get_collection(collection).update(doc_of_file_or__not_file)
+                    print('updated: ', doc_of_file_or__not_file)
+                    pass
 
                 elif (action == 'delete_not_file'):
                     self.local_db001.get_collection(collection).remove(
