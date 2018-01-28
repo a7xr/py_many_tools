@@ -77,33 +77,34 @@ class MongoDb:
                         , database = database
                         , port01 = 27017
                     )
+
+                list_collection = self.local_db001.collection_names()
+
+                if (collection not in list_collection):
+                    print('Collection (' +collection+ ') is NOT in the list_of_collection ')
+                    return
+
                 if(action == 'find_not_file'):
-                    if (collection == 'person'):
-                        
-                        print('Connection from def(query_select) _ code76543222888')
-                        res_query = self.local_db001.person.find(
-                            doc
-                        )
-                        # error below
-                        # res_query = self.local_db001.getCollection(collection).find(
-                        #     doc
-                        # )
-                        pass
-                    else: # the collection is unknown
-                        pass
+                    res_query = self.local_db001.get_collection(collection).find(
+                        doc_of_file_or__not_file
+                    )
+                    for doc01 in res_query:
+                        res.append(doc01)
+                        return res
+                    pass
                 elif(
                     (action == 'find_file')
-                    and (collection == 'file_inserted')
                 ):
+                    collection = 'file_inserted'
                     # list_files_inserted__from_reg_file_name \
                     regex001 = '.*' + patt_to_search_in_file_name + '.*'
                     # res_query \
                     res_query__files_info \
-                        = self.local_db001.file_inserted.find({
+                        = self.local_db001.get_collection(collection).find({
                             'file_name_origin': {'$regex': 
-                                    str(regex001)
-                                    # {str(regex001)}
-                                    , '$options':'i'
+                                str(regex001)
+                                # {str(regex001)}
+                                , '$options':'i'
                             }
                         })
                     # print('res_query: ', res_query)
@@ -141,11 +142,8 @@ class MongoDb:
             pass
         pass
 
-        for doc01 in res_query:
-            res.append(doc01)
-        return res
 
-    # this method is going to be Complicated
+
     def action_not_select(
         self
         , server = 'localhost'

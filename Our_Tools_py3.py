@@ -421,7 +421,12 @@ def main():
             action = 'insert_not_file'
             , collection = 'appli'
             , doc_of_file_or__not_file = {
-                'path_exe': 'testing003'
+                'path_exe': r'C:\Program Files\VideoLAN\VLC\vlc.exe'
+                , 'name_exe': 'vlc'
+                , 'version': """
+2.2.4 Weatherwax
+"""
+                , 'type_os': 'Windows'
             }
         )
         pass
@@ -432,13 +437,12 @@ def main():
         and (sys.argv[2] == 'test_mongodb008')
     ):
         res_query = MongoDb().action_select(
-            collection = 'file_inserted'
-            , action = 'find_file'
+            # collection = 'file_inserted'
+            action = 'find_file'
             , patt_to_search_in_file_name = 'msg'
         )
         # for val in res_query:
         #     print('val: ', val )
-
         pass
 
     elif (
