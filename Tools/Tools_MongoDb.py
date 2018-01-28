@@ -116,20 +116,23 @@ class MongoDb:
                         # # <class 'dict'>
                         # print (f['uid'])
                         # # 59f4870fe97cac22f86e00de
-                        print('f (', i, '): ' , f)
+                        # print('f (', i, '): ' , f)
+                        # # f ( 0 ):  {'_id': ObjectId('5a6d37912b299517cca02ccd'), 'path_file_origin': 'E:\\tsiakoraka\\Ravin taratasy Tsiakoraka.mp4', 'uid': ObjectId('5a6d37902b299517cca02c9c'), 'file_name_origin': 'Ravin taratasy Tsiakoraka.mp4', 'type': 'mp4'}
                         i += 1
                         grid_file = self.fs_loc_db001.get(
                             ObjectId(str(f['uid']))
                         )
                         # print("f['path_file_origin'].rsplit('\\', 1)[1]: ", f['path_file_origin'].rsplit('\\', 1)[1])
                         # # msg_41.txt
+                        file_target_name = output_folder_for_file + f['path_file_origin'].rsplit('\\', 1)[1]
                         file_target = open(
-                            output_folder_for_file + f['path_file_origin'].rsplit('\\', 1)[1]
+                            file_target_name
                             , 'wb'
                         )
                         file_target.write(grid_file.read())
                         file_target.close()
-                        print('finish')
+
+                        print('The output of your file is saved to: ', file_target_name)
                         # print ('dict01: ', dict01)
                         # # <gridfs.grid_file.GridOut object at 0x0000028120D249E8>
                     
@@ -142,7 +145,12 @@ class MongoDb:
             pass
         pass
 
-
+    def exe(
+        self
+        , like_appli_name = 'vlc'
+        , file_to_exe = ''
+    ):
+        pass
 
     def action_not_select(
         self
@@ -168,6 +176,12 @@ class MongoDb:
                         , database = database
                         , port01 = 27017
                     )
+
+                list_collection = self.local_db001.collection_names()
+                if (collection not in list_collection):
+                    print('Collection (' +collection+ ') is NOT in the list_of_collection ')
+                    return
+                    
                 if (action == 'insert_not_file'):   
                     if (collection == 'person'):
 
@@ -211,9 +225,10 @@ class MongoDb:
                         'path_file_origin': doc_of_file_or__not_file['path_file_origin']
                         , 'uid': fileID
                         , 'file_name_origin': doc_of_file_or__not_file['path_file_origin'].rsplit('\\', 1)[1]
+                        , 'type': doc_of_file_or__not_file['type']
                     })
 
-                    print('File inserted _ 6268846943239003322')
+                    print('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
                     pass
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')
