@@ -7,6 +7,17 @@ from bson.objectid import ObjectId
 import re
 import os
 
+import configparser
+
+confs_at_tools = configparser.ConfigParser()
+
+# confs_at_tools.read(
+#     r'E:\DEV\python\py_many_tools\Tools\confs_at__tools.txt')
+
+# misy zvt tsy azoko ito
+# # nga tsy tokony ho any am mis anle fichier mnw import ny misy anle confs_at_tools
+confs_at_tools.read('all_confs.txt')
+
 from .Print_Color import Print_Color
 
 class MongoDb:
@@ -24,11 +35,14 @@ class MongoDb:
         if(server01 == 'localhost'):
             if(database == 'db001'):
                 if(port01 == 27017):
-                    user_name = 'admin'
-                    password = 'admin'
-                    server = '127.0.0.1'
+                    user_name = confs_at_tools['mongo_l']['username']
+                    password = confs_at_tools['mongo_l']['password']
+                    server = confs_at_tools['mongo_l']['ip_host']
                     uri = "mongodb://" + user_name + ":" + password + "@" + server
                     # self.connect_server_localhost = pymongo.MongoClient(server01, port01)
+
+                    # tsy mamoka erreur ito rah diso ny credentials
+                    # # any am insert sy find iz no mnw erreur rah diso ny credentials
                     self.connect_server_localhost = pymongo.MongoClient(uri)                    
                     print ('Connected from URI('+uri+')')
                     self.local_db001 = self.connect_server_localhost.db001
@@ -184,7 +198,11 @@ class MongoDb:
                         , port01 = 27017
                     )
 
-                list_collection = self.local_db001.collection_names()
+                try:
+                    list_collection = self.local_db001.collection_names()
+                except pymongo.errors.OperationFailure:
+                    print('Authentication@Connection to database Error _ 463575584')
+                    sys.exit(0)
                 if (collection not in list_collection):
                     print('Collection (' +collection+ ') is NOT in the list_of_collection ')
                     return
