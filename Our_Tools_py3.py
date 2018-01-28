@@ -448,6 +448,32 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb011')
+    ):
+        MongoDb().action_not_select(
+            collection = 'person'
+            , action = 'delete_file'
+            , doc_of_file_or__not_file = {
+                'file_name_origin': 'Gothic Storm - Newral takeover.mp3'
+            }
+        )
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb010')
+    ):
+        MongoDb().action_not_select(
+            collection = 'person'
+            , action = 'delete_not_file'
+            , doc_of_file_or__not_file = {
+                'file_name_origin': r"Gothic Storm - Newral takeover.mp3"
+            }
+        )
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mongodb007')
     ):
         MongoDb().action_not_select(

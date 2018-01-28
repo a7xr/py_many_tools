@@ -24,9 +24,15 @@ class MongoDb:
         if(server01 == 'localhost'):
             if(database == 'db001'):
                 if(port01 == 27017):
-                    self.connect_server_localhost = pymongo.MongoClient(server01, port01)
+                    user_name = 'admin'
+                    password = 'admin'
+                    server = '127.0.0.1'
+                    uri = "mongodb://" + user_name + ":" + password + "@" + server
+                    # self.connect_server_localhost = pymongo.MongoClient(server01, port01)
+                    self.connect_server_localhost = pymongo.MongoClient(uri)                    
+                    print ('Connected from URI('+uri+')')
                     self.local_db001 = self.connect_server_localhost.db001
-                    print('Connected to db(' + database + ') at server('+ server01 +') _ code6356745473')
+                    # print('Connected to db(' + database + ') at server('+ server01 +') _ code6356745473')
                     
                     # print (type(self.connect_server_localhost.db001))
                     # # <class 'pymongo.database.Database'>
@@ -150,7 +156,7 @@ class MongoDb:
         , like_appli_name = 'vlc'
         , file_to_exe = ''
     ):
-        
+
         pass
 
     def action_not_select(
@@ -185,10 +191,31 @@ class MongoDb:
 
                 if (action == 'insert_not_file'):   
                     self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
-                    txt = 'Inserted into: db(' + database + '), collection('+ collection +'), doc('+ str(doc_of_file_or__not_file) +')'
+                    txt = 'Inserted into: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
                     print (txt)
 
-                # elif
+                elif (action == 'delete_not_file'):
+                    self.local_db001.get_collection(collection).remove(
+                        doc_of_file_or__not_file
+                        # , safe = True # not working
+                    )
+                    txt = r'Deleted from: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
+                    print (txt)
+                    pass
+
+                elif (action == 'delete_file'):
+                    collection = 'file_inserted'
+                    # esorn ny info momba anle file01 > file_inserted
+                    # esorn ny fichier ao am self.fs_loc_db001
+                    self.local_db001.get_collection(collection).remove(
+                        doc_of_file_or__not_file
+                        # , safe = True # not working
+                    )
+                    self.fs_loc_db001.delete(
+                        
+                    )
+                    txt = r'Deleted from: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
+                    print (txt)
                 
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
