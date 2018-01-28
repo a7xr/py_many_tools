@@ -504,16 +504,43 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_mongodb005')
+        and (sys.argv[2] == 'test_mongodb_select002')
     ):
+        # this is the same as:
+        # # where alias like '%t%'
         res_query = MongoDb().action_select(
             collection = 'person'
             , action = 'find_not_file'
-            , doc = {
-                'alias': 'Mamitiana'
+            # don_t know, why this one doesn_t work
+            , doc_of_file_or__not_file = {
+                {}
             }
         )
         print ('res_query: ', res_query)
+        print ('res_query.count(): ', len(res_query))
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_mongodb_select001')
+    ):
+        # this is the same as:
+        # # where alias like '%t%'
+        res_query = MongoDb().action_select(
+            collection = 'person'
+            , action = 'find_not_file'
+            # , doc_of_file_or__not_file = {
+            #     'alias': 'a'
+            # }
+            , doc_of_file_or__not_file = {
+                'alias':{
+                    '$regex': '.*t.*'
+                }
+            }
+        )
+        print ('res_query: ', res_query)
+        print ('res_query.count(): ', len(res_query))
         pass
 
     elif (

@@ -45,6 +45,7 @@ class MongoDb:
                     # # any am insert sy find iz no mnw erreur rah diso ny credentials
                     self.connect_server_localhost = pymongo.MongoClient(uri)                    
                     print ('Connected from URI('+uri+')')
+                    print()
                     self.local_db001 = self.connect_server_localhost.db001
                     # print('Connected to db(' + database + ') at server('+ server01 +') _ code6356745473')
                     
@@ -74,13 +75,16 @@ class MongoDb:
         self
         , server = 'localhost'
         , database = 'db001'
+        , port = 27017
+
         , collection = 'person'
         , action = 'find_not_file'
-        , port = 27017
-        , doc = {
+        
+        , doc_of_file_or__not_file = {
             'alias': 'alias001',
             'phone': 'phone001'
         }
+        , projection = {}
         , patt_to_search_in_file_name = 'eclipse'
         , output_folder_for_file = "e:\\to_del\\"
     ):
@@ -97,20 +101,33 @@ class MongoDb:
                         , database = database
                         , port01 = 27017
                     )
-
-                list_collection = self.local_db001.collection_names()
-
+                try:
+                    list_collection = self.local_db001.collection_names()
+                except pymongo.errors.OperationFailure:
+                    print('Authentication@Connection to database Error _ 72621184')
+                        
                 if (collection not in list_collection):
                     print('Collection (' +collection+ ') is NOT in the list_of_collection ')
                     return
 
                 if(action == 'find_not_file'):
+
+                    # if(len(projection) > 0):
+                        
+
                     res_query = self.local_db001.get_collection(collection).find(
                         doc_of_file_or__not_file
+                        # , projection
                     )
+                    # print ('res_query 820303933: ', res_query)
+
+                    # print ('doc_of_file_or__not_file 9484: ', doc_of_file_or__not_file)
+
                     for doc01 in res_query:
                         res.append(doc01)
-                        return res
+
+                    return res
+
                     pass
                 elif(
                     (action == 'find_file')
@@ -165,13 +182,7 @@ class MongoDb:
             pass
         pass
 
-    def exe(
-        self
-        , like_appli_name = 'vlc'
-        , file_to_exe = ''
-    ):
 
-        pass
 
     def action_not_select(
         self
@@ -230,7 +241,7 @@ class MongoDb:
                         # , safe = True # not working
                     )
                     self.fs_loc_db001.delete(
-                        
+
                     )
                     txt = r'Deleted from: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
                     print (txt)
