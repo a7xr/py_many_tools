@@ -417,10 +417,19 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_appli002')
+    ): 
+        app = MongoDb().modify_file(
+            patt_to_search_in_file_name = 'msg_03.txt'
+        )
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_appli001')
     ): 
         app = MongoDb().exe_one_file(
-            file_name = 'eclipse'
+            file_name = 'Newral'
         )
         # print ('app: ', app)
         pass
@@ -452,7 +461,10 @@ Version 1709 (OS Build 16299.192)
         res_query = MongoDb().action_select(
             # collection = 'file_inserted'
             action = 'find_file'
-            , patt_to_search_in_file_name = 'Newral'
+            # , patt_to_search_in_file_name = 'msg_03.txt'
+            , doc_of_file_or__not_file = {
+                'file_name_origin': 'msg_03.txt'
+            }
         )
         # for val in res_query:
         #     print('val: ', val )
@@ -464,12 +476,13 @@ Version 1709 (OS Build 16299.192)
         and (sys.argv[2] == 'test_mongodb011')
     ):
         MongoDb().action_not_select(
-            collection = 'person'
+            collection = 'file_inserted'
             , action = 'delete_file'
             , doc_of_file_or__not_file = {
                 'file_name_origin': 'Gothic Storm - Newral takeover.mp3'
             }
         )
+        print('file deleted 345HDHDFGH463456DF')
 
     elif (
         (len (sys.argv) == 3) 

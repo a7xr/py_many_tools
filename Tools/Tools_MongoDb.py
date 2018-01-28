@@ -82,30 +82,30 @@ class MongoDb:
 
         # tsy apiasaina ito code eto ambany eto ty rah windows no apiasaina
         # mapiasa ternaire
-        # path_appli = self.action_select(
-        #     collection = 'appli'
-        #     , action = 'find_not_file'
-        #     , doc_of_file_or__not_file = {
-        #         'name_exe': appli_name
-        #     }
-        # )[0]['path_exe'] if (
-        #     len(
-        #         self.action_select(
-        #         collection = 'appli'
-        #         , action = 'find_not_file'
-        #         , doc_of_file_or__not_file = {
-        #             'name_exe': appli_name
-        #         }
-        #         )
-        #     ) == 1
-        # ) else 'Path_appli unknown or there are many'
-        # # print('path_appli: ', path_appli)
-        # # # C:\Program Files\VideoLAN\VLC\vlc.exe
-        # 
-        # if path_appli == 'Path_appli unknown or there are many':
-        #     print (path_appli + ' _ 3676445759432111')
-        #     return
-        #     pass
+        path_appli = self.action_select(
+            collection = 'appli'
+            , action = 'find_not_file'
+            , doc_of_file_or__not_file = {
+                'name_exe': appli_name
+            }
+        )[0]['path_exe'] if (
+            len(
+                self.action_select(
+                    collection = 'appli'
+                    , action = 'find_not_file'
+                    , doc_of_file_or__not_file = {
+                        'name_exe': appli_name
+                    }
+                )
+            ) == 1
+        ) else 'Path_appli unknown or there are many'
+        # print('path_appli: ', path_appli)
+        # # C:\Program Files\VideoLAN\VLC\vlc.exe
+        
+        if path_appli == 'Path_appli unknown or there are many':
+            print (path_appli + ' _ 3676445759432111')
+            return
+            pass
 
 
 
@@ -128,19 +128,134 @@ class MongoDb:
             )
             # return
 
+        # # ti akrai ty natao ho an'i windows irery
         subprocess.check_output(
             str(path_file[0])
             , shell = True
         )
+
+        # print('path_appli: ', path_appli)
+        # print ('path_file: ', str(path_file[0]))
+
+        # subprocess.Popen(
+        #     [
+        #         path_appli
+        #         , path_file
+        #     ]
+        # )
 
         os.remove(str(path_file[0]))
         print()
         print(path_file[0] + ' has been run, then deleted',)
         pass
 
+    def get_path_appli(
+        self
+        , appli_name = 'sublime_text'
+    ):
+        path_appli = self.action_select(
+            collection = 'appli'
+            , action = 'find_not_file'
+            , doc_of_file_or__not_file = {
+                'name_exe': appli_name
+            }
+        )[0]['path_exe'] if (
+            len(
+                self.action_select(
+                    collection = 'appli'
+                    , action = 'find_not_file'
+                    , doc_of_file_or__not_file = {
+                        'name_exe': appli_name
+                    }
+                )
+            ) == 1
+        ) else 'Path_appli unknown or there are many _ 356893211156777'
+        # print('path_appli: ', path_appli)
+        # # C:\Program Files\VideoLAN\VLC\vlc.exe
+        
+        if path_appli == 'Path_appli unknown or there are many':
+            print (path_appli + ' _ 356893211156777')
+            return path_appli
+            pass
+
+        return str(path_appli)
+        pass
     # ny fichier mety modifiena atreto dia
-    # # .txt
-    def modify_file()
+    # # .txt IRERY
+    def modify_file(
+        self
+        , patt_to_search_in_file_name = 'eclipse'
+        , name_exe = 'sublime_text'
+    ):
+        # 
+        # any anaty bdd ny fichier ary alefa anaty to_del > path_file
+        # vakina am sublime ilay path_file
+        # # aza adino ny mnw sauvegarde aa
+        # supprimena ny any anaty file_inserted sy ny fs_loc_db001
+        # mnw insertion anle path_file
+        try: 
+            path_file = self.action_select(
+                action = 'find_file'
+                , doc_of_file_or__not_file = {
+                    'path_file_origin': {
+                        '$regex': '.*'+ patt_to_search_in_file_name +'.*'
+                    }
+                }
+            )
+        except gridfs.errors.NoFile:
+            print()
+            print ('The file('+ patt_to_search_in_file_name +') you wanted is missing')
+            print()
+            return
+        path_file = str(path_file[0]) if (len(path_file) == 1) else 'File missing or you selected to many files'
+
+        path_appli = self.get_path_appli(
+            appli_name = 'sublime_text'
+        )
+
+        # print ('path_appli A34RT45SF2E: ', path_appli)
+        # # C:\Program Files (x86)\Sublime Text 3\sublime_text.exe
+        # print ('path_file 3YQGDF7657541241S: ', path_file)
+        # # e:\to_del\msg_02.txt
+
+        subprocess.Popen(
+            [
+                path_appli
+                , '-w'
+                , path_file
+            ]
+        ).wait()
+
+        self.action_not_select(
+            action = 'delete_file'
+            , doc_of_file_or__not_file = {
+                'file_name_origin': patt_to_search_in_file_name
+            }
+        )
+
+        self.action_not_select(
+            action = 'insert_file'
+            , collection = 'file_inserted'
+            , doc_of_file_or__not_file = {
+                'path_file_origin': path_file
+                , 'type': 'text'
+            }
+        )
+        print ('File updated inside the database 234545869SDFGDFG')
+
+        # uid_file = self.action_select(
+        #     collection = 'file_inserted'
+        #     , action = 'find_not_file'
+        #     , doc_of_file_or__not_file = {
+        #         'file_name_origin': path_file.rsplit('\\', 1)[1]
+        #     }
+        # )[0]['uid']
+
+        # print ('uid_file: ', uid_file)
+        # # 59f48596e97cac03cc5e1d23
+
+
+        pass
 
     def action_select(
         self
@@ -150,14 +265,13 @@ class MongoDb:
 
         , collection = 'person'
         , action = 'find_not_file'
-        
+
         , doc_of_file_or__not_file = {
             'alias': 'alias001',
             'phone': 'phone001'
         }
         , projection = {}
         , limit_number = 10000000000000 # otrn mila anle mnw append_dict ito izay vao miainga
-        , patt_to_search_in_file_name = 'eclipse'
         , output_folder_for_file = "e:\\to_del\\"
     ):
         res_query = None
@@ -211,16 +325,7 @@ class MongoDb:
                 ):
                     collection = 'file_inserted'
                     # list_files_inserted__from_reg_file_name \
-                    regex001 = '.*' + patt_to_search_in_file_name + '.*'
-                    # res_query \
-                    # res_query__files_info \
-                    #     = self.local_db001.get_collection(collection).find({
-                    #         'file_name_origin': {'$regex': 
-                    #             str(regex001)
-                    #             # {str(regex001)}
-                    #             , '$options':'i'
-                    #         }
-                    #     })
+                    
 
                     res_query__files_info \
                         = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file
@@ -318,22 +423,36 @@ class MongoDb:
                     print (txt)
                     pass
 
-                elif (action == 'delete_file'):
+                elif (action == 'delete_file'): # mbola tsy vita
+                    # print ('ato QDSFSDF564567')
                     collection = 'file_inserted'
-                    # esorn ny info momba anle file01 > file_inserted
-                    # esorn ny fichier ao am self.fs_loc_db001
+                    # alaina ny info momba ilay fichier ho supprimena > file_id
+                    # supprimena ny self.local_db001.get_collection
+                    # supprimena ny self.fs_loc_db001
+                    file_id = '00'
+                    try:
+                        file_id = self.action_select(
+                            collection = 'file_inserted'
+                            , action = 'find_not_file'
+                            , doc_of_file_or__not_file = doc_of_file_or__not_file
+                        )[0]['uid']
+                    except IndexError:
+                        print('looks like the file which you wanted is not in collection(file_inserted) anymore _ 232657568134')
+
+                    # print('file_id: ', file_id)
+                    # # 5a6d3fcf2b29952158f66485
+
                     self.local_db001.get_collection(collection).remove(
                         doc_of_file_or__not_file
                         # , safe = True # not working
                     )
-
-                    file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
+                    # print ('tafa ato')
+                    # file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
                     self.fs_loc_db001.delete(
-
+                        file_id
                     )
-                    txt = r'Deleted from: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
-                    print (txt)
-                
+                    print('file_deleted 242345SSDF')
+                    
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
                 ):
