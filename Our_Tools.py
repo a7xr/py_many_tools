@@ -48,7 +48,7 @@ except Exception:
     os.system("pip install psycopg2")
 try:
     import xlwt
-except Exception:
+except ModuleNotFoundError:
     print "xlwt doit etre installee"
     raw_input()
     os.system("pip install xlwt")

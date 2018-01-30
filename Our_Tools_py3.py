@@ -2,6 +2,7 @@ import os
 
 import re
 import sys
+sys.path.append("..")
 import getopt
 import csv
 
@@ -19,12 +20,15 @@ from tweepy import OAuthHandler
 from tweepy.streaming import StreamListener
 import json
 
+from Test999 import coco # Test999 is in the parent_folder
+
 from Tools.Tools_Pics import Tools_Pics
 from Tools.Tools_MatPlotLib import MatPlotLib
 from Tools.Tools_Selenium import Tools_Selenium
 from Tools.Print_Color import Print_Color
 from Tools.Tools_MySQL import MySQL
 from Tools.Tools_MongoDb import MongoDb
+
 
 from Freelance.Twitter001 import Twitter_Code
 from Machine_Learning.Machine_Learning import *
@@ -47,7 +51,6 @@ from twitter.oauth import write_token_file, read_token_file
 from twitter.oauth_dance import oauth_dance
 
 import json
-
 
 
 config = configparser.ConfigParser()
@@ -399,7 +402,6 @@ class Our_Tools_py3(threading.Thread):
     pass
 
 
-
 def main():
     try:
         #opts, args = getopt.getopt(sys.argv[1:],"hle:t:p:cu:", ["help","listen","execute","target","port","command","upload"])
@@ -416,6 +418,14 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_xlrd001'):
+    ): 
+        
+        pass
 
     elif (
         (len (sys.argv) == 3) 
@@ -1137,6 +1147,9 @@ Version 1709 (OS Build 16299.192)
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_config_parser001')
     ):
+
+        coco()
+
         # # do not understand, if this is uncommented, then the 
         # # # -T test_beautiful_soup001... will NOT work
         # config = configparser.ConfigParser()
