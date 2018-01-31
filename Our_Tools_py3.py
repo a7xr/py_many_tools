@@ -11,6 +11,7 @@ import csv
 
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_System import Tools_System
+from Tools.Tools_Excel import Tools_Excel
 import sys
 import datetime
 from datetime import date
@@ -422,9 +423,19 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_xlrd001'):
+        and (sys.argv[2] == 'test_xlrd002')
     ): 
-        
+        val00 = Tools_Excel.read_one_col_of_sheet_xl()
+        print('val00: ', val00)
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_xlrd001')
+    ): 
+        val00 = Tools_Excel.read_one_cell_from_xl()
+        print('val00: ', val00)
         pass
 
     elif (
