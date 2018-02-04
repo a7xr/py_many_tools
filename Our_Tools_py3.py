@@ -506,6 +506,18 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_action_select001')
+    ): 
+        m = MongoDb()
+        m.connection()
+        res = m.action_select001()
+        for r in res:
+            print(r)
+        pass
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))

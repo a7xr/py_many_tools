@@ -297,6 +297,34 @@ class MongoDb:
 
         pass
 
+    # this is going to select file or NOT file
+    # the parameter_json_filter is very important
+    def action_select_not_file(
+        self
+        , server = 'localhost'
+        , database = 'db001'
+        , port = 27017
+
+        , collection = 'file_inserted'
+        , action = 'find_not_file'
+        , print_only = True
+
+        , json_filter = {
+            'file_name_origin': {
+                '$regex': '.*msg.*'
+            }
+        }
+    ):
+        results = self.local_db001\
+            .get_collection(collection).find(json_filter)
+
+        res = []
+        for result in results:
+            # print(result)
+            res.append(result)
+        return res
+        pass
+
     
     def action_select(
         self
