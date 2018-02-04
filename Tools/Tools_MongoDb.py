@@ -297,6 +297,112 @@ class MongoDb:
 
         pass
 
+    def action_select_file(
+        self
+        , server = 'localhost'
+        , database = 'db001'
+        , port = 27017
+
+        , collection = 'file_inserted'
+        , print_only = 1 # 1 means, we are going to print ONLY
+                        # 0 means, we are going to download ONLY
+                        # 2 means, we are going to print AND download
+
+        , json_filter = {
+            'file_name_origin': {
+                '$regex': '.*msg.*'
+            }
+        }
+
+        , output_folder_for_file = "e:\\to_del\\"
+    ):
+        if (server == 'localhost'):
+            if(database == 'db001'):
+                try:
+                    self.connect_server_localhost
+
+                except AttributeError:
+                    self.connection(
+                        server01 = server
+                        , database = database
+                        , port01 = port
+                    )
+                try:
+                    list_collection = self.local_db001.collection_names()
+                except pymongo.errors.OperationFailure:
+                    print('Authentication@Connection to database Error _ 72621184')
+
+                if (collection not in list_collection):
+                    print('Collection (' +collection+ ') is NOT in the list_of_collection ')
+                    return
+
+                # connection is set
+                # we are in (server == 'localhost', database == 'db001')
+                collection = 'file_inserted'
+                # results = self.local_db001\
+                #     .get_collection(collection).find(json_filter)
+                res_query__files_info \
+                        = self.local_db001.get_collection(collection).find(json_filter
+                        )
+                res = []
+                i = 0
+                for about_file in res_query__files_info:
+                    # print(result)
+                    # res.append(result)
+
+                    # should find a better solution, this one is going to let the computer make a lot of branch
+                    if print_only == 0: # we are going to Download ONLY
+                        # print (about_file['uid'])
+                        # sys.exit(0)
+                        try: 
+                            grid_file = self.fs_loc_db001.get(
+                                ObjectId(str(about_file['uid']))
+                            )
+                        except gridfs.errors.NoFile as err: # the information is in collection('file_inserted'), but that file is missing in MongoDb
+                            print (about_file['uid'])
+                            Print_Color.print_blue (txt = 'Looks like the information of the file is in collection(file_inserted)')
+                            Print_Color.print_blue (txt = '- but the file is missing in MongoDb:server('+ server +'), database('+ database +')')
+                            self.local_db001.get_collection('file_inserted').remove({'uid': about_file['uid']})
+                            print()
+                            print('uid: ', str(about_file['uid']), ' has been')
+                            Print_Color.print_red(txt = '- deleted')
+                            sys.exit(0)
+                        file_target_name = output_folder_for_file + about_file['path_file_origin'].rsplit('\\', 1)[1]
+                        res.append(file_target_name)
+                        file_target = open(
+                            file_target_name
+                            , 'wb'
+                        )
+                        file_target.write(grid_file.read())
+                        file_target.close()
+                        print('Your file is saved to: ', file_target_name)
+                        pass
+                    elif print_only == 1: # we are going to print ONLY
+                        try:
+                            print()
+                            print('uid: ', about_file['uid'])
+                            print('file_name_origin: ', about_file['file_name_origin'])
+                            print('path_file_origin: ', about_file['path_file_origin'])
+                            print('type: ', about_file['type'])
+                            pass
+                        except KeyError:
+                            pass
+                    elif print_only == 2: # we are going to print AND download
+                        pass
+
+                return res
+                pass
+            else: # the database which is selected is missing
+                print('The database('+ database +') which you wanted is ')
+                Print_Color.print_red(txt = '- missing')
+                sys.exit(0)
+        else:
+            print('The server('+ server +') which you wanted is ')
+            Print_Color.print_red(txt = '- missing')
+            sys.exit(0)
+        pass
+        # end of def action_select_file()
+
     # this is going to select file or NOT file
     # the parameter_json_filter is very important
     def action_select_not_file(
@@ -306,7 +412,6 @@ class MongoDb:
         , port = 27017
 
         , collection = 'file_inserted'
-        , action = 'find_not_file'
         , print_only = True
 
         , json_filter = {
@@ -315,17 +420,46 @@ class MongoDb:
             }
         }
     ):
-        results = self.local_db001\
-            .get_collection(collection).find(json_filter)
+        if (server == 'localhost'):
+            if(database == 'db001'):
+                try:
+                    self.connect_server_localhost
 
-        res = []
-        for result in results:
-            # print(result)
-            res.append(result)
-        return res
-        pass
+                except AttributeError:
+                    self.connection(
+                        server01 = server
+                        , database = database
+                        , port01 = port
+                    )
+                try:
+                    list_collection = self.local_db001.collection_names()
+                except pymongo.errors.OperationFailure:
+                    print('Authentication@Connection to database Error _ 72621184')
 
-    
+                if (collection not in list_collection):
+                    print('Collection (' +collection+ ') is NOT in the list_of_collection ')
+                    return
+
+                # connection is set
+                # we are in (server == 'localhost', database == 'db001')
+                results = self.local_db001\
+                    .get_collection(collection).find(json_filter)
+
+                res = []
+                for result in results:
+                    # print(result)
+                    res.append(result)
+                return res
+                pass
+            else: # the database which is selected is missing
+                print('The database('+ database +') which you wanted is ')
+                Print_Color.print_red(txt = '- missing')
+                sys.exit(0)
+        else:
+            print('The server('+ server +') which you wanted is ')
+            Print_Color.print_red(txt = '- missing')
+            sys.exit(0)
+
     def action_select(
         self
         , server = 'localhost'
@@ -527,7 +661,9 @@ class MongoDb:
                     # print ('tafa ato')
                     # file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
                     self.fs_loc_db001.delete(
-                        file_id
+                        {
+                            '_id': ObjectId(file_id)
+                        }
                     )
                     print('file_deleted 242345SSDF')
                     

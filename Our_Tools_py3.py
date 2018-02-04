@@ -506,18 +506,63 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_action_select004')
+    ): 
+        MongoDb().action_select_file(
+            print_only = 0
+            , json_filter = {
+                'path_file_origin':{
+                    '$regex': '.*tsiakoraka.*'
+                }
+            }
+        )
+        pass
 
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_action_select003')
+    ): 
+        MongoDb().action_select_file(
+            print_only = 0
+            , json_filter = {
+                'file_name_origin': {
+                    '$regex': 'Introducing Ethereum and Solidity.*'
+                }
+            }
+        )
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_action_select002')
+    ): 
+        MongoDb().action_select_file()
+        pass
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_action_select001')
     ): 
-        m = MongoDb()
-        m.connection()
-        res = m.action_select001()
+        # m = MongoDb()
+        # m.connection()
+        res = MongoDb().action_select_not_file(
+            collection = 'appli'
+            , database = 'db002'
+            , json_filter = {
+                'name_exe': {
+                    '$regex': '.*foxit.*'
+                }
+            }
+        )
         for r in res:
             print(r)
         pass
+        
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
@@ -667,7 +712,7 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'delete_file'
             , doc_of_file_or__not_file = {
-                'file_name_origin': 'Gothic Storm - Newral takeover.mp3'
+                'uid': '5a76acf12b299514c4834984'
             }
         )
         print('file deleted 345HDHDFGH463456DF')
@@ -694,8 +739,8 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'insert_file'
             , doc_of_file_or__not_file = {
-                'path_file_origin': r'E:\New folder\extracted\FOR HONOR\Gothic Storm - Newral takeover.mp3'
-                , 'type': 'mp3'
+                'path_file_origin': r'G:\doc\android\potatoe02.txt'
+                , 'type': 'pdf'
             }
             , 
         )
