@@ -4,6 +4,7 @@ import re
 import sys
 sys.path.append("..")
 import getopt
+import xlsxwriter
 import csv
 
 
@@ -402,6 +403,91 @@ class Our_Tools_py3(threading.Thread):
         print ("- - hamoaka ny 'help' ireo")
     pass
 
+    def main_xl(self):
+        # Tanjona: Avoaka ny Main_py.xlsx
+        # Vakiana ny Main_py.xlsx
+        # # Tonga de izai misy zvt ftsn no mnw execution
+        # alefa ny execution
+
+        # ny zvt ande hoapdirina ao zao
+        # # mapditra zvt ao anaty bdd
+        # ##Note omeo ligne ak10 am voloo, depart 01@xl > 00@program
+        # ###Mongo omeo ligne ak50, depart 11@xl > 10@program
+        # ###Mysql omeo ligne ak50, depart 61@xl > 60@program
+
+        # mnw connection am Mongo
+
+        self.mongo001 = MongoDb()
+        self.mongo001.connection()
+
+        self.xl_main_read = "Main_py.xlsx"
+
+        workbook_write = xlsxwriter.Workbook(self.xl_main_read)
+
+        header_format_red = workbook_write.add_format({'bold': True,
+                                'align': 'center',
+                                'valign': 'vcenter',
+                                'fg_color': '#c80815', # 200, 8, 15
+                                'border': 1})
+
+
+        header_format_blue001 = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#4d8fac', # 77, 143, 172
+                            'border': 1})
+
+        header_format_blue002 = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#a3c7d6', # 163, 199, 214
+                            'border': 1})
+        header_format_blue002 = workbook_write.add_format({'bold': True,
+                            'align': 'center',
+                            'valign': 'vcenter',
+                            'fg_color': '#a3c7d6', # 163, 199, 214
+                            'border': 1})
+
+        sheet_main = workbook_write.add_worksheet('Main')
+        cell_format_union = workbook_write.add_format({'align': 'center',
+            'valign': 'vcenter',
+            'border': 1})
+        sheet_main.merge_range('A1:D1', "", 
+            cell_format_union)
+        sheet_main.merge_range('A2:B2', "", 
+            cell_format_union)
+                    #    y  x
+        sheet_main.write(0, 0, 'Notes', header_format_blue001)
+        sheet_main.write(1, 0, 'Mainly KeyWords', header_format_blue002)
+        sheet_main.write(1, 2, '#MongoDb')
+        sheet_main.write(1, 3, '#MySQL')
+
+        sheet_main.merge_range('A11:D11', "", 
+            cell_format_union)
+        sheet_main.write(10, 0, '###MongoDb', header_format_blue001)
+        sheet_main.write(11, 0, 'Raha ohatra ka hampiditra Fichier anaty MongoDb', header_format_blue002)
+        sheet_main.write(13, 0, 'Rah ohatra k hnw Select ao anaty MongoDb', header_format_blue001)
+
+        workbook_write.close()
+        os.system(self.xl_main_read)
+
+        test001 = Tools_Excel.read_one_cell_from_xl(
+            xl_file = self.xl_main_read
+            , sheet_index = 0
+            , y = 1 # noho ireo val ireo dia B2 no voavaky
+            , x = 1
+        )
+
+        # 0 34 38 499 03
+
+        print ('test001: ', test001)
+
+        pass
+
+# def main():
+    
+#     Our_Tools_py3().main_xl()
+    
 
 def main():
     try:
@@ -490,9 +576,11 @@ def main():
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_system001')
+        and (sys.argv[2] == 'set_file_del_sys001')
     ): 
-        s = Tools_System().set_file_to_mongodb()
+        s = Tools_System().set_file_to_mongodb__del_in_sys(
+            path_file = r'G:\doc\cryptocurrency\Introducing Ethereum and Solidity.pdf'
+        )
         pass
 
     elif (
@@ -501,7 +589,7 @@ def main():
         and (sys.argv[2] == 'test_appli002')
     ): 
         app = MongoDb().modify_file(
-            patt_to_search_in_file_name = 'msg_03.txt'
+            patt_to_search_in_file_name = 'msg_03'
         )
 
     elif (
@@ -520,14 +608,15 @@ def main():
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_mongodb009')
     ):
+    # C:\Program Files (x86)\Foxit Software\Foxit Reader
         MongoDb().action_not_select(
             action = 'insert_not_file'
             , collection = 'appli'
             , doc_of_file_or__not_file = {
-                'path_exe': r'C:\Windows\SysWOW64\mspaint.exe'
-                , 'name_exe': 'mspaint'
+                'path_exe': r'C:\Program Files (x86)\Foxit Software\Foxit Reader\FoxitReader.exe'
+                , 'name_exe': 'foxit_reader'
                 , 'version': """
-Version 1709 (OS Build 16299.192)
+Version 8.1.0.1013                
 """
                 , 'type_os': 'Windows'
             }
@@ -537,18 +626,24 @@ Version 1709 (OS Build 16299.192)
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_mongodb008')
+        and (sys.argv[2] == 'search_file_in_mongodb')
     ):
-        res_query = MongoDb().action_select(
-            # collection = 'file_inserted'
-            action = 'find_file'
-            # , patt_to_search_in_file_name = 'msg_03.txt'
-            , doc_of_file_or__not_file = {
-                'file_name_origin': 'msg_03.txt'
-            }
-        )
-        # for val in res_query:
-        #     print('val: ', val )
+        words_to_search = 'msg'
+        try: 
+            path_file = MongoDb().action_select(
+                action = 'find_file'
+                , print_only = True
+                , doc_of_file_or__not_file = {
+                    'path_file_origin': {
+                        '$regex': '.*'+ words_to_search +'.*'
+                    }
+                }
+            )
+        except gridfs.errors.NoFile:
+            print()
+            print ('The file('+ words_to_search +') you wanted is missing')
+            print()
+            return
         pass
 
     elif (
@@ -581,7 +676,7 @@ Version 1709 (OS Build 16299.192)
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
-        and (sys.argv[2] == 'test_mongodb007')
+        and (sys.argv[2] == 'test_insert_file_mongodb001')
     ):
         MongoDb().action_not_select(
             collection = 'file_inserted'

@@ -198,35 +198,73 @@ class MongoDb:
         try: 
             path_file = self.action_select(
                 action = 'find_file'
+                , print_only = False
                 , doc_of_file_or__not_file = {
                     'path_file_origin': {
                         '$regex': '.*'+ patt_to_search_in_file_name +'.*'
                     }
                 }
             )
+            # print('path_fileAZFQSDF3452345: ', path_file)
+            # # # ['e:\\to_del\\msg_03.txt', 'e:\\to_del\\msg_03.txt']
+            # sys.exit(0)
+            if (len(path_file) > 1):
+                print('There are many files which you wanted to ', end = '')
+                Print_Color.print_red(txt = 'modify')
+                print()
+                print('Which one of them do you want to modify')
+                i = 0
+                for file001 in path_file:
+                    print(str(i) + ': ' + file001)
+                    i += 1
+                i = input(': ')
+                path_file = path_file[int(i)]
+            if (len(path_file) == 1):
+                path_file = path_file[0]
+            # sys.exit(0)
         except gridfs.errors.NoFile:
             print()
             print ('The file('+ patt_to_search_in_file_name +') you wanted is missing')
             print()
             return
-        path_file = str(path_file[0]) if (len(path_file) == 1) else 'File missing or you selected to many files'
+        # path_file = str(path_file[0]) if (len(path_file) == 1) else 'File missing or you selected to many files'
 
-        path_appli = self.get_path_appli(
-            appli_name = 'sublime_text'
-        )
+        # print('path_file: ', path_file)
+        # sys.exit(0)
+        
+        print('path_extension: ' + str(path_file.rsplit('.', 1)[1]))
+        # txt
+
+
+        file_extension = path_file.rsplit('.', 1)[1]
+        if ( file_extension == 'txt'):
+            path_appli = self.get_path_appli(
+                appli_name = 'sublime_text'
+            )
+
+            subprocess.Popen(
+                [
+                    path_appli
+                    , '-w'
+                    , path_file
+                ]
+            ).wait()
+        elif ( file_extension == 'pdf'):
+            path_appli = self.get_path_appli(
+                appli_name = 'foxit_reader'
+            )
+            subprocess.Popen(
+                [
+                    path_appli
+                    , path_file
+                ]
+            )
 
         # print ('path_appli A34RT45SF2E: ', path_appli)
         # # C:\Program Files (x86)\Sublime Text 3\sublime_text.exe
         # print ('path_file 3YQGDF7657541241S: ', path_file)
         # # e:\to_del\msg_02.txt
 
-        subprocess.Popen(
-            [
-                path_appli
-                , '-w'
-                , path_file
-            ]
-        ).wait()
 
         self.action_not_select(
             action = 'delete_file'
@@ -268,6 +306,7 @@ class MongoDb:
 
         , collection = 'person'
         , action = 'find_not_file'
+        , print_only = True
 
         , doc_of_file_or__not_file = {
             'alias': 'alias001',
@@ -354,15 +393,18 @@ class MongoDb:
                         file_target_name = output_folder_for_file + f['path_file_origin'].rsplit('\\', 1)[1]
 
                         res.append(file_target_name)
+                        if (print_only == True):
+                            print(file_target_name)
+                            pass
+                        else:
+                            file_target = open(
+                                file_target_name
+                                , 'wb'
+                            )
+                            file_target.write(grid_file.read())
+                            file_target.close()
+                            print('The output of your file is saved to: ', file_target_name)
 
-                        file_target = open(
-                            file_target_name
-                            , 'wb'
-                        )
-                        file_target.write(grid_file.read())
-                        file_target.close()
-
-                        print('The output of your file is saved to: ', file_target_name)
                         # print ('dict01: ', dict01)
                         # # <gridfs.grid_file.GridOut object at 0x0000028120D249E8>
                     return res

@@ -27,7 +27,7 @@ class Tools_Excel:
     def read_one_cell_from_xl(
         xl_file = "Main_py.xlsx"
         , sheet_index = 0
-        , y = 1
+        , y = 1 ###n noho ireo val ireo dia B2 no voavaky
         , x = 1
         , give_default_value_if_void = 1
     ):

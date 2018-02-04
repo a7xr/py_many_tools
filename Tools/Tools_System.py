@@ -50,7 +50,7 @@ class Tools_System:
         self.connect_to_db()
         pass
 
-    def set_file_to_mongodb(
+    def set_file_to_mongodb__del_in_sys(
         self
         , path_file = r'e:\disk_part.txt'
         , type001 = 'text'
@@ -66,7 +66,12 @@ class Tools_System:
                 , 'type': type001
             }
         )
-        os.remove(path_file)
+        try:
+            os.remove(path_file)
+        except PermissionError as err:
+            print()
+            print ('The file('+ str(path_file) +') which you wanted to insert then delete into System is in use by another Program')
+            return
         print(path_file, ' has been removed')
         pass
 
