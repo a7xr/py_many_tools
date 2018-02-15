@@ -517,8 +517,40 @@ def main():
         # maka anle id001
         url = 'https://www.ted.com/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud/transcript'
         id001 = bs.get_id_of_link_of_ted(url = url)
-        json001 = bs.get_json_of_transcript()
-        # maka anle transcript mfandray am id001
+        # maka anle json_transcript mfandray am id001
+        # # fa mbola mila traitena ilay json
+        json_to_treat = bs.get_json_of_transcript()
+        # traitena ilay json amzai ilay transcript ftsn no azo
+
+        # alaina loo ny key001 ao am json_to_treat
+        key001 = json_to_treat.keys()
+        # print('key001: ', key001)
+        # # dict_keys(['paragraphs'])
+
+        key001 = list(key001)
+        key001 = key001[0]
+        # print (key001[0])
+        # # paragraphs
+
+        # print(json_to_treat[key001])
+        # # [{'cues': [{'time': 751, 'text': 'Nina Dølvik Brochman
+
+        for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
+            # print ('do_not_know_yet: ', do_not_know_yet)
+            # # {'cues': [{'time': 428446, 'text': 'You can s
+            # input()
+            # Tools_Basic.long_print()
+            list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
+            # print ('list_of_time_and_transcript: ', list_of_time_and_transcript)
+            # # [{'time': 273598, 'text': "That's a popula
+            # input()
+            # Tools_Basic.long_print()
+            for time_and_transcript in list_of_time_and_transcript:
+                print(time_and_transcript['time'], end = ": ")
+                print(time_and_transcript['text'])
+                input()
+            pass
+
 
         pass
 

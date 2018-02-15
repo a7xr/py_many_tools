@@ -44,6 +44,13 @@ class Tools_Beautiful_Soup:
         return id001
 
 
+    def treat_json_to_get_transcript(
+        self
+        , json_to_treat = ''
+    ):
+
+        pass
+
     def get_json_of_transcript(
         self
         , id001 = 9126
@@ -72,9 +79,32 @@ class Tools_Beautiful_Soup:
         # print(json_to_treat.get("paragraphs"))
         # # [{'cues': [{'time': 751, 'text': 'Ni....
 
-        for key, value in json_to_treat.iteritems():
-            print (key, value)
+        # print(json_to_treat.keys())
+        # # dict_keys(['paragraphs'])
 
+        # print(json_to_treat['paragraphs'][0])
+        # # {'cues': [{'time': 751, 'text': 'Nina Dølvik Brochmann:\nWe grew up b
+
+        # print(json_to_treat['paragraphs'][0].keys())
+        # # dict_keys(['cues'])
+
+        # print (json_to_treat['paragraphs'][0]['cues'])
+        # # [{'time': 751, 'text': 'Nina Dølv...
+
+        # print (json_to_treat['paragraphs'][0]['cues'][0])
+        # # {'time': 751, 'text': 'Nina Dølvik Brochmann:\nWe grew up believing'}
+
+        # print (json_to_treat['paragraphs'][0]['cues'][0]['time'])
+        # # 751
+
+        # print (json_to_treat['paragraphs'][0]['cues'][0]['time'])
+        # json_to_treat = dict
+        # json_to_treat['paragraphs'] = list
+        # json_to_treat['paragraphs'][0] = dict
+        # json_to_treat['paragraphs'][0]['cues'] = list
+        # json_to_treat['paragraphs'][0]['cues'][0] = dict
+        # json_to_treat['paragraphs'][0]['cues'][0]['time'] = value_string
+        return json_to_treat
 
 
 
