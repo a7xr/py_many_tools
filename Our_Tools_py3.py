@@ -6,6 +6,7 @@ sys.path.append("..")
 import getopt
 import xlsxwriter
 import csv
+import time
 
 
 # lasa zao 
@@ -13,6 +14,8 @@ import csv
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_System import Tools_System
 from Tools.Tools_Excel import Tools_Excel
+from Tools.Tools_Basic import Tools_Basic
+from Tools.Tools_Beautiful_Soup import Tools_Beautiful_Soup
 import sys
 import datetime
 from datetime import date
@@ -416,7 +419,6 @@ class Our_Tools_py3(threading.Thread):
         # ###Mysql omeo ligne ak50, depart 61@xl > 60@program
 
         # mnw connection am Mongo
-
         self.mongo001 = MongoDb()
         self.mongo001.connection()
 
@@ -505,6 +507,88 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs006')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        # maka anle id001
+        url = 'https://www.ted.com/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud/transcript'
+        id001 = bs.get_id_of_link_of_ted(url = url)
+        json001 = bs.get_json_of_transcript()
+        # maka anle transcript mfandray am id001
+
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs005')
+    ): 
+        Tools_Beautiful_Soup().get_id_of_link_of_ted()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs004')
+    ): 
+        Tools_Beautiful_Soup.test_from_book001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs003')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        bs.get_transcript_from_ted()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs002')
+    ): 
+
+        bs = Tools_Beautiful_Soup()
+
+        # link001 = '/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud'
+        # transcript = '/transcript'
+
+        # link_to_search_transcript = link001 + transcript
+
+
+
+        # sys.exit(0)
+
+        for compteur in range(1, 76):
+            url = "https://www.ted.com/talks?page=" + str(compteur)
+            print (compteur)
+            l = bs.get_links(url = url)
+            print (l)
+            print (compteur)
+            Tools_Basic.long_print()
+            time.sleep(100000)
+
+
+        # sys.exit(0)
+        
+        # l = bs.get_links()
+        # print(l)
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs001')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        # bs.get_title(("http://www.pythonscraping.com/pages/page1.html"))
+        # bs.get_title(("http://www.pythonscraping.com/pages/warandpeace.html"))
+        
+        bs.get_title()
+        print(bs.get_from_tag())
 
     elif (
         (len (sys.argv) == 3) 
