@@ -145,6 +145,12 @@ class Twitter_Listener(StreamListener):
 class Our_Tools_py3(threading.Thread):
 
     @staticmethod
+    def materials():
+        print('Here are some materials which I used to write this code')
+        print('- 1: Effective Python Penetration Testing.pdf _ by Rejah Rehim')
+    
+
+    @staticmethod
     def write_append_to_file(
             path_file = "test_append.txt",
             txt_to_add = "this is anotehr test",
@@ -508,6 +514,15 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs007')
+    ): 
+        Tools_Beautiful_Soup().get_lang_of_ted_talk()
+        pass
+
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
@@ -516,10 +531,11 @@ def main():
         bs = Tools_Beautiful_Soup()
         # maka anle id001
         url = 'https://www.ted.com/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud/transcript'
+        # url = 'https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women/transcript'
         id001 = bs.get_id_of_link_of_ted(url = url)
         # maka anle json_transcript mfandray am id001
         # # fa mbola mila traitena ilay json
-        json_to_treat = bs.get_json_of_transcript()
+        json_to_treat = bs.get_json_of_transcript(id001 = int(id001))
         # traitena ilay json amzai ilay transcript ftsn no azo
 
         # alaina loo ny key001 ao am json_to_treat

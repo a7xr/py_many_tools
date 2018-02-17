@@ -8,7 +8,6 @@ import json
 
 class Tools_Beautiful_Soup:
 
-    
     def get_id_of_link_of_ted(
         self
         , url = 'https://www.ted.com/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud/transcript'
@@ -110,6 +109,25 @@ class Tools_Beautiful_Soup:
 
         pass
 
+
+    def get_lang_of_ted_talk(
+        self
+        , url = 'https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women/transcript'
+    ):
+        """
+        Got this from material_1_p124
+        """
+        self.html = urlopen(url)
+        self.bsObj = BeautifulSoup(self.html)
+        
+        tag_to_search = 'track'
+        about_the_field = {"kind": "subtitles"}
+
+        do_not_know_yet = self.bsObj.findAll(tag_to_search)
+
+        print ('do_not_know_yet: ', do_not_know_yet)
+
+        pass
 
 
     @staticmethod
