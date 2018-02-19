@@ -16,6 +16,8 @@ from Tools.Tools_System import Tools_System
 from Tools.Tools_Excel import Tools_Excel
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_Beautiful_Soup import Tools_Beautiful_Soup
+from Test001.All_Tests import Test_to_del
+from Test001.All_Tests import To_del001
 import sys
 import datetime
 from datetime import date
@@ -514,6 +516,29 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_barrier002')
+    ): 
+        To_del001.test002()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_barrier001')
+    ): 
+        To_del001.test001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_to_del001')
+    ): 
+        Test_to_del.to_del001()
+        pass
 
     elif (
         (len (sys.argv) == 3) 
@@ -760,7 +785,7 @@ Version 8.1.0.1013
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'search_file_in_mongodb')
     ):
-        words_to_search = 'msg'
+        words_to_search = 'Android Cookbook'
         try: 
             path_file = MongoDb().action_select(
                 action = 'find_file'
@@ -787,7 +812,7 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'delete_file'
             , doc_of_file_or__not_file = {
-                'file_name_origin': 'Gothic Storm - Newral takeover.mp3'
+                'file_name_origin': 'CentOS-7-x86_64-DVD-1503-01.iso'
             }
         )
         print('file deleted 345HDHDFGH463456DF')
@@ -814,7 +839,7 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'insert_file'
             , doc_of_file_or__not_file = {
-                'path_file_origin': r'E:\New folder\extracted\FOR HONOR\Gothic Storm - Newral takeover.mp3'
+                'path_file_origin': r'G:\CentOS-7-x86_64-DVD-1503-01.iso'
                 , 'type': 'mp3'
             }
             , 
@@ -1406,3 +1431,4 @@ Version 8.1.0.1013
 
 if __name__ == '__main__':
     main()
+
