@@ -9,6 +9,14 @@ class Tools_System:
     def __init__(self):
         pass
 
+    @staticmethod
+    def create_folder(
+        path_system = "E:\DEV\python\ted_transcript"
+    ):
+        if not os.path.exists(path_system):
+            os.makedirs(path_system)
+        pass
+
     # TODO going to insert a whole folder into mongodb
     def insert_folder(
         self

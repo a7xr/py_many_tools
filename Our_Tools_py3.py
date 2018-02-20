@@ -650,13 +650,19 @@ def main():
 
         # sys.exit(0)
 
+        folder_content001 = r'E:\DEV\python\ted_transcript'
+
         for compteur in range(1, 76):
-            url = "https://www.ted.com/talks?page=" + str(compteur)
+            url_page = "https://www.ted.com/talks?page=" + str(compteur)
             print (compteur)
-            links = bs.get_links(url = url)
+            links = bs.get_links(url = url_page)
             # print (links)
             main_url = 'https://www.ted.com'
             for link in links:
+                # print (folder_content001 + '\\' + link.replace('/', '_'))
+                # input()
+                container_folder = (folder_content001 + '\\' + link.replace('/', '_'))
+                Tools_System.create_folder(container_folder)
                 # print (link)
                 # # /talks/naoko_ishii_an_economic_case_for_saving_th
                 url_transcript = main_url + link + '/transcript'
@@ -667,9 +673,12 @@ def main():
                 url_w_list_language = bs.get_list_url_talk_w_list_lang(
                     url = main_url + link + '/transcript'
                 )
+                # print (url_w_list_language)
+                # # ['https://www.ted.com/talks/tanya_menon_the_secret_to_great_opportunities_the_person_you_haven_t_met_yet/transcript', '"x-default"', '"en"', '"en"', '"en"']
 
 
 
+                
                 id001 = bs.get_id_of_link_of_ted(url = url_transcript)
 
                 json_to_treat = bs.get_json_of_transcript(id001 = int(id001))
@@ -685,9 +694,6 @@ def main():
                     for time_and_transcript in list_of_time_and_transcript:
                         print(time_and_transcript['time'], end = ": ")
                         print(time_and_transcript['text'])
-                        
-                # print (url_w_list_language)
-                # # ['https://www.ted.com/talks/tanya_menon_the_secret_to_great_opportunities_the_person_you_haven_t_met_yet/transcript', '"x-default"', '"en"', '"en"', '"en"']
 
 
 
