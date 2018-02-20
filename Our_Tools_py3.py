@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 import os
 
 import re
@@ -639,7 +640,7 @@ def main():
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_bs002')
     ): 
-
+        
         bs = Tools_Beautiful_Soup()
 
         # link001 = '/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud'
@@ -685,7 +686,17 @@ def main():
                 # input()
 
                 for lang in url_w_list_language[1::1]:
-                    if lang != '"x-default"':
+                    if lang == '"x-default"':
+                        pass
+                    else:
+                        file_w_lang = container_folder + '\\' + lang.replace('"', '')
+
+                        print('file_w_lang: ', file_w_lang)
+                        # # E:\DEV\python\ted_transcript\_talks_peter_ouko_how_i_earned_a_law_diploma_while_on_death_row\ar
+                        # input()
+
+
+
                         json_to_treat = bs.get_json_of_transcript(
                             id001 = int(id001)
                             , language = lang.replace('"', '')
@@ -695,13 +706,29 @@ def main():
                         key001 = list(key001)
                         key001 = key001[0]
                         # print('key001: ', key001)
-                        print('url_w_list_language[0]: ', url_w_list_language[0])
-                        input()
+                        # print('url_w_list_language[0]: ', url_w_list_language[0])
+                        # input()
                         for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
                             list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
                             for time_and_transcript in list_of_time_and_transcript:
-                                print(time_and_transcript['time'], end = ": ")
-                                print(time_and_transcript['text'])
+                                print(
+                                    # query01.encode('ISO-8859-1')
+                                    time_and_transcript['time'], 
+                                    end = ": ", 
+                                    file=open(file_w_lang, "a")
+                                )
+                                try:
+                                    print(
+                                        time_and_transcript['text'].encode(
+                                            'ISO-8859-1'
+                                        )
+                                        , file=open(file_w_lang, "a")
+                                    )
+                                except UnicodeEncodeError:
+                                    pass
+
+                        # vita ny language01 am lien01
+                        time.sleep(20)
 
 
 

@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from .Tools_Basic import Tools_Basic
 import re
 import json
+import time
 
 class Tools_Beautiful_Soup:
 
@@ -120,7 +121,11 @@ class Tools_Beautiful_Soup:
         """
         Got this from material_1_p124
         """
-        self.html = urlopen(url)
+        try:
+            self.html = urlopen(url)
+        except urllib.error.HTTPError:
+            time.sleep(60)
+            pass
         self.bsObj = BeautifulSoup(self.html)
         
         tag_to_search = 'link'

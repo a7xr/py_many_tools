@@ -10,6 +10,13 @@ class Tools_System:
         pass
 
     @staticmethod
+    def create_file(
+        path_system = "E:\DEV\python\ted_transcript\file001.txt"
+    ):
+        
+        pass
+
+    @staticmethod
     def create_folder(
         path_system = "E:\DEV\python\ted_transcript"
     ):
