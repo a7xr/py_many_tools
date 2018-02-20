@@ -516,6 +516,22 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_event004')
+    ): 
+        To_del001.test004()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_semaphore_003')
+    ): 
+        To_del001.test003()
+        pass
+
     elif (
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
