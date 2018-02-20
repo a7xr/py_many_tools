@@ -6,6 +6,7 @@ sys.path.append("..")
 import getopt
 import xlsxwriter
 import csv
+import time
 
 
 # lasa zao 
@@ -13,6 +14,10 @@ import csv
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_System import Tools_System
 from Tools.Tools_Excel import Tools_Excel
+from Tools.Tools_Basic import Tools_Basic
+from Tools.Tools_Beautiful_Soup import Tools_Beautiful_Soup
+from Test001.All_Tests import Test_to_del
+from Test001.All_Tests import To_del001
 import sys
 import datetime
 from datetime import date
@@ -140,6 +145,12 @@ class Twitter_Listener(StreamListener):
 
 
 class Our_Tools_py3(threading.Thread):
+
+    @staticmethod
+    def materials():
+        print('Here are some materials which I used to write this code')
+        print('- 1: Effective Python Penetration Testing.pdf _ by Rejah Rehim')
+    
 
     @staticmethod
     def write_append_to_file(
@@ -416,7 +427,6 @@ class Our_Tools_py3(threading.Thread):
         # ###Mysql omeo ligne ak50, depart 61@xl > 60@program
 
         # mnw connection am Mongo
-
         self.mongo001 = MongoDb()
         self.mongo001.connection()
 
@@ -505,6 +515,169 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_event004')
+    ): 
+        To_del001.test004()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_semaphore_003')
+    ): 
+        To_del001.test003()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_barrier002')
+    ): 
+        To_del001.test002()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_thread_barrier001')
+    ): 
+        To_del001.test001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_to_del001')
+    ): 
+        Test_to_del.to_del001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs007')
+    ): 
+        Tools_Beautiful_Soup().get_lang_of_ted_talk()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs006')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        # maka anle id001
+        url = 'https://www.ted.com/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud/transcript'
+        # url = 'https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women/transcript'
+        id001 = bs.get_id_of_link_of_ted(url = url)
+        # maka anle json_transcript mfandray am id001
+        # # fa mbola mila traitena ilay json
+        json_to_treat = bs.get_json_of_transcript(id001 = int(id001))
+        # traitena ilay json amzai ilay transcript ftsn no azo
+
+        # alaina loo ny key001 ao am json_to_treat
+        key001 = json_to_treat.keys()
+        # print('key001: ', key001)
+        # # dict_keys(['paragraphs'])
+
+        key001 = list(key001)
+        key001 = key001[0]
+        # print (key001[0])
+        # # paragraphs
+
+        # print(json_to_treat[key001])
+        # # [{'cues': [{'time': 751, 'text': 'Nina Dølvik Brochman
+
+        for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
+            # print ('do_not_know_yet: ', do_not_know_yet)
+            # # {'cues': [{'time': 428446, 'text': 'You can s
+            # input()
+            # Tools_Basic.long_print()
+            list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
+            # print ('list_of_time_and_transcript: ', list_of_time_and_transcript)
+            # # [{'time': 273598, 'text': "That's a popula
+            # input()
+            # Tools_Basic.long_print()
+            for time_and_transcript in list_of_time_and_transcript:
+                print(time_and_transcript['time'], end = ": ")
+                print(time_and_transcript['text'])
+                input()
+            pass
+
+
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs005')
+    ): 
+        Tools_Beautiful_Soup().get_id_of_link_of_ted()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs004')
+    ): 
+        Tools_Beautiful_Soup.test_from_book001()
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs003')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        bs.get_transcript_from_ted()
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs002')
+    ): 
+
+        bs = Tools_Beautiful_Soup()
+
+        # link001 = '/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud'
+        # transcript = '/transcript'
+
+        # link_to_search_transcript = link001 + transcript
+
+
+
+        # sys.exit(0)
+
+        for compteur in range(1, 76):
+            url = "https://www.ted.com/talks?page=" + str(compteur)
+            print (compteur)
+            l = bs.get_links(url = url)
+            print (l)
+            print (compteur)
+            Tools_Basic.long_print()
+            time.sleep(100000)
+
+
+        # sys.exit(0)
+        
+        # l = bs.get_links()
+        # print(l)
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bs001')
+    ): 
+        bs = Tools_Beautiful_Soup()
+        # bs.get_title(("http://www.pythonscraping.com/pages/page1.html"))
+        # bs.get_title(("http://www.pythonscraping.com/pages/warandpeace.html"))
+        
+        bs.get_title()
+        print(bs.get_from_tag())
 
     elif (
         (len (sys.argv) == 3) 
@@ -685,7 +858,7 @@ Version 8.1.0.1013
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'search_file_in_mongodb')
     ):
-        words_to_search = 'msg'
+        words_to_search = 'Android Cookbook'
         try: 
             path_file = MongoDb().action_select(
                 action = 'find_file'
@@ -712,7 +885,7 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'delete_file'
             , doc_of_file_or__not_file = {
-                'uid': '5a76acf12b299514c4834984'
+                'file_name_origin': 'CentOS-7-x86_64-DVD-1503-01.iso'
             }
         )
         print('file deleted 345HDHDFGH463456DF')
@@ -739,8 +912,8 @@ Version 8.1.0.1013
             collection = 'file_inserted'
             , action = 'insert_file'
             , doc_of_file_or__not_file = {
-                'path_file_origin': r'G:\doc\android\potatoe02.txt'
-                , 'type': 'pdf'
+                'path_file_origin': r'G:\CentOS-7-x86_64-DVD-1503-01.iso'
+                , 'type': 'mp3'
             }
             , 
         )
@@ -1331,3 +1504,4 @@ Version 8.1.0.1013
 
 if __name__ == '__main__':
     main()
+

@@ -1,5 +1,7 @@
 
 import sys
+sys.path.append("..")
+
 import pymongo
 import gridfs
 import bson
@@ -30,6 +32,7 @@ class MongoDb:
 
     def connection(
         self
+        , conf_file = 'default_conf_file'
         , server01 = 'localhost'
         , database = 'db001'
         , port01 = 27017
@@ -38,9 +41,19 @@ class MongoDb:
         if(server01 == 'localhost'):
             if(database == 'db001'):
                 if(port01 == 27017):
-                    user_name = confs_at_tools['mongo_l']['username']
-                    password = confs_at_tools['mongo_l']['password']
-                    server = confs_at_tools['mongo_l']['ip_host']
+                    # TODO, don_t know when Testing, this is going to 
+                    if (conf_file == 'default_conf_file'):
+                        user_name = confs_at_tools['mongo_l']['username']
+                        password = confs_at_tools['mongo_l']['password']
+                        server = confs_at_tools['mongo_l']['ip_host']
+                    else:
+                        conf_from_param = configparser.ConfigParser()
+                        conf_from_param.read(conf_file)
+
+                        user_name = confs_at_tools['mongo_l']['username']
+                        password = confs_at_tools['mongo_l']['password']
+                        server = confs_at_tools['mongo_l']['ip_host']
+
                     uri = "mongodb://" + user_name + ":" + password + "@" + server
                     # self.connect_server_localhost = pymongo.MongoClient(server01, port01)
 
@@ -690,7 +703,8 @@ class MongoDb:
                     })
 
                     print('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    pass
+                    return ('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
+                    
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')
             else: # tsy fantatra ny bdd izai ho_ampiasaina
