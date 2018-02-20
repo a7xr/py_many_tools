@@ -561,7 +561,7 @@ def main():
         and (sys.argv[1] in ("-T", "--all_test"))
         and (sys.argv[2] == 'test_bs007')
     ): 
-        Tools_Beautiful_Soup().get_lang_of_ted_talk()
+        Tools_Beautiful_Soup().get_list_lang_of_ted_talk()
         pass
 
     elif (
@@ -644,7 +644,6 @@ def main():
 
         # link001 = '/talks/nina_dolvik_brochmann_and_ellen_stokken_dahl_the_virginity_fraud'
         # transcript = '/transcript'
-
         # link_to_search_transcript = link001 + transcript
 
 
@@ -654,8 +653,44 @@ def main():
         for compteur in range(1, 76):
             url = "https://www.ted.com/talks?page=" + str(compteur)
             print (compteur)
-            l = bs.get_links(url = url)
-            print (l)
+            links = bs.get_links(url = url)
+            # print (links)
+            main_url = 'https://www.ted.com'
+            for link in links:
+                # print (link)
+                # # /talks/naoko_ishii_an_economic_case_for_saving_th
+                url_transcript = main_url + link + '/transcript'
+                
+                # print(url_transcript)
+                # # https://www.ted.com/talks/david_katz_the_surprising_solution_to_ocean_plastic/transcript
+                
+                url_w_list_language = bs.get_list_url_talk_w_list_lang(
+                    url = main_url + link + '/transcript'
+                )
+
+
+
+                id001 = bs.get_id_of_link_of_ted(url = url_transcript)
+
+                json_to_treat = bs.get_json_of_transcript(id001 = int(id001))
+
+                key001 = json_to_treat.keys()
+                key001 = list(key001)
+                key001 = key001[0]
+                # print('key001: ', key001)
+                print('url_transcript: ', url_transcript)
+                input()
+                for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
+                    list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
+                    for time_and_transcript in list_of_time_and_transcript:
+                        print(time_and_transcript['time'], end = ": ")
+                        print(time_and_transcript['text'])
+                        
+                # print (url_w_list_language)
+                # # ['https://www.ted.com/talks/tanya_menon_the_secret_to_great_opportunities_the_person_you_haven_t_met_yet/transcript', '"x-default"', '"en"', '"en"', '"en"']
+
+
+
             print (compteur)
             Tools_Basic.long_print()
             time.sleep(100000)

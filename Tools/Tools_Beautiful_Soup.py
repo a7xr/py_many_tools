@@ -110,7 +110,8 @@ class Tools_Beautiful_Soup:
         pass
 
 
-    def get_lang_of_ted_talk(
+    # this is going to return list of language of one_talk
+    def get_list_url_talk_w_list_lang(
         self
         , url = 'https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women/transcript'
     ):
@@ -134,20 +135,23 @@ class Tools_Beautiful_Soup:
         # print ('list_to_grab_lang[0]', list_to_grab_lang[0])
         # # <link href="https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women" hreflang="x-default" rel="alternate"/>
         res = []
-        for l in list_to_grab_lang:
-            part2 = str(l).rsplit('hreflang=', 1)[1]
-
+        res.append(url)
+        for where_to_grab_lang in list_to_grab_lang:
+            try:
+                part2 = str(where_to_grab_lang).rsplit('hreflang=', 1)[1]
+            except IndexError:
+                pass
             # print ('part2:', part2)
             # #  "x-default" rel="alternate"/>
             list_to_grab_lang001 = part2.split()
             # print ('list_to_grab_lang001: ', list_to_grab_lang001)
             # print ('lang: ', list_to_grab_lang001[0])
             # # "pt-br"
+            # print (list_to_grab_lang001[0])
+            # input_w_url_talk()
             res.append(list_to_grab_lang001[0])
+
         return res
-
-        pass
-
 
     @staticmethod
     def test_from_book001():
@@ -222,10 +226,16 @@ class Tools_Beautiful_Soup:
         res = []
         for link in self.bsObj.findAll(tag):    # alaina ny ao anatinle <a>
             if 'href' in link.attrs: # maka ireo lien
-                if '/talks' in link.attrs[field]: # ireo lien misy /talks ihany no stoomn
+                if (
+                    (
+                        ('/talks/' in link.attrs[field])
+                    )
+                ): # ireo lien misy /talks ihany no stoomn
                     # print (link.attrs)
-                    # print (link)                    
+                    # print (link)
                     res.append(link.attrs[field])
+                    # print ()
                 # print(link.attrs['href'])
+        res = set(res)
         return res
         pass
