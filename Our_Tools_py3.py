@@ -678,22 +678,30 @@ def main():
 
 
 
-                
-                id001 = bs.get_id_of_link_of_ted(url = url_transcript)
 
-                json_to_treat = bs.get_json_of_transcript(id001 = int(id001))
+                id001 = bs.get_id_of_link_of_ted(url = url_w_list_language[0])
+                print ('url_w_list_language[1::1]: ', url_w_list_language[1::1])
+                # # 
+                # input()
 
-                key001 = json_to_treat.keys()
-                key001 = list(key001)
-                key001 = key001[0]
-                # print('key001: ', key001)
-                print('url_transcript: ', url_transcript)
-                input()
-                for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
-                    list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
-                    for time_and_transcript in list_of_time_and_transcript:
-                        print(time_and_transcript['time'], end = ": ")
-                        print(time_and_transcript['text'])
+                for lang in url_w_list_language[1::1]:
+                    if lang != '"x-default"':
+                        json_to_treat = bs.get_json_of_transcript(
+                            id001 = int(id001)
+                            , language = lang.replace('"', '')
+                        )
+
+                        key001 = json_to_treat.keys()
+                        key001 = list(key001)
+                        key001 = key001[0]
+                        # print('key001: ', key001)
+                        print('url_w_list_language[0]: ', url_w_list_language[0])
+                        input()
+                        for dict_contain_list_of_time_and_transcript in json_to_treat[key001]:
+                            list_of_time_and_transcript = dict_contain_list_of_time_and_transcript['cues']
+                            for time_and_transcript in list_of_time_and_transcript:
+                                print(time_and_transcript['time'], end = ": ")
+                                print(time_and_transcript['text'])
 
 
 

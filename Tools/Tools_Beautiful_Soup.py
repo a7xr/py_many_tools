@@ -57,6 +57,8 @@ class Tools_Beautiful_Soup:
     ):
         url_contains_json = 'https://www.ted.com/talks/' + str(id001) + '/transcript.json?language=' + str(language)
 
+        # print('url_contains_json: ', url_contains_json)
+        # input()
         self.html = urlopen(url_contains_json)
         self.bsObj = BeautifulSoup(self.html)
         # print(self.bsObj)
