@@ -120,12 +120,31 @@ class Tools_Beautiful_Soup:
         self.html = urlopen(url)
         self.bsObj = BeautifulSoup(self.html)
         
-        tag_to_search = 'track'
-        about_the_field = {"kind": "subtitles"}
+        tag_to_search = 'link'
+        about_the_field = {"rel": "alternate"}
 
-        do_not_know_yet = self.bsObj.findAll(tag_to_search)
+        list_to_grab_lang = self.bsObj.findAll(tag_to_search, about_the_field)
 
-        print ('do_not_know_yet: ', do_not_know_yet)
+        # print ('list_to_grab_lang: ', list_to_grab_lang)
+        # [<link href="https://www.ted.com', ....
+
+        # print(type(list_to_grab_lang[0]))
+        # # <class 'bs4.element.Tag'>
+
+        # print ('list_to_grab_lang[0]', list_to_grab_lang[0])
+        # # <link href="https://www.ted.com/talks/sofia_jawed_wessel_the_lies_we_tell_pregnant_women" hreflang="x-default" rel="alternate"/>
+        res = []
+        for l in list_to_grab_lang:
+            part2 = str(l).rsplit('hreflang=', 1)[1]
+
+            # print ('part2:', part2)
+            # #  "x-default" rel="alternate"/>
+            list_to_grab_lang001 = part2.split()
+            # print ('list_to_grab_lang001: ', list_to_grab_lang001)
+            # print ('lang: ', list_to_grab_lang001[0])
+            # # "pt-br"
+            res.append(list_to_grab_lang001[0])
+        return res
 
         pass
 
