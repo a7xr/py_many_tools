@@ -517,6 +517,16 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_iota001')
+    ): 
+        Test_to_del.test_hello_world_iota()
+        pass
+
+
     elif (        
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))

@@ -6,6 +6,67 @@ from Tools.Tools_MongoDb import MongoDb
 from Tools.Tools_Basic import Tools_Basic
 
 class Test_to_del:
+
+    @staticmethod
+    def test_hello_world_iota():
+        import iota
+        import secrets
+        import requests
+        assert iota.__version__ == '2.0.4'
+        assert requests.__version__ == '2.18.4'
+        depth = 3
+        uri = 'https://testnet140.tangle.works:443'
+
+
+        chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ9'
+        receiver_seed = ''
+        for i in range(81): receiver_seed += secrets.choice(chars)
+            
+        print(receiver_seed)
+
+
+        api = iota.Iota(uri, seed=receiver_seed)
+        api.get_node_info()
+        gna_result = api.get_new_addresses(count=1)
+        addresses = gna_result['addresses']
+        receiver_address = addresses[0]
+        print("Receiver address 0 is: " + str(receiver_address))
+        r = requests.get('https://seeedy.tangle.works/')
+        print("Faucet response: " + str(r.status_code))
+        sender_wallet = r.json()
+        sender_seed = sender_wallet["seed"]
+        sender_address = sender_wallet["address"]
+
+        print("Sender seed: " + sender_seed)
+        print("Sender address: " + sender_address)
+        print("Sender amount: " + str(sender_wallet["amount"]))
+        api = iota.Iota(uri, seed=sender_seed)
+        sender_account = api.get_account_data(start=0)
+        sender_account["balance"]
+
+
+        api = iota.Iota(uri, seed=receiver_seed)
+        receiver_account = api.get_account_data(start=0)
+        receiver_account["balance"]
+        api = iota.Iota(uri, seed=sender_seed)
+
+
+        message = ("Here, have all my testnet tokens!")
+        proposedTransaction = iota.ProposedTransaction(address = iota.Address(receiver_address), 
+                                                       value = sender_account["balance"], 
+                                                       message = iota.TryteString.from_string(message)
+                                                      )
+
+        print(proposedTransaction)
+
+        transfer = api.send_transfer(transfers = [proposedTransaction], 
+                  depth = depth,
+                  inputs = [iota.Address(sender_address, key_index=0, security_level=2)]
+                 )
+
+
+        pass
+
     @staticmethod
     def to_del001():
         import threading
