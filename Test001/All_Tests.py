@@ -8,6 +8,10 @@ from Tools.Tools_Basic import Tools_Basic
 class Test_to_del:
 
     @staticmethod
+    def bonjour_monde():
+        print('bonjour_monde')
+
+    @staticmethod
     def test_hello_world_iota():
         import iota
         import secrets

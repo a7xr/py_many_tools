@@ -284,7 +284,8 @@ class Our_Tools_py3(threading.Thread):
         us_trends = self.twitter_api.trends.place(_id=US_WOE_ID)
         
         # print (world_trends)
-        # # [{'trends': [{'name': '#KarneGünü', 'url': 'http://twitter.com/search?q=%23KarneG%C3%BCn%C3%BC', 'promoted_content': None, 'query': '%23KarneG%C3%BCn%C3%BC', 'tweet_volume': 12103}, {'name': 
+        # # [{'trends': [{'name': '#KarneGünü', 'url': 'http://twitter.com/search?q=%23KarneG%C3%BCn%C3%BC', 
+        # # # 'promoted_content': None, 'query': '%23KarneG%C3%BCn%C3%BC', 'tweet_volume': 12103}, {'name': 
         print (us_trends)
         # # [
         # # # {'trends': [
@@ -517,6 +518,12 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_bonjour_monde')
+    ): 
+        Test_to_del.bonjour_monde()
 
     elif (        
         (len (sys.argv) == 3) 
@@ -1455,6 +1462,19 @@ Version 8.1.0.1013
         our_tools_py3.db_not_select(
             test001 = False
             , query01 = "alter table table001 add column pname text"
+            , auto_commit = True
+        )
+        print ('tonga ato')
+        pass
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'test_insert_mysql001')
+    ):
+        our_tools_py3 = Our_Tools_py3()
+        our_tools_py3.db_not_select(
+            test001 = False
+            , query01 = "insert into twitter_app (id_str) values ('coco')"
             , auto_commit = True
         )
         print ('tonga ato')

@@ -77,8 +77,9 @@ class Print_Color:
 	
     @staticmethod
     def print_green(
-            txt = "this is a test",
-            new_line = True):
+        txt = "this is a test",
+        new_line = True
+    ):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
@@ -93,7 +94,8 @@ class Print_Color:
 
     @staticmethod
     def print_blue(txt = "this is a test",
-            new_line = True):
+        new_line = True
+    ):
         default_colors = get_text_attr()
         default_bg = default_colors & 0x0070
         set_text_attr(
