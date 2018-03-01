@@ -85,12 +85,14 @@ class Print_Color:
         set_text_attr(
             FOREGROUND_GREEN | 
             default_bg |
-            FOREGROUND_INTENSITY)
+            FOREGROUND_INTENSITY
+        )
         if new_line == True:
             print( txt)
         else:
             print( txt, end = "")
         set_text_attr(default_colors)
+        return 1
 
     @staticmethod
     def print_blue(txt = "this is a test",
@@ -101,12 +103,14 @@ class Print_Color:
         set_text_attr(
             FOREGROUND_BLUE | 
             default_bg |
-            FOREGROUND_INTENSITY)
+            FOREGROUND_INTENSITY
+        )
         if new_line == True:
             print (txt)
         else:
             print (txt, end = "")
         set_text_attr(default_colors)
+        return 1
 
 
     @staticmethod
@@ -119,9 +123,11 @@ class Print_Color:
         set_text_attr(
             FOREGROUND_RED | 
             default_bg |
-            FOREGROUND_INTENSITY)
+            FOREGROUND_INTENSITY
+        )
         if new_line == True:
             print (txt)
         else:
             print (txt, end = "")
         set_text_attr(default_colors)
+        return 1
