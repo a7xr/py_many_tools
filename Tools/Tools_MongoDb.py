@@ -61,7 +61,7 @@ class MongoDb:
 
                     uri = "mongodb://" + user_name + ":" + password + "@" + server
                     # self.connect_server_localhost = pymongo.MongoClient(server01, port01)
-
+                    print("uri124124: ", uri)
                     # tsy mamoka erreur ito rah diso ny credentials
                     # # any am insert sy find iz no mnw erreur rah diso ny credentials
                     self.connect_server_localhost = pymongo.MongoClient(uri)                    
@@ -676,64 +676,13 @@ class MongoDb:
                     pass
 
                 elif (action == 'delete_file'): # mbola tsy vita
-                    # print ('ato QDSFSDF564567')
-                    collection = 'file_inserted'
-                    # alaina ny info momba ilay fichier ho supprimena > file_id
-                    # supprimena ny self.local_db001.get_collection
-                    # supprimena ny self.fs_loc_db001
-                    file_id = '00'
-                    try:
-                        file_id = self.action_select(
-                            collection = 'file_inserted'
-                            , action = 'find_not_file'
-                            , doc_of_file_or__not_file = doc_of_file_or__not_file
-                        )[0]['uid']
-                    except IndexError:
-                        print('looks like the file which you wanted is not in collection(file_inserted) anymore _ 232657568134')
-
-                    # print('file_id: ', file_id)
-                    # # 5a6d3fcf2b29952158f66485
-
-                    self.local_db001.get_collection(collection).remove(
-                        doc_of_file_or__not_file
-                        # , safe = True # not working
-                    )
-                    # print ('tafa ato')
-                    # file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
-                    self.fs_loc_db001.delete(
-                        {
-                            '_id': ObjectId(file_id)
-                        }
-                    )
-                    print('file_deleted 242345SSDF')
-                    return 1
+                    pass
                     
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
                 ):
 
-                    # this next line is going to insert the file inside MongoDb 
-                    fileID = self.fs_loc_db001.put(
-                        open(
-                            doc_of_file_or__not_file['path_file_origin']
-                            , 'rb'
-                        )
-                    )
-                    # this next_line is going to save the information about the file
-                    # # which we just inserted into the database
-                    # print ('fileID: ', fileID)
-                    # # 5a6c8cf42b2995113cd81aeb
-                    self.local_db001.get_collection(collection).insert({
-                        'path_file_origin': doc_of_file_or__not_file['path_file_origin']
-                        , 'uid': fileID
-                        , 'file_name_origin': doc_of_file_or__not_file['path_file_origin'].rsplit('\\', 1)[1]
-                        , 'type': doc_of_file_or__not_file['type']
-                    })
-
-                    print('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    return 1
-                    # return ('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    
+                    pass
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')
             else: # tsy fantatra ny bdd izai ho_ampiasaina
