@@ -1,4 +1,9 @@
 # going to study testing with python
+# to delete the commented_lines in python
+# # sed -e '/^ *#/d' file001.py > file001_no_comments.py
+#
+# to delete the void lines
+# # sed '/^$/d'
 
 import unittest
 
@@ -12,12 +17,37 @@ config = configparser.ConfigParser()
 config.read('all_confs.txt')
 
 
-class Print_Color_Test(unittest.TestCase):
+class MongoDB_Test(unittest.TestCase):
 
+    # MongoDB_Test
     def setUp(self):
         
         pass
+
+    # MongoDB_Test
+    def tearDown(self):
+        pass
+
+    def test_all_test_mongodb(unittest.TestCase):
+
+
+
+        pass
+
     
+
+class Print_Color_Test(unittest.TestCase):
+
+    # Print_Color_Test
+    def setUp(self):
+        
+        pass
+
+    # Print_Color_Test
+    def tearDown(self):        
+        pass
+
+
     def test_print_green(self):
 
         self.assertEqual(
@@ -31,7 +61,8 @@ class Print_Color_Test(unittest.TestCase):
 
 
 class MySQL_Test(unittest.TestCase):
-    
+
+    # MySQL_Test
     def setUp(self):
         self.server = config['mysql_localhost_db_s']['ip_host']
         self.user = config['mysql_localhost_db_s']['username']
@@ -51,39 +82,23 @@ class MySQL_Test(unittest.TestCase):
         )
 
         pass
-    
+
+    # MySQL_Test
     def tearDown(self):
 
-        last_inserted = self.mysql.db_not_select(
-            query01 = "insert into torm (txt) values ('55')"
+        self.mysql.db_not_select(
+            query01 = "delete from torm where id < 2222222"
             , host = self.server
             , db = self.database
             , log_query = False
             , auto_commit = True
             , test001 = False
         )
-
-        last_inserted_torm = self.mysql.db_select(
-            query01 = "select id from torm where id = last_insert_id()"
-            , host = self.server
-            , db = self.database
-        )
-
-        print ('last_inserted_torm: ', last_inserted_torm)
         pass
 
-    def test_db_select(self):
-        self.assertEqual(
-            1, 
-            self.mysql.db_select(
-                query01 = "select * from torm"
-                , host = config['mysql_localhost_db_s']['ip_host']
-                , db = config['mysql_localhost_db_s']['database']
-            )
-        )
-        pass
-
-    def test_connect_db(self):
+    # 
+    def test_mysql_test(self):
+        # test connection to the database
         self.assertEqual(
             1, 
             self.mysql.connect_db(
@@ -95,9 +110,8 @@ class MySQL_Test(unittest.TestCase):
                 , log = False
             )
         )
-        pass
 
-    def test_insert_db(self):
+        # test insertion to the database
         self.assertEqual(
             1,
             self.mysql.db_not_select(
@@ -109,6 +123,23 @@ class MySQL_Test(unittest.TestCase):
                 , test001 = False
             )
         )
+
+        # test select from the database
+        self.assertEqual(
+            1
+            , self.mysql.db_select(
+                query01 = "select * from torm"
+                , host = self.server
+                , db = self.database
+            )
+        )
+
+        # another testing from the database
+        self.assertEqual(
+            self.mysql.results_select_query[0][1]
+            , ('55')
+        )
+
         pass
 
 if __name__ == "__main__":

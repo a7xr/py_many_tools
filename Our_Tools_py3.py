@@ -1,4 +1,11 @@
 # -*- coding: latin-1 -*-
+
+# to delete the commented_lines in python
+# # sed -e '/^ *#/d' file001.py > file001_no_comments.py
+#
+# to delete the void lines
+# # sed '/^$/d'
+
 import os
 
 import re
