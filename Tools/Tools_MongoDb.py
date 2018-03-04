@@ -1,4 +1,9 @@
 
+# to delete the commented_lines in python
+# # sed -e '/^ *#/d' file001.py > file001_no_comments.py
+#
+# to delete the void lines
+# # sed '/^$/d'
 import sys
 sys.path.append("..")
 
@@ -56,7 +61,7 @@ class MongoDb:
 
                     uri = "mongodb://" + user_name + ":" + password + "@" + server
                     # self.connect_server_localhost = pymongo.MongoClient(server01, port01)
-
+                    print("uri124124: ", uri)
                     # tsy mamoka erreur ito rah diso ny credentials
                     # # any am insert sy find iz no mnw erreur rah diso ny credentials
                     self.connect_server_localhost = pymongo.MongoClient(uri)                    
@@ -463,8 +468,8 @@ class MongoDb:
                 for result in results:
                     # print(result)
                     res.append(result)
-                self.results_select_mongo = res
-                print("self.results_select_mongo63224679: ", self.results_select_mongo)
+                self.results_select_mongodb = res
+                print("self.results_select_mongodb63224679: ", self.results_select_mongodb)
                 return res
                 pass
             else: # the database which is selected is missing
@@ -523,6 +528,17 @@ class MongoDb:
                             doc_of_file_or__not_file
                             # , projection
                         )
+                        
+                        # print('type(res_query): ', type(res_query))
+                        # # <class 'pymongo.cursor.Cursor'>
+
+                        # print('res_query.count(): ', res_query.count())
+                        # # 1
+                        i = 0
+                        for doc01 in res_query:
+                            res.append(doc01)
+                            print('doc01: ', doc01, ' _ ', i)
+                            i += 1
                     else:
                         res_query = self.local_db001.get_collection(collection).find(
                             doc_of_file_or__not_file
@@ -530,12 +546,14 @@ class MongoDb:
                         )
                     if (limit_number != 10000000000000):
                         pass
-                    # print ('res_query 820303933: ', res_query)
 
                     # print ('doc_of_file_or__not_file 9484: ', doc_of_file_or__not_file)
 
-                    for doc01 in res_query:
-                        res.append(doc01)
+                    i = 0
+                    # for doc01 in res_query:
+                    #     res.append(doc01)
+                    #     print('doc01: ', doc01, ' _ ', i)
+                    #     i += 1
 
                     return res
 
@@ -688,32 +706,13 @@ class MongoDb:
                         }
                     )
                     print('file_deleted 242345SSDF')
+
                     
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
                 ):
 
-                    # this next line is going to insert the file inside MongoDb
-                    fileID = self.fs_loc_db001.put(
-                        open(
-                            doc_of_file_or__not_file['path_file_origin']
-                            , 'rb'
-                        )
-                    )
-                    # this next_line is going to save the information about the file
-                    # # which we just inserted into the database
-                    # print ('fileID: ', fileID)
-                    # # 5a6c8cf42b2995113cd81aeb
-                    self.local_db001.get_collection(collection).insert({
-                        'path_file_origin': doc_of_file_or__not_file['path_file_origin']
-                        , 'uid': fileID
-                        , 'file_name_origin': doc_of_file_or__not_file['path_file_origin'].rsplit('\\', 1)[1]
-                        , 'type': doc_of_file_or__not_file['type']
-                    })
-
-                    print('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    return ('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    
+                    pass
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')
             else: # tsy fantatra ny bdd izai ho_ampiasaina
