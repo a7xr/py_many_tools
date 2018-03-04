@@ -69,6 +69,7 @@ class MongoDb:
                     # # <class 'pymongo.database.Database'>
 
                     self.fs_loc_db001 = gridfs.GridFS(self.local_db001)
+                    return 1
                 else: # only the port is NOT ok
                     print('Server OK: ', server01)
                     print('Database OK: ', database)
@@ -462,6 +463,8 @@ class MongoDb:
                 for result in results:
                     # print(result)
                     res.append(result)
+                self.results_select_mongo = res
+                print("self.results_select_mongo63224679: ", self.results_select_mongo)
                 return res
                 pass
             else: # the database which is selected is missing
@@ -601,6 +604,7 @@ class MongoDb:
         , database = 'db001'
         , collection = 'person'
         , action = 'insert_not_file'
+        , _id = 1 # normally, this is going to be done by 
         , doc_of_file_or__not_file = {  # be careful when inserting file01, this has to has keys(path_file_origin, uid, file_name_origin)
             # 'path_file_origin': path_file,
             # 'uid': fileID,
@@ -609,6 +613,7 @@ class MongoDb:
         }
         # , path_file = 'e:\about_eclipse.txt'
     ):
+        print("tonga ato")
         if (server == 'localhost'):
             if (database == 'db001'):
                 try:
@@ -622,17 +627,21 @@ class MongoDb:
 
                 try:
                     list_collection = self.local_db001.collection_names()
+                    print ("list_collection: ", list_collection)
                 except pymongo.errors.OperationFailure:
                     print('Authentication@Connection to database Error _ 463575584')
                     sys.exit(0)
                 if (collection not in list_collection):
                     print('Collection (' +collection+ ') is NOT in the list_of_collection ')
-                    return
+                    return 0
 
                 if (action == 'insert_not_file'):   
-                    self.local_db001.get_collection(collection).insert(doc_of_file_or__not_file)
+                    doc_of_file_or__not_file['_id'] = _id
+                    self.local_db001.get_collection(collection)\
+                        .insert(doc_of_file_or__not_file)
                     txt = 'Inserted into: db(' + database + '), collection('+ collection +'), \n- doc('+ str(doc_of_file_or__not_file) +')'
                     print (txt)
+                    return 1
 
                 elif (action == 'update_not_file'):
                     self.local_db001.get_collection(collection).update(doc_of_file_or__not_file)
