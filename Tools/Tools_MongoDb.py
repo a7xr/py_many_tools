@@ -1,4 +1,9 @@
 
+# to delete the commented_lines in python
+# # sed -e '/^ *#/d' file001.py > file001_no_comments.py
+#
+# to delete the void lines
+# # sed '/^$/d'
 import sys
 sys.path.append("..")
 
@@ -463,8 +468,8 @@ class MongoDb:
                 for result in results:
                     # print(result)
                     res.append(result)
-                self.results_select_mongo = res
-                print("self.results_select_mongo63224679: ", self.results_select_mongo)
+                self.results_select_mongodb = res
+                print("self.results_select_mongodb63224679: ", self.results_select_mongodb)
                 return res
                 pass
             else: # the database which is selected is missing
@@ -523,6 +528,17 @@ class MongoDb:
                             doc_of_file_or__not_file
                             # , projection
                         )
+                        
+                        # print('type(res_query): ', type(res_query))
+                        # # <class 'pymongo.cursor.Cursor'>
+
+                        # print('res_query.count(): ', res_query.count())
+                        # # 1
+                        i = 0
+                        for doc01 in res_query:
+                            res.append(doc01)
+                            print('doc01: ', doc01, ' _ ', i)
+                            i += 1
                     else:
                         res_query = self.local_db001.get_collection(collection).find(
                             doc_of_file_or__not_file
@@ -530,12 +546,14 @@ class MongoDb:
                         )
                     if (limit_number != 10000000000000):
                         pass
-                    # print ('res_query 820303933: ', res_query)
 
                     # print ('doc_of_file_or__not_file 9484: ', doc_of_file_or__not_file)
 
-                    for doc01 in res_query:
-                        res.append(doc01)
+                    i = 0
+                    # for doc01 in res_query:
+                    #     res.append(doc01)
+                    #     print('doc01: ', doc01, ' _ ', i)
+                    #     i += 1
 
                     return res
 
@@ -688,6 +706,7 @@ class MongoDb:
                         }
                     )
                     print('file_deleted 242345SSDF')
+                    return 1
                     
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
@@ -712,7 +731,8 @@ class MongoDb:
                     })
 
                     print('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
-                    return ('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
+                    return 1
+                    # return ('File inserted: '+ doc_of_file_or__not_file['path_file_origin'] +' _ 6268846943239003322')
                     
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')

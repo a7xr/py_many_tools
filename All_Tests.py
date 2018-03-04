@@ -189,8 +189,39 @@ class MongoDB_Test(unittest.TestCase):
                     'name': 'name001'
                 }
             )
-            , self.mongodb.results_select_mongo
+            , self.mongodb.results_select_mongodb     # <<<<<<<<<<<<<<< after doing a select_not_file in mongo, you
+                                                    # # you should grab the result in self.mongodb.results_select_mongodb
         )
+
+        # test insert_file into mongodb
+        self.assertEqual(
+            1,
+            self.mongodb.action_not_select(
+                action = 'insert_file'
+                , collection = 'file_inserted'
+                , _id = 'file001'
+                , doc_of_file_or__not_file = {
+                    'path_file_origin': 'E:\\a.mp3'
+                    , 'type' : 'audio_music'
+                }
+            )
+        )
+        
+
+        # test delete_file into mongodb
+        self.assertEqual(
+            1,
+            self.mongodb.action_not_select(
+                action = 'delete_file'
+                , collection = 'file_inserted'
+                , _id = 'file001'
+                , doc_of_file_or__not_file = {
+                    'file_name_origin': 'a.mp3'
+                    , 'type' : 'audio_music'
+                }
+            )
+        )
+
 
         pass
 
