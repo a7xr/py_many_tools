@@ -658,7 +658,7 @@ class MongoDb:
                     pass
 
                 elif (action == 'delete_file'): # mbola tsy vita
-                    # print ('ato QDSFSDF564567')
+                    # print ('ato QDSFSDF564567')   
                     collection = 'file_inserted'
                     # alaina ny info momba ilay fichier ho supprimena > file_id
                     # supprimena ny self.local_db001.get_collection
