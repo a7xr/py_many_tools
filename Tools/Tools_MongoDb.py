@@ -258,7 +258,7 @@ class MongoDb:
         # any anaty bdd ny fichier ary alefa anaty to_del > path_file
         # vakina am sublime ilay path_file
         # # aza adino ny mnw sauvegarde aa
-        # supprimena ny any anaty file_inserted sy ny fs_loc_db001
+        # supprimena ny any anaty inserted_files sy ny fs_loc_db001
         # mnw insertion anle path_file
         try: 
             path_file = self.action_select(
@@ -340,7 +340,7 @@ class MongoDb:
 
         self.action_not_select(
             action = 'insert_file'
-            , collection = 'file_inserted'
+            , collection = 'inserted_files'
             , doc_of_file_or__not_file = {
                 'path_file_origin': path_file
                 , 'type': 'text'
@@ -349,7 +349,7 @@ class MongoDb:
         print ('File updated inside the database 234545869SDFGDFG')
 
         # uid_file = self.action_select(
-        #     collection = 'file_inserted'
+        #     collection = 'inserted_files'
         #     , action = 'find_not_file'
         #     , doc_of_file_or__not_file = {
         #         'file_name_origin': path_file.rsplit('\\', 1)[1]
@@ -368,7 +368,7 @@ class MongoDb:
         , database = 'db001'
         , port = 27017
 
-        , collection = 'file_inserted'
+        , collection = 'inserted_files'
         , print_only = 1 # 1 means, we are going to print ONLY
                         # 0 means, we are going to download ONLY
                         # 2 means, we are going to print AND download
@@ -403,7 +403,7 @@ class MongoDb:
 
                 # connection is set
                 # we are in (server == 'localhost', database == 'db001')
-                collection = 'file_inserted'
+                collection = 'inserted_files'
                 # results = self.local_db001\
                 #     .get_collection(collection).find(json_filter)
                 res_query__files_info \
@@ -423,11 +423,11 @@ class MongoDb:
                             grid_file = self.fs_loc_db001.get(
                                 ObjectId(str(about_file['uid']))
                             )
-                        except gridfs.errors.NoFile as err: # the information is in collection('file_inserted'), but that file is missing in MongoDb
+                        except gridfs.errors.NoFile as err: # the information is in collection('inserted_files'), but that file is missing in MongoDb
                             print (about_file['uid'])
-                            Print_Color.print_blue (txt = 'Looks like the information of the file is in collection(file_inserted)')
+                            Print_Color.print_blue (txt = 'Looks like the information of the file is in collection(inserted_files)')
                             Print_Color.print_blue (txt = '- but the file is missing in MongoDb:server('+ server +'), database('+ database +')')
-                            self.local_db001.get_collection('file_inserted').remove({'uid': about_file['uid']})
+                            self.local_db001.get_collection('inserted_files').remove({'uid': about_file['uid']})
                             print()
                             print('uid: ', str(about_file['uid']), ' has been')
                             Print_Color.print_red(txt = '- deleted')
@@ -476,7 +476,7 @@ class MongoDb:
         , database = 'db001'
         , port = 27017
 
-        , collection = 'file_inserted'
+        , collection = 'inserted_files'
         , print_only = True
 
         , json_filter = {
@@ -607,7 +607,7 @@ class MongoDb:
                 elif(
                     (action == 'find_file')
                 ):
-                    collection = 'file_inserted'
+                    collection = 'inserted_files'
                     # list_files_inserted__from_reg_file_name \
                     
 
@@ -660,7 +660,72 @@ class MongoDb:
             pass
         pass
 
+    def insert_file(
+        self
+        , path_file = 'g:\\michel.txt'
+        , name_to_store_in_register = 'm001.txt'
+    ):
+        fileID = self.fs_loc_db001.put(
+            open(
+                path_file
+                , 'rb'
+            )
+        )
 
+        collection = "inserted_file"
+        self.local_db001.get_collection(collection).insert({
+            'path_file_origin': path_file
+            , 'uid': fileID
+            , 'file_name_origin': name_to_store_in_register
+            , 'type': "text"
+        })
+        return 1
+        pass
+
+
+    def get_file(
+        self
+        , name_stored_in_register = "m001.txt"
+    ):
+        collection = "inserted_file"
+        
+        pass
+
+    def delete_file(
+        self
+        , name_stored_in_register = 'm001.txt'
+    ):
+        collection = "inserted_file"
+
+        try:
+            self.action_select_not_file(
+                collection = 'inserted_file'
+                , print_only = True
+
+                , json_filter = {
+                    'file_name_origin': 'm001.txt'
+                }
+            )
+            uid_file_to_delete = self.results_select_mongodb[0]['uid']
+            # print("uid_file_to_delete03948569: ", uid_file_to_delete)
+            # input()
+            self.fs_loc_db001.delete(
+                {
+                    '_id': ObjectId(uid_file_to_delete)
+                }
+            )
+            # input('Before deleting a line in collection(inserted_files)')
+            self.local_db001.get_collection(collection).remove({
+                'uid': ObjectId(uid_file_to_delete)
+            })
+
+            return 1
+            pass
+        except IndexError:
+            print('MAYBE the file which you wanted to delete do NOT exist Anymore')
+            pass
+
+        pass
 
     def action_not_select(
         self
@@ -675,6 +740,7 @@ class MongoDb:
             # 'file_name_origin': path_file.rsplit('\\', 1)[1]
             'path_file_origin' : 'g:\\michel.txt'
             , 'name_to_store_in_db': "m001.txt"
+            , 'type': "text"
         }
         # , path_file = 'e:\about_eclipse.txt'
     ):
@@ -724,19 +790,19 @@ class MongoDb:
 
                 # elif (action == 'delete_file'): # mbola tsy vita
                 #     # print ('ato QDSFSDF564567')   
-                #     collection = 'file_inserted'
+                #     collection = 'inserted_files'
                 #     # alaina ny info momba ilay fichier ho supprimena > file_id
                 #     # supprimena ny self.local_db001.get_collection
                 #     # supprimena ny self.fs_loc_db001
                 #     file_id = '00'
                 #     try:
                 #         file_id = self.action_select(
-                #             collection = 'file_inserted'
+                #             collection = 'inserted_files'
                 #             , action = 'find_not_file'
                 #             , doc_of_file_or__not_file = doc_of_file_or__not_file
                 #         )[0]['uid']
                 #     except IndexError:
-                #         print('looks like the file which you wanted is not in collection(file_inserted) anymore _ 232657568134')
+                #         print('looks like the file which you wanted is not in collection(inserted_files) anymore _ 232657568134')
 
                 #     # print('file_id: ', file_id)
                 #     # # 5a6d3fcf2b29952158f66485
@@ -754,6 +820,42 @@ class MongoDb:
                 #     )
                 #     print('file_deleted 242345SSDF')
 
+                elif(
+                    (action == 'insert_file') # var(server, database) are already defined
+                    and (
+                        ('insertion_type' in doc_of_file_or__not_file.keys()) and 
+                        ('python' == doc_of_file_or__not_file['insertion_type']) 
+                    )
+                ):
+                    return 1
+                    fileID = self.fs_loc_db001.put(
+                        open(
+                            doc_of_file_or__not_file['path_file_origin']
+                            , 'rb'
+                        )
+                    )
+
+                    collection = 'inserted_files'
+
+                    self.mongodb.action_select_not_file(
+                        collection = collection
+                        , print_only = True
+
+                        , json_filter = {
+                            'path_file_origin': doc_of_file_or__not_file['path_file_origin']
+                            , 'type': doc_of_file_or__not_file['type']
+                            , 'name_to_store_in_db': doc_of_file_or__not_file['name_to_store_in_db']
+                        }
+                    )
+
+                    # self.local_db001.get_collection(collection).insert({
+                    #     'path_file_origin': doc_of_file_or__not_file['path_file_origin']
+                    #     , 'uid': fileID
+                    #     , 'file_name_origin': doc_of_file_or__not_file['path_file_origin'].rsplit('\\', 1)[1]
+                    #     # , 'type': doc_of_file_or__not_file['type']
+                    # })
+
+                    pass
                     
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
@@ -770,6 +872,7 @@ class MongoDb:
                     # subprocess.Popen([
                     #     confs_at_tools['mongo_l']['path_mongofiles']
                     # ])
+                    return 1
                     if( 
                         'name_to_store_in_db' in doc_of_file_or__not_file.keys() 
                     ):
@@ -798,15 +901,7 @@ class MongoDb:
                     
 
                     pass
-                elif (
-                    (action == 'insert_file')
-                    and (
-                        ('insertion_type' not in doc_of_file_or__not_file.keys())
-                    )
-                ):
-                    # by default we are going to insert files into the database with mongofiles
-                    #todo
-                    pass
+                
                 elif (
                     (action == 'delete_file')
                     # and (
@@ -833,9 +928,9 @@ class MongoDb:
         # elif (
         #     (server == 'localhost')
         #     and (database == 'db001')
-        #     and (collection == 'file_inserted')
+        #     and (collection == 'inserted_files')
         #     and (action == 'insert')
         # ):
-        #     self.local_db001.file_inserted.insert(p)
+        #     self.local_db001.inserted_files.insert(p)
 
         pass
