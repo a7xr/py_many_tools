@@ -5,18 +5,34 @@
 # to delete the void lines
 # # sed '/^$/d'
 
+
+
 import unittest
+import os
+import pprint
 
-
-
+from Tools.Tools_Basic import *
 from Tools.Print_Color import *
 from Tools.Tools_MySQL import *
 from Tools.Tools_MongoDb import *
+from Tools.Tools_Win32 import *
 
 
 config = configparser.ConfigParser()
 config.read('all_confs.txt')
 
+
+# class Win32_Test(unittest.TestCase):
+
+#     def test_win32(self):
+#         self.assertEqual(
+#             'windows010'
+#             , Tools_Win32().get_username()
+#         )
+
+#     pass
+
+#end_class__Win32_Test
 
 
 # class Print_Color_Test(unittest.TestCase):
@@ -39,7 +55,7 @@ config.read('all_confs.txt')
 
 #         pass
 
-
+#end_class__Print_Color_Test
 
 
 
@@ -124,24 +140,44 @@ config.read('all_confs.txt')
 #         )
 
 #         pass
+# 
+#end__class__MySQL_Test
+
 
 
 
 class MongoDB_Test(unittest.TestCase):
 
+
+    # # otrn tsis ilaivan anreto aa
+    # def test_run_server(self):
+    #     self.assertEqual(
+    #         1,
+    #         self.mongodb.run_one_server()
+    #     )
+
+    # def test_kill_all_servers(self):
+    #     self.assertEqual(
+    #         1,
+    #         self.mongodb.kill_all_servers()
+    #     )
+
     # MongoDB_Test
     def setUp(self):
+
         self.mongodb_server = config["mongo_l"]["ip_host"]
         self.mongodb_database = config["mongo_l"]["database"]
         self.mongodb_port = config["mongo_l"]["port"]
 
         self.mongodb = MongoDb()
-        
+        self.mongodb.run_one_server()
+        self.mongodb.connection()
+        Tools_Basic.long_print()
         pass
 
     # MongoDB_Test
     def tearDown(self):
-
+        Tools_Basic.long_print()
         input("Going to delete all documents in collection(person)")
         self.mongodb.local_db001.get_collection('person')\
             .delete_many(
@@ -151,17 +187,28 @@ class MongoDB_Test(unittest.TestCase):
                     }
                 }
             )
-
+        self.mongodb.kill_all_servers()
         pass
 
     def test_all_test_mongodb(self):
         # do not know how to set the file_test.py into a folder yet
 
+
+
+
+        # # repairing the server when you deleted some files into the database
+        # # # so that the files you deleted are not in the register anymore
+        # self.assertEqual(
+        #     1,
+        #     self.mongodb.repair_server()
+        # )
+
         # testing the connection
-        self.assertEqual(
-            1
-            , self.mongodb.connection()
-        )
+        # # should be commented, otherwise, ther is a second_connection
+        # self.assertEqual(
+        #     1
+        #     , self.mongodb.connection()
+        # )
 
         # test insert_not_file into the database
         # # all the documents which are going to be inserted in collection(person) will be deleted by tearDown
@@ -180,6 +227,9 @@ class MongoDB_Test(unittest.TestCase):
         )
 
         # test select_not_file
+        # # this is going to be done in 2steps
+        # # # we are going to set the query and the result is going to be set into "self.mongodb.results_select_mongodb
+        # # # we take the result of the query inside "self.mongodb.results_select_mongodb"
         self.assertEqual(
             self.mongodb.action_select_not_file(
                 collection = 'person'
@@ -189,8 +239,13 @@ class MongoDB_Test(unittest.TestCase):
                     'name': 'name001'
                 }
             )
-            , self.mongodb.results_select_mongodb     # <<<<<<<<<<<<<<< after doing a select_not_file in mongo, you
+            , 1
+            # , self.mongodb.results_select_mongodb     # <<<<<<<<<<<<<<< after doing a select_not_file in mongo,
                                                     # # you should grab the result in self.mongodb.results_select_mongodb
+        )
+        self.assertEqual(
+            [{'_id': 1, 'name': 'name001'}]
+            , self.mongodb.results_select_mongodb
         )
 
         # test insert_file into mongodb
@@ -201,12 +256,13 @@ class MongoDB_Test(unittest.TestCase):
                 , collection = 'file_inserted'
                 , _id = 'file001'
                 , doc_of_file_or__not_file = {
-                    'path_file_origin': 'E:\\a.mp3'
+                    'path_file_origin': 'g:\\michel.txt'
+                    , 'name_to_store_in_db': "m001.txt"
                     , 'type' : 'audio_music'
+                    , 'insertion_type': "mongofiles"
                 }
             )
         )
-        
 
         # test delete_file into mongodb
         self.assertEqual(
@@ -216,15 +272,32 @@ class MongoDB_Test(unittest.TestCase):
                 , collection = 'file_inserted'
                 , _id = 'file001'
                 , doc_of_file_or__not_file = {
-                    'file_name_origin': 'a.mp3'
-                    , 'type' : 'audio_music'
+                    'name_stored_in_db': "m001.txt"
+                    , 'insertion_type': "mongofiles"
+                    , 'deletion_type': "mongofiles"
+                    , 'name_stored_in_db': "m001.txt"
                 }
             )
         )
 
 
-        pass
+        # test delete_file into mongodb
+        # self.assertEqual(
+        #     1,
+        #     self.mongodb.action_not_select(
+        #         action = 'delete_file'
+        #         , collection = 'file_inserted'
+        #         , _id = 'file001'
+        #         , doc_of_file_or__not_file = {
+        #             'file_name_origin': 'a.mp3'
+        #             , 'type' : 'audio_music'
+        #         }
+        #     )
+        # )
 
+
+        pass
+#end_class__MongoDB_Test
     
 
 
@@ -234,3 +307,9 @@ class MongoDB_Test(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    # os.system(r"C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe --dbpath G:\mongo_data\test002 --port 5566")
+
+    # a = subprocess.Popen([r'C:\Program Files\MongoDB\Server\3.4\bin\mongod.exe', "--dbpath", r'G:\mongo_data\test001', '--port', '5566'])
+    # MongoDb().run_one_server()
+    # MongoDb().kill_all_servers()
+    # print('killed')

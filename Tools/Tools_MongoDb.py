@@ -14,6 +14,9 @@ from bson.objectid import ObjectId
 import re
 import os
 import subprocess
+import time
+
+from .Tools_Basic import *
 
 from Freelance.Twitter001 import Twitter_Code
 
@@ -31,6 +34,49 @@ confs_at_tools.read('all_confs.txt')
 from .Print_Color import Print_Color
 
 class MongoDb:
+
+    def repair_server(self):
+        # mongod.exe --repair --dbpath g:\mongo_data\test002
+        Tools_Basic.long_print()
+        time.sleep(4)
+        input('Going to repair the server_stockage')
+        subprocess.Popen([
+            confs_at_tools['mongo_l']['path_mongofiles']
+            , '--repair'
+            , '--dbpath'
+            , confs_at_tools['mongo_l']['db_path_mongo']
+        ])
+        return 1
+        pass
+
+    def run_one_server(self):
+        # vakiana dol loo ny zvt ilaina: 
+        # # chemin_.exe, chemin_storage
+        # mandefa anle serveur
+        subprocess.Popen([
+            confs_at_tools['mongo_l']['path_exe']
+            
+            , "--dbpath", confs_at_tools['mongo_l']['db_path_mongo']
+            , '--port', confs_at_tools['mongo_l']['port_mongo']
+        ])#\
+        #.wait()
+        return 1
+        pass
+
+    def kill_all_servers(self):
+        # subprocess.Popen([
+        #     'taskkill /f /im "mongod.exe"'
+        #     # , '/f'
+        #     # , '/im'
+        #     # , '"mongod.exe"'
+        # ])
+        os.system('taskkill /f /im "mongod.exe"')
+        return 1
+        pass
+
+    def stop_server(self):
+
+        pass
 
     def __del__(self):
         print ('Object MongoDb destroyed')
@@ -470,7 +516,7 @@ class MongoDb:
                     res.append(result)
                 self.results_select_mongodb = res
                 print("self.results_select_mongodb63224679: ", self.results_select_mongodb)
-                return res
+                return 1
                 pass
             else: # the database which is selected is missing
                 print('The database('+ database +') which you wanted is ')
@@ -627,7 +673,8 @@ class MongoDb:
             # 'path_file_origin': path_file,
             # 'uid': fileID,
             # 'file_name_origin': path_file.rsplit('\\', 1)[1]
-            'path_file_origin' : 'e:\\about_eclipse.txt'
+            'path_file_origin' : 'g:\\michel.txt'
+            , 'name_to_store_in_db': "m001.txt"
         }
         # , path_file = 'e:\about_eclipse.txt'
     ):
@@ -710,7 +757,70 @@ class MongoDb:
                     
                 elif(
                     (action == 'insert_file') # var(server, database) are already defined
+                    and (
+                        ('insertion_type' in doc_of_file_or__not_file.keys()) and 
+                        ('mongofiles' == doc_of_file_or__not_file['insertion_type']) 
+                    )
                 ):
+                    #todo... this is going to be used to insert file with mongofiles
+                    # mongofiles.exe put -l g:\michel.txt m.txt
+                    # mongofiles.exe list
+                    # mongofiles.exe delete m.txt
+
+                    # subprocess.Popen([
+                    #     confs_at_tools['mongo_l']['path_mongofiles']
+                    # ])
+                    if( 
+                        'name_to_store_in_db' in doc_of_file_or__not_file.keys() 
+                    ):
+                        name_to_store_in_db = doc_of_file_or__not_file['name_to_store_in_db']
+                        subprocess.Popen([
+                            confs_at_tools['mongo_l']['path_mongofiles']
+                            , 'put'
+                            , "-l"
+                            , doc_of_file_or__not_file['path_file_origin']
+                            ,  name_to_store_in_db
+                            # , 'coco.txt'
+                        ])
+
+
+                        return 1
+                        pass
+                    else:
+                        subprocess.Popen([
+                            confs_at_tools['mongo_l']['path_mongofiles']
+                            , 'put'
+                            , doc_of_file_or__not_file['path_file_origin']
+                        ])
+                        return 1
+                        pass
+
+                    
+
+                    pass
+                elif (
+                    (action == 'insert_file')
+                    and (
+                        ('insertion_type' not in doc_of_file_or__not_file.keys())
+                    )
+                ):
+                    # by default we are going to insert files into the database with mongofiles
+                    #todo
+                    pass
+                elif (
+                    (action == 'delete_file')
+                    # and (
+                    #     ('deletion_type' not in doc_of_file_or__not_file.keys())
+                    # )
+                ):
+                    # by default, this is going to delete the file with mongofiles
+
+                    # mongofiles delete m001.txt
+                    subprocess.Popen([
+                        confs_at_tools['mongo_l']['path_mongofiles']
+                        , "delete"
+                        , doc_of_file_or__not_file['name_stored_in_db']
+                    ])
 
                     pass
                 else: # tsy mnw insertion, update, ...
