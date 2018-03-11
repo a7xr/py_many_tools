@@ -25,73 +25,93 @@ config = configparser.ConfigParser()
 config.read('all_confs.txt')
 
 
-class SQLite_Test(unittest.TestCase):
+# class SQLite_Test(unittest.TestCase):
 
-    def setUp(self):
-        self.sqlite = Tools_SQLite()
-        self.sqlite.connect_db(
-            file_db = config['sqlite']['file_sqlite']
-        )
-        pass
+#     def setUp(self):
+#         self.sqlite = Tools_SQLite()
+#         self.sqlite.connect_db(
+#             file_db = config['sqlite']['file_sqlite']
+#         )
+#         pass
 
-    def tearDown(self):
-        self.sqlite.action_not_select(
-            query = "delete from table001"
-        )
-        print('deleted all content of table(table001)')
+#     def tearDown(self):
+#         self.sqlite.action_not_select(
+#             query = "delete from table001"
+#         )
+#         print('deleted all content of table(table001)')
 
-        self.sqlite.disconnect_db()
+#         self.sqlite.disconnect_db()
 
-        pass
+#         pass
 
-    def test_all_sqlite_test(self):
-        # going to test for the connection
-        self.assertIsNotNone(
-            self.sqlite.connection
-        )
+#     def test_all_sqlite_test(self):
+#         # going to test for the connection
+#         self.assertIsNotNone(
+#             self.sqlite.connection
+#         )
 
-        # going to test the insertion into the database
-        self.assertEqual(
-            1,
-            self.sqlite.action_not_select(
-                query = 'insert into table001 (txt) values ("test")'
-            )
-        )
+#         # going to test the insertion into the database
+#         self.assertEqual(
+#             1,
+#             self.sqlite.action_not_select(
+#                 query = 'insert into table001 (txt) values ("test")'
+#             )
+#         )
+
+#         # test select into the database
+#         # # you should take the result of your query inside "self.sqlite.cursor_sqlite"
+#         self.assertEqual(
+#             1,
+#             self.sqlite.action_select(
+#                 query = 'select * from table001'
+#             )
+#         )
+
+#         print(self.sqlite.res_query_select)
+#         self.assertEqual(
+#             [('test', )],   # you have to understand 
+#                             # # when you are going to select a row from sqlite3, it have to be similar that that result
+#             self.sqlite.res_query_select
+#         )
 
 
-        # test select into the database
-        self.assertEqual(
-            1,
-            self.sqlite.action_select(
-                query = 'select * from table001'
-            )
-        )
+#         # test update
+#         self.assertEqual(
+#             1,
+#             self.sqlite.action_not_select(
+#                 query = 'update table001 set txt = "testing the update"'
+#             )
+#         )
 
-        # test select into the database
-        # # this should be filled after the self.sqlite.action_select(qery=  ...)
-        self.assertEqual(
-            1,
-            self.sqlite.result_query
-        )
+#         # NOT A TEST, 
+#         self.sqlite.action_not_select(
+#             query = 'insert into table001(txt) values ("val001"), ("val002"), ("val003"), ("val004"), ("val005"), ("val006"), ("val007"), ("val008"), ("val009");'
+#         )
+#         self.assertEqual(
+#             1,
+#             self.sqlite.action_not_select(
+#                 query = 'delete from table001 where txt like "val006"'
+#             )
+#         )
+#         self.sqlite.action_select(
+#             query = 'select * from table001'
+#         )
 
-        # test update
-        self.assertEqual(
-            1,
-            self.sqlite.action_not_select(
-                query = 'update table001 set txt = "testing the update"'
-            )
-        )
 
-        # test delete something inside the table001 of sqlite
-        self.sqlite.action_not_select(
-            query = 'insert into table001(txt) values ("val001"), ("val002"), ("val003"), ("val004"), ("val005"), ("val006"), ("val007"), ("val008"), ("val009");'
-        )
-        self.assertEqual(
-            1,
-            self.sqlite.action_not_select(
-                query = 'delete from table001 where txt like "%006%"'
-            )
-        )
+#         # for a in self.sqlite.res_query_select:
+#         #     print(a)
+
+#         self.assertNotIn(
+#             ('val006', )
+#             , self.sqlite.res_query_select
+#         )
+
+#         self.assertIn(
+#             ('val005', )
+#             , self.sqlite.res_query_select
+#         )
+
+        # self.assertEqual()
 
         # going to test the insertion into the database
         # self.assertEqual(
@@ -101,7 +121,9 @@ class SQLite_Test(unittest.TestCase):
         #     )
         # )
 
-        pass
+
+#end_class__SQLite_Test
+
 
 # class Win32_Test(unittest.TestCase):
 
@@ -140,89 +162,89 @@ class SQLite_Test(unittest.TestCase):
 
 
 
-# class MySQL_Test(unittest.TestCase):
+class MySQL_Test(unittest.TestCase):
 
-#     # MySQL_Test
-#     def setUp(self):
-#         self.server_mysql = config['mysql_localhost_db_s']['ip_host']
-#         self.user = config['mysql_localhost_db_s']['username']
-#         self.password_mysql = config['mysql_localhost_db_s']['password']
-#         self.database_mysql = config['mysql_localhost_db_s']['database']
-#         self.port_mysql = 3306
-        
-#         self.mysql = MySQL()
+    # MySQL_Test
+    def setUp(self):
+        self.server_mysql = config['mysql_localhost_db_s']['ip_host']
+        self.user = config['mysql_localhost_db_s']['username']
+        self.password_mysql = config['mysql_localhost_db_s']['password']
+        self.database_mysql = config['mysql_localhost_db_s']['database']
+        self.port_mysql = 3306
 
-#         self.mysql.connect_db(
-#             server01 = self.server_mysql
-#             , user01 = self.user
-#             , password01 = self.password_mysql
-#             , database01 = self.database_mysql
-#             , port = self.port_mysql
-#             , log = False
-#         )
+        self.mysql = MySQL()
 
-#         pass
+        self.mysql.connect_db(
+            server01 = self.server_mysql
+            , user01 = self.user
+            , password01 = self.password_mysql
+            , database01 = self.database_mysql
+            , port = self.port_mysql
+            , log = False
+        )
 
-#     # MySQL_Test
-#     def tearDown(self):
+        pass
 
-#         self.mysql.db_not_select(
-#             query01 = "delete from torm where id < 2222222"
-#             , host = self.server_mysql
-#             , db = self.database_mysql
-#             , log_query = False
-#             , auto_commit = True
-#             , test001 = False
-#         )
-#         pass
+    # MySQL_Test
+    def tearDown(self):
 
-#     # 
-#     def test_mysql_test(self):
-#         # test connection to the database
-#         self.assertEqual(
-#             1, 
-#             self.mysql.connect_db(
-#                 server01 = config['mysql_localhost_db_s']['ip_host']
-#                 , user01 = config['mysql_localhost_db_s']['username']
-#                 , password01 = config['mysql_localhost_db_s']['password']
-#                 , database01 = config['mysql_localhost_db_s']['database']
-#                 , port = config['mysql_localhost_db_s']['port']
-#                 , log = False
-#             )
-#         )
+        self.mysql.db_not_select(
+            query01 = "delete from torm where id < 2222222"
+            , host = self.server_mysql
+            , db = self.database_mysql
+            , log_query = False
+            , auto_commit = True
+            , test001 = False
+        )
+        pass
 
-#         # test insertion to the database
-#         self.assertEqual(
-#             1,
-#             self.mysql.db_not_select(
-#                 query01 = "insert into torm (txt) values ('55')"
-#                 , host = self.server_mysql
-#                 , db = self.database_mysql
-#                 , log_query = False
-#                 , auto_commit = True
-#                 , test001 = False
-#             )
-#         )
+    # 
+    def test_mysql_test(self):
+        # test connection to the database
+        # self.assertEqual(
+        #     1, 
+        #     self.mysql.connect_db(
+        #         server01 = config['mysql_localhost_db_s']['ip_host']
+        #         , user01 = config['mysql_localhost_db_s']['username']
+        #         , password01 = config['mysql_localhost_db_s']['password']
+        #         , database01 = config['mysql_localhost_db_s']['database']
+        #         , port = config['mysql_localhost_db_s']['port']
+        #         , log = False
+        #     )
+        # )
 
-#         # test select from the database
-#         self.assertEqual(
-#             1
-#             , self.mysql.db_select(
-#                 query01 = "select * from torm"
-#                 , host = self.server_mysql
-#                 , db = self.database_mysql
-#             )
-#         )
+        # # test insertion to the database
+        self.assertEqual(
+            1,
+            self.mysql.db_not_select(
+                query01 = "insert into torm (txt) values ('55')"
+                , host = self.server_mysql
+                , db = self.database_mysql
+                , log_query = False
+                , auto_commit = True
+                , test001 = False
+            )
+        )
 
-#         # another testing from the database
-#         self.assertEqual(
-#             self.mysql.results_select_query[0][1]
-#             , ('55')
-#         )
+        # test select from the database
+        self.assertEqual(
+            1
+            , self.mysql.db_select(
+                query01 = "select * from torm"
+                , host = self.server_mysql
+                , db = self.database_mysql
+            )
+        )
 
-#         pass
-# 
-#end__class__MySQL_Test
+        # another testing from the database
+        self.assertEqual(
+            self.mysql.results_select_query[0][1]
+            , ('55')
+        )
+
+        pass
+
+# end__class__MySQL_Test
 
 
 
