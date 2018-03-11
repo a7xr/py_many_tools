@@ -273,7 +273,9 @@ class MongoDB_Test(unittest.TestCase):
         self.mongodb_port = config["mongo_l"]["port"]
 
         self.mongodb = MongoDb()
+
         self.mongodb.run_one_server()
+
         self.mongodb.connection()
         Tools_Basic.long_print()
         pass
@@ -299,6 +301,10 @@ class MongoDB_Test(unittest.TestCase):
 
 
 
+        ############################################################################
+        ###############    Managing the Server of MongoDb     ######################
+        ############################################################################
+
         # # repairing the server when you deleted some files into the database
         # # # so that the files you deleted are not in the register anymore
         # self.assertEqual(
@@ -312,6 +318,12 @@ class MongoDB_Test(unittest.TestCase):
         #     1
         #     , self.mongodb.connection()
         # )
+
+
+
+        ############################################################################
+        ###############         Managing Data with Mongodb     #####################
+        ############################################################################
 
         # test insert_not_file into the database
         # # all the documents which are going to be inserted in collection(person) will be deleted by tearDown
@@ -373,6 +385,9 @@ class MongoDB_Test(unittest.TestCase):
 
 
 
+        ############################################################################
+        ###############    Manipulating files with MongoDb     #####################
+        ############################################################################
 
         # inserting file inside mongo
         self.assertEqual(
