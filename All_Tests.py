@@ -390,10 +390,10 @@ class MongoDB_Test(unittest.TestCase):
         )
 
         # downloading file from mongo
-        self.get_file()
+        self.mongodb.get_file()
         self.assertTrue(
             os.path.exists(
-                self.mongodb.store_dldd_file
+                self.mongodb.store_dldd_file + "m001.txt"
             )
         )
 
@@ -402,21 +402,6 @@ class MongoDB_Test(unittest.TestCase):
 
 
 
-        # test delete_file into mongodb
-        # self.assertEqual(
-        #     1,
-        #     self.mongodb.action_not_select(
-        #         action = 'delete_file'
-        #         , collection = 'file_inserted'
-        #         , _id = 'file001'
-        #         , doc_of_file_or__not_file = {
-        #             'name_stored_in_db': "m001.txt"
-        #             , 'deletion_type': "mongofiles"
-        #             , 'name_stored_in_db': "m001.txt"
-        #             , 'type': 'text'
-        #         }
-        #     )
-        # )
 
 
 

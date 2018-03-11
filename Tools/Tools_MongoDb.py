@@ -688,7 +688,33 @@ class MongoDb:
         , name_stored_in_register = "m001.txt"
     ):
         collection = "inserted_file"
-        
+        self.store_dldd_file = 'g:\\to_del'
+
+        self.local_db001.get_collection(collection).find({
+
+        })
+        try: 
+            self.action_select_not_file(
+                collection = 'inserted_file'
+                , print_only = True
+
+                , json_filter = {
+                    'file_name_origin': 'm001.txt'
+                }
+            )
+            grid_file = self.fs_loc_db001.get(
+                ObjectId(self.results_select_mongodb[0]['uid'])
+            )
+            file_target = self.store_dldd_file + '\\' + json_filter['file_name_origin']
+            file_target = open(
+                file_target_name
+                , 'wb'
+            )
+            file_target.write(grid_file.read())
+            file_target.close()
+        except gridfs.errors.NoFile as err: # the information is in collection('inserted_files'), but that file is missing in MongoDb
+            print ("MAYBE the file which you wanted is missing in the GridFS, but it exists inside the register")
+
         pass
 
     def delete_file(
