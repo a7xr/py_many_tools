@@ -722,37 +722,37 @@ class MongoDb:
                     print (txt)
                     pass
 
-                elif (action == 'delete_file'): # mbola tsy vita
-                    # print ('ato QDSFSDF564567')   
-                    collection = 'file_inserted'
-                    # alaina ny info momba ilay fichier ho supprimena > file_id
-                    # supprimena ny self.local_db001.get_collection
-                    # supprimena ny self.fs_loc_db001
-                    file_id = '00'
-                    try:
-                        file_id = self.action_select(
-                            collection = 'file_inserted'
-                            , action = 'find_not_file'
-                            , doc_of_file_or__not_file = doc_of_file_or__not_file
-                        )[0]['uid']
-                    except IndexError:
-                        print('looks like the file which you wanted is not in collection(file_inserted) anymore _ 232657568134')
+                # elif (action == 'delete_file'): # mbola tsy vita
+                #     # print ('ato QDSFSDF564567')   
+                #     collection = 'file_inserted'
+                #     # alaina ny info momba ilay fichier ho supprimena > file_id
+                #     # supprimena ny self.local_db001.get_collection
+                #     # supprimena ny self.fs_loc_db001
+                #     file_id = '00'
+                #     try:
+                #         file_id = self.action_select(
+                #             collection = 'file_inserted'
+                #             , action = 'find_not_file'
+                #             , doc_of_file_or__not_file = doc_of_file_or__not_file
+                #         )[0]['uid']
+                #     except IndexError:
+                #         print('looks like the file which you wanted is not in collection(file_inserted) anymore _ 232657568134')
 
-                    # print('file_id: ', file_id)
-                    # # 5a6d3fcf2b29952158f66485
+                #     # print('file_id: ', file_id)
+                #     # # 5a6d3fcf2b29952158f66485
 
-                    self.local_db001.get_collection(collection).remove(
-                        doc_of_file_or__not_file
-                        # , safe = True # not working
-                    )
-                    # print ('tafa ato')
-                    # file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
-                    self.fs_loc_db001.delete(
-                        {
-                            '_id': ObjectId(file_id)
-                        }
-                    )
-                    print('file_deleted 242345SSDF')
+                #     self.local_db001.get_collection(collection).remove(
+                #         doc_of_file_or__not_file
+                #         # , safe = True # not working
+                #     )
+                #     # print ('tafa ato')
+                #     # file_id = self.local_db001.get_collection(collection).find(doc_of_file_or__not_file)
+                #     self.fs_loc_db001.delete(
+                #         {
+                #             '_id': ObjectId(file_id)
+                #         }
+                #     )
+                #     print('file_deleted 242345SSDF')
 
                     
                 elif(
@@ -821,7 +821,7 @@ class MongoDb:
                         , "delete"
                         , doc_of_file_or__not_file['name_stored_in_db']
                     ])
-
+                    return 1
                     pass
                 else: # tsy mnw insertion, update, ...
                     print('Unknown Action, action(', action,')')
