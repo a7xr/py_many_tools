@@ -35,12 +35,54 @@ class SQLite_Test(unittest.TestCase):
         pass
 
     def tearDown(self):
+        self.sqlite.action_not_select(
+            query = "delete from table001"
+        )
+        print('deleted all content of table(table001)')
+
         self.sqlite.disconnect_db()
+
         pass
 
     def test_all_sqlite_test(self):
+        # going to test for the connection
+        self.assertIsNotNone(
+            self.sqlite.connection
+        )
 
-        
+        # going to test the insertion into the database
+        self.assertEqual(
+            1,
+            self.sqlite.action_not_select(
+                query = 'insert into table001 (txt) values ("test")'
+            )
+        )
+
+
+        # test select into the database
+        self.assertEqual(
+            1,
+            self.sqlite.action_select(
+                query = 'select * from table001'
+            )
+        )
+
+        # test select into the database
+        # # this should be filled after the self.sqlite.action_select(qery=  ...)
+        self.assertEqual(
+            1,
+            self.sqlite.result_query
+        )
+
+        # test 
+
+        # going to test the insertion into the database
+        # self.assertEqual(
+        #     1,
+        #     self.sqlite.action_select(
+        #         query = 'select * from table001 where '
+        #     )
+        # )
 
         pass
 
