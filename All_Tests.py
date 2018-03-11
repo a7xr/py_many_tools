@@ -74,7 +74,24 @@ class SQLite_Test(unittest.TestCase):
             self.sqlite.result_query
         )
 
-        # test 
+        # test update
+        self.assertEqual(
+            1,
+            self.sqlite.action_not_select(
+                query = 'update table001 set txt = "testing the update"'
+            )
+        )
+
+        # test delete something inside the table001 of sqlite
+        self.sqlite.action_not_select(
+            query = 'insert into table001(txt) values ("val001"), ("val002"), ("val003"), ("val004"), ("val005"), ("val006"), ("val007"), ("val008"), ("val009");'
+        )
+        self.assertEqual(
+            1,
+            self.sqlite.action_not_select(
+                query = 'delete from table001 where txt like "%006%"'
+            )
+        )
 
         # going to test the insertion into the database
         # self.assertEqual(
