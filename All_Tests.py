@@ -282,42 +282,29 @@ class MongoDB_Test(unittest.TestCase):
 
     # MongoDB_Test
     def tearDown(self):
+        time.sleep(1)
         Tools_Basic.long_print()
-        input("Going to delete all documents in collection(person)")
-        self.mongodb.local_db001.get_collection('person')\
-            .delete_many(
-                {
-                    '_id': {
-                        '$gt': 0
-                    }
-                }
-            )
+        input("Going to tearDown(...) the MongoDb")
+        # self.mongodb.local_db001.get_collection('person')\
+        #     .delete_many(
+        #         {
+        #             '_id': {
+        #                 '$gt': ObjectId('000000000000000000000000')
+        #             }
+        #         }
+        #     )
         self.mongodb.kill_all_servers()
+        self.mongodb.repair_server()
+        # time.sleep(10)
+        Tools_Basic.long_print()
+        print("Server repaired")
+
         pass
 
     def test_all_test_mongodb(self):
         # do not know how to set the file_test.py into a folder yet
 
 
-
-
-        ############################################################################
-        ###############    Managing the Server of MongoDb     ######################
-        ############################################################################
-
-        # # repairing the server when you deleted some files into the database
-        # # # so that the files you deleted are not in the register anymore
-        # self.assertEqual(
-        #     1,
-        #     self.mongodb.repair_server()
-        # )
-
-        # testing the connection
-        # # should be commented, otherwise, ther is a second_connection
-        # self.assertEqual(
-        #     1
-        #     , self.mongodb.connection()
-        # )
 
 
 
@@ -327,41 +314,81 @@ class MongoDB_Test(unittest.TestCase):
 
         # test insert_not_file into the database
         # # all the documents which are going to be inserted in collection(person) will be deleted by tearDown
+        # self.assertEqual(
+        #     1
+        #     , self.mongodb.action_not_select(
+        #         server = 'localhost'
+        #         , database = 'db001'
+        #         , collection = 'person'
+        #         , action = 'insert_not_file'
+        #         , _id = 1
+        #         , doc_of_file_or__not_file = {  # be careful when inserting file01, this has to has keys(path_file_origin, uid, file_name_origin)
+        #             'name': 'name001'
+        #         }
+        #     )
+        # )
+        #
+        #
+        # mety ito fa aleo manao madinidinika d aveo mvern mnw zvt ngeza
         self.assertEqual(
-            1
-            , self.mongodb.action_not_select(
-                server = 'localhost'
-                , database = 'db001'
-                , collection = 'person'
-                , action = 'insert_not_file'
-                , _id = 1
-                , doc_of_file_or__not_file = {  # be careful when inserting file01, this has to has keys(path_file_origin, uid, file_name_origin)
-                    'name': 'name001'
-                }
+            1,
+            self.mongodb.insert_data(
+                collection = 'person'
+                , list_json001 = [
+                    {
+                        'first_name' : "first_name001"
+                        , 'last_name' : "last_name001"
+                    }
+                    , {
+                        'first_name' : "first_name002"
+                        , 'last_name' : "last_name002"
+                    }
+                ]
             )
         )
-
+        return
         # test select_not_file
         # # this is going to be done in 2steps
-        # # # we are going to set the query and the result is going to be set into "self.mongodb.results_select_mongodb
-        # # # we take the result of the query inside "self.mongodb.results_select_mongodb"
-        self.assertEqual(
-            self.mongodb.action_select_not_file(
-                collection = 'person'
-                , print_only = True
+        # # # we are going to set the query and the result is going to be set into "self.mongodb.listOfDict__results_select_mongodb
+        # # # we take the result of the query inside "self.mongodb.listOfDict__results_select_mongodb"
+        # self.assertEqual(
+        #     self.mongodb.action_select_not_file(
+        #         collection = 'person'
+        #         , print_only = True
 
-                , json_filter = {
-                    'name': 'name001'
+        #         , json_filter = {
+        #             'name': 'name001'
+        #         }
+        #     )
+        #     , 1
+        #     # , self.mongodb.listOfDict__results_select_mongodb     # <<<<<<<<<<<<<<< after doing a select_not_file in mongo,
+        #                                             # # you should grab the result in self.mongodb.listOfDict__results_select_mongodb
+        # )
+
+
+        # mianatra manao requete am mongodb
+        self.assertEqual(
+            1,
+            self.mongodb.select_data(
+                collection = 'person'
+                , json001 = {       # am json001, ito dia miasa b mitsn
+                    'first_name' : "first_name001"
+                    , 'last_name' : "last_name001"                    
                 }
             )
-            , 1
-            # , self.mongodb.results_select_mongodb     # <<<<<<<<<<<<<<< after doing a select_not_file in mongo,
-                                                    # # you should grab the result in self.mongodb.results_select_mongodb
         )
-        self.assertEqual(
-            [{'_id': 1, 'name': 'name001'}]
-            , self.mongodb.results_select_mongodb
-        )
+        # self.assertIn(
+        #     [{'_id': 1, 'first_name001': 'first_name', 'last_name': 'last_name001'}]
+        #     , self.mongodb.listOfDict__results_select_mongodb
+        # )
+        # print('self.mongodb.listOfDict__results_select_mongodb: ', self.mongodb.listOfDict__results_select_mongodb)
+        # input("jereo io ambony io rah: [{'_id': 1, 'first_name001': 'first_name', 'last_name': 'last_name001'}]")
+
+
+        # self.assertEqual(
+        #     [{'_id': 1, 'name': 'name001'}]
+        #     , self.mongodb.listOfDict__results_select_mongodb
+        # )
 
         # test insert_file into mongodb
         # self.assertEqual(
@@ -385,6 +412,7 @@ class MongoDB_Test(unittest.TestCase):
 
 
 
+
         ############################################################################
         ###############    Manipulating files with MongoDb     #####################
         ############################################################################
@@ -397,11 +425,10 @@ class MongoDB_Test(unittest.TestCase):
                 , name_to_store_in_register = 'm001.txt'
             )
         )
-
         # deleting file inside the mongodb
         self.assertEqual(
-            1,
-            self.mongodb.delete_file()
+            1
+            , self.mongodb.delete_file()
         )
 
         # downloading file from mongo
@@ -416,6 +443,25 @@ class MongoDB_Test(unittest.TestCase):
 
 
 
+
+
+        ############################################################################
+        ###############    Managing the Server of MongoDb     ######################
+        ############################################################################
+
+        # # repairing the server when you deleted some files into the database
+        # # # so that the files you deleted are not in the register anymore
+        # self.assertEqual(
+        #     1,
+        #     self.mongodb.repair_server()
+        # )
+
+        # testing the connection
+        # # should be commented, otherwise, ther is a second_connection
+        # self.assertEqual(
+        #     1
+        #     , self.mongodb.connection()
+        # )
 
 
 

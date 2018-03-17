@@ -41,11 +41,11 @@ class MongoDb:
         time.sleep(4)
         input('Going to repair the server_stockage')
         subprocess.Popen([
-            confs_at_tools['mongo_l']['path_mongofiles']
+            confs_at_tools['mongo_l']['path_mongod']
             , '--repair'
             , '--dbpath'
             , confs_at_tools['mongo_l']['db_path_mongo']
-        ])
+        ]).wait()
         return 1
         pass
 
@@ -468,6 +468,24 @@ class MongoDb:
         pass
         # end of def action_select_file()
 
+
+
+
+    def select_data(
+        self
+        , collection = "person"
+        , json001 = {
+            'first_name' : "first_name001"
+            , 'last_name' : "last_name001"
+        }
+    ):
+        # tadidio fa ito dia mameno zvt any am self.listOfDict__results_select_mongodb loo
+        self.listOfDict__results_select_mongodb = []
+        for row in self.local_db001.get_collection(collection).find(json001):
+            self.listOfDict__results_select_mongodb.append(row)
+        return 1
+        pass
+
     # this is going to select file or NOT file
     # the parameter_json_filter is very important
     def action_select_not_file(
@@ -514,8 +532,8 @@ class MongoDb:
                 for result in results:
                     # print(result)
                     res.append(result)
-                self.results_select_mongodb = res
-                print("self.results_select_mongodb63224679: ", self.results_select_mongodb)
+                self.listOfDict__results_select_mongodb = res
+                print("self.listOfDict__results_select_mongodb63224679: ", self.listOfDict__results_select_mongodb)
                 return 1
                 pass
             else: # the database which is selected is missing
@@ -702,8 +720,14 @@ class MongoDb:
                     'file_name_origin': 'm001.txt'
                 }
             )
+            self.select_data(
+                collection = 'inserted_file'
+                , json001 = {
+
+                }
+            )
             grid_file = self.fs_loc_db001.get(
-                ObjectId(self.results_select_mongodb[0]['uid'])
+                ObjectId(self.listOfDict__results_select_mongodb[0]['uid'])
             )
             file_target = self.store_dldd_file + '\\' + json_filter['file_name_origin']
             file_target = open(
@@ -721,6 +745,8 @@ class MongoDb:
         self
         , name_stored_in_register = 'm001.txt'
     ):
+        # alaina ilay uid_file_to_delete
+        # supprimena 
         collection = "inserted_file"
 
         try:
@@ -732,7 +758,7 @@ class MongoDb:
                     'file_name_origin': 'm001.txt'
                 }
             )
-            uid_file_to_delete = self.results_select_mongodb[0]['uid']
+            uid_file_to_delete = self.listOfDict__results_select_mongodb[0]['uid']
             # print("uid_file_to_delete03948569: ", uid_file_to_delete)
             # input()
             self.fs_loc_db001.delete(
@@ -749,6 +775,42 @@ class MongoDb:
             pass
         except IndexError:
             print('MAYBE the file which you wanted to delete do NOT exist Anymore')
+            pass
+
+        pass
+
+    def insert_data(
+        self
+        , collection = ''
+        , list_json001 = {
+
+        }
+    ):
+        # jerena loo we ao v ilay collection hanaovana insertion
+        # rah ao:
+        # # manao insertion
+        # rah tsy ao:
+        # # affichena we ilay collection hanaovana insertion tsy ao... ar mvoka
+
+
+
+
+
+
+        # jerena loo we ao v ilay collection hanaovana insertion
+        # rah ao:
+        if ( collection in self.local_db001.collection_names() ):
+            # # manao insertion
+            self.local_db001.get_collection(collection).insert_many(list_json001)
+            return 1
+            pass
+        # rah tsy ao:
+        else:
+            # # affichena we ilay collection hanaovana insertion tsy ao... ar mvoka
+            Print_Color.print_red(
+                txt = "The collection( "+ collection +" ) which you wanted to insert something is missing"
+            )
+            return 0
             pass
 
         pass
@@ -770,7 +832,7 @@ class MongoDb:
         }
         # , path_file = 'e:\about_eclipse.txt'
     ):
-        print("tonga ato")
+        # print("tonga ato")
         if (server == 'localhost'):
             if (database == 'db001'):
                 try:
