@@ -156,6 +156,7 @@ class Twitter_Listener(StreamListener):
 
 
 csv_file_rcs = None
+
 class Our_Tools_py3(threading.Thread):
 
     @staticmethod
@@ -414,16 +415,16 @@ class Our_Tools_py3(threading.Thread):
             for a in content_one_line:
                 
                 if i == 0:
-                    col = a
+                    col = a.strip()
                     if col not in headers:
                         headers.append(col)
                     print('col: ', col)
                     i += 1
                     pass
                 else:
-                    val = a
+                    val = a.replace(':', '').strip()
                     # print(a)
-                    value_of_headers.append(val)
+                    value_of_headers.append(val.replace(':', '').strip())
                     i = 0
                 headers_and_value[col] = val
 
@@ -440,20 +441,48 @@ class Our_Tools_py3(threading.Thread):
         # # [': RCS Antananarivo 2016 A 00951', ': Monsieur', ': RAMIAKAJAT
 
         # print('headers_and_value: ', headers_and_value)
-
+        # # {'Immatriculation': 'RCS Antananarivo 2016 A 00951', .... }
+        # # input()
         # print('headers_and_value: ', headers_and_value.pop(r'\t\t\t\t\t\t\t', None))
         # # {' Immatriculation  ': ': RCS Antananarivo 2016 A 00951', ' CivilitÃ© ': ': Monsieur', ' Nom et PrÃ©noms ': ': RAMIAKAJATO Voninahindrainy Jaofera', ' Date de naissance ': ':16/01/1973 ', '\t\t\t\t\t\t\t': ':16/01/1973 ', ' Lieu
 
         # the previous result contain some key which are sth like a ghost
-        del headers_and_value['\t\t\t\t\t\t\t']
-        print(headers_and_value)
+        del headers_and_value['']
+        # print(headers_and_value)
+
 
 
         with open('result001.csv', 'a') as csv_file_rcs:
             # fieldnames = headers
+            fieldnames = [
+                'Immatriculation',
+                'Civilité',
+                'Nom et Prénoms',
+                'Date de naissance',
+                'Lieu de naissance',
+                'Denomination',
+                'Adresse',
+                'Date de début',
+                'Date d\'immatriculation',
+                'Activité',
+                'Type d\'entreprise' 
+                , 'Enseigne'
+            ]
             writer = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
             writer.writeheader()
+            input()
 
+            # print(
+            #     headers_and_value
+            # )
+            for x in headers_and_value:
+                print (
+                    x.encode(
+                        'ISO-8859-1'
+                    )
+                )
+
+            input()
             writer.writerow(
                 headers_and_value
             )
@@ -654,13 +683,13 @@ def main():
             , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
         ]
 
-        with open('result001.csv', 'a') as csv_file_rcs:
-            
-            for url in list_url:
-                Our_Tools_py3.rcs001(
-                    url = url
-                )
-            pass
+        # with open('result001.csv', 'a') as csv_file_rcs:
+
+        for url in list_url:
+            Our_Tools_py3.rcs001(
+                url = url
+            )
+        pass
 
     elif (        
         (len (sys.argv) == 3) 
