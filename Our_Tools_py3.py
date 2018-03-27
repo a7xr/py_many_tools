@@ -17,6 +17,7 @@ import csv
 import time
 
 
+
 # lasa zao 
 
 from Tools.Tools_PDF import Tools_PDF
@@ -156,7 +157,7 @@ class Twitter_Listener(StreamListener):
 
 
 csv_file_rcs = None
-
+writer_csv_rcs = None
 class Our_Tools_py3(threading.Thread):
 
     @staticmethod
@@ -379,9 +380,9 @@ class Our_Tools_py3(threading.Thread):
 
 
 
-    @staticmethod
     def rcs001(
-        url = r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
+        self
+        , url = r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
     ):
         content_html_to_treat = Tools_Beautiful_Soup.get_content_of_url(
             url = url
@@ -452,42 +453,42 @@ class Our_Tools_py3(threading.Thread):
 
 
 
-        with open('result001.csv', 'a') as csv_file_rcs:
-            # fieldnames = headers
-            fieldnames = [
-                'Immatriculation',
-                'Civilité',
-                'Nom et Prénoms',
-                'Date de naissance',
-                'Lieu de naissance',
-                'Denomination',
-                'Adresse',
-                'Date de début',
-                'Date d\'immatriculation',
-                'Activité',
-                'Type d\'entreprise' 
-                , 'Enseigne'
-            ]
-            writer = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
-            writer.writeheader()
-            input()
+        
+        # fieldnames = headers
+        # fieldnames = [
+        #     'Immatriculation',
+        #     'Civilité',
+        #     'Nom et Prénoms',
+        #     'Date de naissance',
+        #     'Lieu de naissance',
+        #     'Denomination',
+        #     'Adresse',
+        #     'Date de début',
+        #     'Date d\'immatriculation',
+        #     'Activité',
+        #     'Type d\'entreprise' 
+        #     , 'Enseigne'
+        # ]
+        # writer_csv_rcs = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
+        # writer_csv_rcs.writeheader()
+        # input()
+        # print(
+        #     headers_and_value
+        # )
 
-            # print(
-            #     headers_and_value
-            # )
-            for x in headers_and_value:
-                print (
-                    x.encode(
-                        'ISO-8859-1'
-                    )
-                )
 
-            input()
-            writer.writerow(
-                headers_and_value
-            )
 
-            pass
+        # for x in headers_and_value:
+        #     print (
+        #         x.encode(
+        #             'ISO-8859-1'
+        #         )
+        #     )
+        # input()
+        writer_csv_rcs.writerow(
+            headers_and_value
+        )
+        pass
 
 
 
@@ -683,13 +684,28 @@ def main():
             , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
         ]
 
-        # with open('result001.csv', 'a') as csv_file_rcs:
-
-        for url in list_url:
-            Our_Tools_py3.rcs001(
-                url = url
-            )
-        pass
+        with open('result001.csv', 'a') as csv_file_rcs:
+            fieldnames = [
+                'Immatriculation'
+                , 'Civilité'
+                , 'Nom et Prénoms'
+                , 'Date de naissance'
+                , 'Lieu de naissance'
+                , 'Denomination'
+                , 'Adresse'
+                , 'Date de début'
+                , 'Date d\'immatriculation'
+                , 'Activité'
+                , 'Type d\'entreprise'
+                , 'Enseigne'
+            ]
+            writer_csv_rcs = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
+            writer_csv_rcs.writeheader()
+            for url in list_url:
+                Our_Tools_py3().rcs001(
+                    url = url
+                )
+            pass
 
     elif (        
         (len (sys.argv) == 3) 
