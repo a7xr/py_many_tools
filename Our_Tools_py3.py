@@ -19,8 +19,10 @@ import time
 
 # lasa zao 
 
+from Tools.Tools_PDF import Tools_PDF
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_System import Tools_System
+from Tools.Tools_File import Tools_File
 from Tools.Tools_Excel import Tools_Excel
 from Tools.Tools_Basic import Tools_Basic
 from Tools.Tools_Beautiful_Soup import Tools_Beautiful_Soup
@@ -372,6 +374,120 @@ class Our_Tools_py3(threading.Thread):
         print ('Imported Twitter_api')
         pass
 
+
+
+    @staticmethod
+    def rcs001(
+        url = r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
+    ):
+        content_html_to_treat = Tools_Beautiful_Soup.get_content_of_url(
+            url = url
+        )
+        # print("type(content_html_to_treat): ", type(content_html_to_treat))
+        # # <class 'bs4.BeautifulSoup'>
+
+        
+        
+
+        tbody = content_html_to_treat.find("tbody").find_all("tr")
+        headers = []
+        value_of_headers = []
+        headers_and_value = {}
+
+        for c in tbody:
+            # print (c.get_text().split('\n'))
+            # ['', ' Immatriculation  ', ': RCS Antananarivo 2016 A 00951', '']
+            content_one_line = c.get_text().split('\n')
+            content_one_line = [e for e in content_one_line if e not in ('')]
+
+            # print(content_one_line)
+            # [' Immatriculation  ', ': RCS Antananarivo 2016 A 00951']
+
+            data = []
+            
+            col = None
+            val = None
+
+            i = 0
+            for a in content_one_line:
+                
+                if i == 0:
+                    col = a
+                    if col not in headers:
+                        headers.append(col)
+                    print('col: ', col)
+                    i += 1
+                    pass
+                else:
+                    val = a
+                    # print(a)
+                    value_of_headers.append(val)
+                    i = 0
+                headers_and_value[col] = val
+
+            print('val: ', val)
+            # input()
+
+
+            
+
+        # print('headers:', headers)
+        # # [' Immatriculation  ', ' CivilitÃ© ', ... ]
+
+        # print("value_of_headers: ", value_of_headers)
+        # # [': RCS Antananarivo 2016 A 00951', ': Monsieur', ': RAMIAKAJAT
+
+        # print('headers_and_value: ', headers_and_value)
+
+        # print('headers_and_value: ', headers_and_value.pop(r'\t\t\t\t\t\t\t', None))
+        # # {' Immatriculation  ': ': RCS Antananarivo 2016 A 00951', ' CivilitÃ© ': ': Monsieur', ' Nom et PrÃ©noms ': ': RAMIAKAJATO Voninahindrainy Jaofera', ' Date de naissance ': ':16/01/1973 ', '\t\t\t\t\t\t\t': ':16/01/1973 ', ' Lieu
+
+        # the previous result contain some key which are sth like a ghost
+        del headers_and_value['\t\t\t\t\t\t\t']
+        print(headers_and_value)
+
+
+        with open('result001.csv', 'a') as csv_file:
+            fieldnames = headers
+            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            writer.writeheader()
+
+            writer.writerow(
+                headers_and_value
+            )
+
+            pass
+
+
+
+        # print("len(tbody): ", len(tbody))
+        # 10
+        # print(tbody)
+        # [<tr> <td> <strong>Immatriculation </strong> ... ]
+        # print(type(tbody))
+        # bs4.element.ResultSet
+        
+
+        # tbody = content_html_to_treat.find_all("tbody")
+
+        # print ("tbody: ", tbody)
+        # # div:  [<tbody><tr> <td> <strong>Immatriculation ..... </tbody> ]
+
+        # path_html_to_treat = r'C:\Users\windows010\Documents\RCS\pers_physique\Ramiaka001.html'
+        # content_html_to_treat = Tools_File.read_file_line_by_line(
+            # path_file = path_html_to_treat
+        # )
+        # d = content_html_to_treat.find_all("div")
+        # print ("d: ", d)
+
+        # print ("content_html_to_treat: " + content_html_to_treat)
+        # # <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> <!-- saved from url=(0064)http://www.rcsmada.mg/index.php?pgdown=consultation&soc=10-43070 --> <html xmlns="http://www.w3.org/1999/xhtml" class="gr__rcsmada_mg"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <title>RNCS-CM MADAGASCAR</title> <link href="./Ramiaka001_files/design3.css" rel="stylesheet" type="text/css"> <meta name="author" content="MTC"> <meta name="copyr
+        # # this is going to be the html which contains the data in which we want to extract
+
+
+        pass
+        pass
+
     @staticmethod
     def get_some_part_of_page(
         url = config["urls"]["test002"]
@@ -405,7 +521,6 @@ class Our_Tools_py3(threading.Thread):
         url_request  = requests.get("http://" +url)
         url_content_of_page = BeautifulSoup(url_request.text)
         return url_content_of_page
-        pass
 
     @staticmethod
     def usage():
@@ -524,6 +639,53 @@ def main():
     if len (sys.argv) == 1:
         Our_Tools_py3.usage()
         sys.exit(0)
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'rcs_treat_html_code001')
+    ): 
+
+
+        list_url = [
+            r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
+            , r'C:/Users/windows010/Documents/RCS/pers_physique/SAM_Ki001.html'
+            , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
+        ]
+
+        with open('result001.csv', 'a') as csv_file:
+        for url in list_url:
+            Our_Tools_py3.rcs001(
+                url = url
+            )
+        pass
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'read_file_line_by_line')
+    ): 
+        # path_html_to_treat = r'C:\Users\windows010\Documents\RCS\pers_physique\Ramiaka001.html'
+        print(
+            Tools_File.read_file_line_by_line()
+        )
+        pass
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'merge_pdf')
+    ): 
+        path_pdf = r'C:\Users\windows010\Downloads\Documents\babypips\elementary'
+        list_pdf = [
+            r'E:\sync_google_drive\babypips\babypips_com_preschool.pdf'
+            , r'C:\Users\windows010\Downloads\Documents\babypips\preschool_pics\pic_preschool.pdf'
+        ]
+        Tools_PDF.merge_pdf(
+            merged_pdf = "babypips_com_preschool_with_pics.pdf"
+            , list_pdf = list_pdf
+        )
+
 
     elif (        
         (len (sys.argv) == 3) 

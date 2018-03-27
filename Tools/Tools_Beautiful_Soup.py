@@ -6,8 +6,21 @@ from .Tools_Basic import Tools_Basic
 import re
 import json
 import time
+import requests
+
 
 class Tools_Beautiful_Soup:
+
+    
+
+    @staticmethod
+    def get_content_of_url(
+        # url = config["urls"]["test002"]
+        url = r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
+    ):
+        # url_request  = requests.get(url)
+        url_content_of_page = BeautifulSoup(open(url), "html.parser")
+        return url_content_of_page
 
     def get_id_of_link_of_ted(
         self
@@ -19,7 +32,10 @@ class Tools_Beautiful_Soup:
         tag_to_search = 'meta'
         about_the_field = {"property": "al:ios:url"}
 
-        meta_contains__id_transcript = self.bsObj.findAll(tag_to_search, about_the_field)
+        meta_contains__id_transcript = self.bsObj.findAll(
+            tag_to_search
+            , about_the_field
+        )
 
         # print(type(meta_contains__id_transcript))
         # # <class 'bs4.element.ResultSet'>
@@ -131,7 +147,10 @@ class Tools_Beautiful_Soup:
         tag_to_search = 'link'
         about_the_field = {"rel": "alternate"}
 
-        list_to_grab_lang = self.bsObj.findAll(tag_to_search, about_the_field)
+        list_to_grab_lang = self.bsObj.findAll(
+            tag_to_search
+            , about_the_field
+        )
 
         # print ('list_to_grab_lang: ', list_to_grab_lang)
         # [<link href="https://www.ted.com', ....
