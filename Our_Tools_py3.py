@@ -154,6 +154,8 @@ class Twitter_Listener(StreamListener):
         print ("Error:", status)
 
 
+
+csv_file_rcs = None
 class Our_Tools_py3(threading.Thread):
 
     @staticmethod
@@ -447,9 +449,9 @@ class Our_Tools_py3(threading.Thread):
         print(headers_and_value)
 
 
-        with open('result001.csv', 'a') as csv_file:
-            fieldnames = headers
-            writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+        with open('result001.csv', 'a') as csv_file_rcs:
+            # fieldnames = headers
+            writer = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
             writer.writeheader()
 
             writer.writerow(
@@ -646,19 +648,19 @@ def main():
         and (sys.argv[2] == 'rcs_treat_html_code001')
     ): 
 
-
         list_url = [
             r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
             , r'C:/Users/windows010/Documents/RCS/pers_physique/SAM_Ki001.html'
             , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
         ]
 
-        with open('result001.csv', 'a') as csv_file:
-        for url in list_url:
-            Our_Tools_py3.rcs001(
-                url = url
-            )
-        pass
+        with open('result001.csv', 'a') as csv_file_rcs:
+            
+            for url in list_url:
+                Our_Tools_py3.rcs001(
+                    url = url
+                )
+            pass
 
     elif (        
         (len (sys.argv) == 3) 
