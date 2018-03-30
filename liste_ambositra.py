@@ -1,25 +1,102 @@
+# to delete the commented_lines in python
+# # sed -e '/^\s*#/d' file001.py > file001_no_comments.py
+#
+
 import csv
 import string
 import requests
 from bs4 import BeautifulSoup
 
-# ito dia ahazo ilay code_html izay ho_traitena am bs4
+import configparser
+config = configparser.ConfigParser()
+config.read(
+    r'E:\DEV\python\py_many_tools\all_confs.txt'
+)
+
+
+import MySQLdb
+
+# input: code_html izay ho_traitena am bs4
+# 
+
+connection_db = MySQLdb.Connection(
+	host = 'localhost'
+	, user = config['mysql_our_db']['username']
+	, passwd = config['mysql_our_db']['password']
+	, db = config['mysql_our_db']['database']
+	, charset='utf8'
+)
+cursor_db = connection_db.cursor()
+cursor_db.execute("set names utf8;")
+cursor_db.execute("SET CHARACTER SET utf8;;")
+# cursor_db.execute("insert into rcs_data(immatriculation, link, data_txt) values ('imm001', 'link001', 'data_txt001')")
+# connection_db.commit()
+
 def get_all_fiches(content):
 	
 	soup = BeautifulSoup(content)
 	table_row = soup.find("tbody").findAll("tr")
 	if len(table_row)>0:
 		for tr in table_row: 
+			# isakn page iray dia misy info(Immatriculation, Nom, ..., lien(+d_infos))
+
+			# print("tr: ", tr)
+			# # <tr>
+			# # <td>RCS Ambositra 2000A00001</td>
+			# # <td>SAHONDRANIAINA</td>
+			# # <td></td>
+			# # <td>SAHONDRANIAINA Jeanne MarinÃ Â  </td>
+			# # <td><a 
+			info_list = tr.findAll("td")
+			immatriculation = info_list[0].text # <<<<<<<<<<<<<<<
+
+			# for i in info_list:
+			# 	print(i)
 			fiche_url =  tr.find('a')['href']
 			fiche_url = fiche_url.replace( "&amp;", "&")
 			fichier = fiche_url.replace( "index.php?pgdown=consultation&soc=", "") + ".htm"
 			r = requests.get(tld+fiche_url)
-			file = open(fichier,"w", encoding="utf-8") 
-			#soup = BeautifulSoup(r.content)
-			#file.write(soup.find("table", {"class": "simple2"}))
-			file.write(r.text) 
-			file.close() 
-			print(fichier)
+
+			soup = BeautifulSoup(r.text) # ok
+			tr_list = soup.findAll("tr")
+
+			all_txt = ""
+			for tr001 in tr_list:
+				print(tr001.text) # <<<<<<<<<<<<<<<<<<<<<<< 
+				all_txt += tr001.text
+
+			# all_txt
+			# #  Immatriculation
+			# # : RCS Ambositra 2000A00001
+ 			# #Civilité
+			# # : Madame
+
+			# print(immatriculation) # OK
+			url_total = tld+fiche_url
+			# print(url_total)
+			# # http://www.rcsmada.mg/index.php?pgdown=consultation&soc=1-1
+			print("immatriculation: ", immatriculation)
+			print("url_total: ", url_total)
+			print('all_txt: ', all_txt)
+			mysql_req = "insert into rcs_data(immatriculation, link, data_txt) values ('"+immatriculation+"', '"+url_total.replace("'", "\\'")+"', '"+all_txt.replace("'", "\\'")+"')"
+			print('mysql_req: ', mysql_req)
+			# input()
+			try:
+				cursor_db.execute(mysql_req)
+				connection_db.commit()
+			except Exception:
+				print("ERRRRRRROOOOOOR")
+				input()
+				print(mysql_req)
+				pass
+			input()
+
+			# file = open(fichier,"w", encoding="utf-8") 
+			# #soup = BeautifulSoup(r.content)
+			# #file.write(soup.find("table", {"class": "simple2"}))
+			# file.write(r.text) 
+			# file.close() 
+			# print(fichier)
 	else:
 		print("aucune ligne trouvée");
 	
@@ -29,7 +106,24 @@ def get_all_fiches(content):
 tld = 'http://www.rcsmada.mg/'
 url = 'http://www.rcsmada.mg/index.php?pgdown=liste2'
 headers = {'User-Agent': 'Mozilla/5.0'}
-req = {'TypeSociete':'A','Greffe':'1', 'DateInscrit':'', 'FormeJuridiq':'Null'}
+
+req = {
+	'TypeSociete':'A'
+	# A = Personne physique
+	# B = Personne morale
+	# C = Groupement d'interet personnelle
+	
+	,'Greffe':'1' 
+	# 1  = Ambositra
+	# 10 = Tana
+	# 11 = Antsirabe
+	# ...
+
+	, 'DateInscrit':''
+	, 'FormeJuridiq':'Null'
+}
+
+
 
 requete = requests.post(url, headers=headers,data=req)
 page = requete.content
@@ -39,13 +133,12 @@ get_all_fiches(page)
 
 soup = BeautifulSoup(page)
 # apdirn ao anaty bs4 loo mten we hatao ilay page_html
-#pagination : <span class="butons">
+# pagination : <span class="butons">
 
 # ireto ambany ireto dia ilay resultat_traitement_bs4
 span_list  =soup.findAll("span", {"class": "butons"})
 page_list  = [elt.a['href'] for elt in span_list]
-print("page_list: ", page_list)
-input()
+
 
 if len(page_list) > 0:
 
