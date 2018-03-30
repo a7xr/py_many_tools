@@ -10,10 +10,12 @@ import os
 
 import re
 import sys
+import codecs
 sys.path.append("..")
 import getopt
 import xlsxwriter
 import csv
+import glob
 import time
 
 
@@ -156,8 +158,6 @@ class Twitter_Listener(StreamListener):
 
 
 
-csv_file_rcs = None
-writer_csv_rcs = None
 class Our_Tools_py3(threading.Thread):
 
     @staticmethod
@@ -382,6 +382,8 @@ class Our_Tools_py3(threading.Thread):
 
     def rcs001(
         self
+        , csv_file_rcs = None
+        , writer_csv_rcs = None
         , url = r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
     ):
         content_html_to_treat = Tools_Beautiful_Soup.get_content_of_url(
@@ -393,7 +395,18 @@ class Our_Tools_py3(threading.Thread):
         
         
 
-        tbody = content_html_to_treat.find("tbody").find_all("tr")
+        # tbody001 = content_html_to_treat.find("tbody")
+        tbody001 = content_html_to_treat.find('table', {"class": "simple2"})
+        # print("tbody001: ", tbody001)
+        if(tbody001 is not None):
+            tbody = tbody001.find_all("tr")
+        else:
+            # print(tbody001)
+            print(url)
+            tbody = tbody001
+            input()    
+            return    
+        # .find_all("tr")
         headers = []
         value_of_headers = []
         headers_and_value = {}
@@ -414,26 +427,24 @@ class Our_Tools_py3(threading.Thread):
 
             i = 0
             for a in content_one_line:
-                
+                # a = a.encode('ISO-8859-1')
                 if i == 0:
                     col = a.strip()
                     if col not in headers:
                         headers.append(col)
-                    print('col: ', col)
+                    # print('col: ', col)
                     i += 1
                     pass
                 else:
                     val = a.replace(':', '').strip()
                     # print(a)
+                    # print(val.encode('ISO-8859-1'))
                     value_of_headers.append(val.replace(':', '').strip())
                     i = 0
                 headers_and_value[col] = val
 
-            print('val: ', val)
+            # print('val: ', val)
             # input()
-
-
-            
 
         # print('headers:', headers)
         # # [' Immatriculation  ', ' CivilitÃ© ', ... ]
@@ -444,50 +455,32 @@ class Our_Tools_py3(threading.Thread):
         # print('headers_and_value: ', headers_and_value)
         # # {'Immatriculation': 'RCS Antananarivo 2016 A 00951', .... }
         # # input()
-        # print('headers_and_value: ', headers_and_value.pop(r'\t\t\t\t\t\t\t', None))
-        # # {' Immatriculation  ': ': RCS Antananarivo 2016 A 00951', ' CivilitÃ© ': ': Monsieur', ' Nom et PrÃ©noms ': ': RAMIAKAJATO Voninahindrainy Jaofera', ' Date de naissance ': ':16/01/1973 ', '\t\t\t\t\t\t\t': ':16/01/1973 ', ' Lieu
-
-        # the previous result contain some key which are sth like a ghost
-        del headers_and_value['']
-        # print(headers_and_value)
-
-
-
         
-        # fieldnames = headers
-        # fieldnames = [
-        #     'Immatriculation',
-        #     'Civilité',
-        #     'Nom et Prénoms',
-        #     'Date de naissance',
-        #     'Lieu de naissance',
-        #     'Denomination',
-        #     'Adresse',
-        #     'Date de début',
-        #     'Date d\'immatriculation',
-        #     'Activité',
-        #     'Type d\'entreprise' 
-        #     , 'Enseigne'
-        # ]
-        # writer_csv_rcs = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
-        # writer_csv_rcs.writeheader()
+        # the previous result contain some key which are sth like a ghost
+        if('' in headers_and_value.keys()):
+            del headers_and_value['']
+
+        # for key in headers_and_value.keys():
+        #     # key = key.encode('UTF-8')
+        #     # b'Civilit\xc3\x83\xc2\xa9'
+        #     # key = key.encode('ISO-8859-1')
+        #     # print(key)
+        #     # b'Civilit\xc3\xa9'
+        #     # b'Civilit\xc3\xa9'
+
+        #     key = key.encode('latin-1')
+        #     print (key)
+        #     input()
+        # print("headers_and_value: ", headers_and_value)
+
         # input()
-        # print(
-        #     headers_and_value
-        # )
 
 
-
-        # for x in headers_and_value:
-        #     print (
-        #         x.encode(
-        #             'ISO-8859-1'
-        #         )
-        #     )
-        # input()
-        writer_csv_rcs.writerow(
-            headers_and_value
-        )
+        with open('result001.csv', 'a', encoding='ISO-8859-1') as csv_file_rcs:
+            # writer_csv_rcs = csv.DictWriter(csv_file_rcs)
+            writer_csv_rcs.writerows(
+                [headers_and_value]
+            )
         pass
 
 
@@ -678,13 +671,20 @@ def main():
         and (sys.argv[2] == 'rcs_treat_html_code001')
     ): 
 
-        list_url = [
-            r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
-            , r'C:/Users/windows010/Documents/RCS/pers_physique/SAM_Ki001.html'
-            , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
-        ]
+        path_contain_htm = r'E:\rcs_scraping'
+        list_url = glob.glob(path_contain_htm + '\\*.htm')  
 
-        with open('result001.csv', 'a') as csv_file_rcs:
+        # list_url = glob.glob(r'C:/Users/windows010/Documents/RCS/pers_physique/*.html')  
+        # print(list_url)
+        # # 
+        # input()
+        # list_url = [
+        #     r'C:/Users/windows010/Documents/RCS/pers_physique/Ramiaka001.html'
+        #     , r'C:/Users/windows010/Documents/RCS/pers_physique/SAM_Ki001.html'
+        #     , r'C:/Users/windows010/Documents/RCS/pers_physique/Hasiniosy.html'
+        # ]
+
+        with open('result001.csv', 'a', encoding = "utf-16-le") as csv_file_rcs:
             fieldnames = [
                 'Immatriculation'
                 , 'Civilité'
@@ -698,14 +698,36 @@ def main():
                 , 'Activité'
                 , 'Type d\'entreprise'
                 , 'Enseigne'
+                , 'Nom commercial'
+                , 'Surnom'
+                , ""
+                , "-Vente de meubles"
+                , 'Marchandises générales - Fournisseur de fournitures de bureau, scolaires, meubles et entrepreneur de travaux de bois et de fers.-'
             ]
-            writer_csv_rcs = csv.DictWriter(csv_file_rcs, fieldnames=fieldnames)
+
+            csv_file_rcs.write('\ufeff')
+            # csv_file_rcs.write('\xff\xfe')
+            i = 0
+            # for f in fieldnames:
+            #     fieldnames[i] = fieldnames[i].encode('ISO-8859-1')
+            #     print (fieldnames[i])
+            #     i += 1
+            #     input()
+            #     pass
+
+            writer_csv_rcs = csv.DictWriter(
+                csv_file_rcs
+                , fieldnames=fieldnames
+            )
             writer_csv_rcs.writeheader()
+
             for url in list_url:
                 Our_Tools_py3().rcs001(
-                    url = url
+                    csv_file_rcs = csv_file_rcs
+                    , writer_csv_rcs = writer_csv_rcs
+                    , url = url
                 )
-            pass
+        pass
 
     elif (        
         (len (sys.argv) == 3) 
