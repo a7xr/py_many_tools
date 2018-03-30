@@ -32,8 +32,12 @@ cursor_db.execute("SET CHARACTER SET utf8;;")
 # cursor_db.execute("insert into rcs_data(immatriculation, link, data_txt) values ('imm001', 'link001', 'data_txt001')")
 # connection_db.commit()
 
-def get_all_fiches(content):
-	
+def get_all_fiches(
+	content
+	, req = None
+):
+	print ('req003: ', req)
+	input()
 	soup = BeautifulSoup(content)
 	table_row = soup.find("tbody").findAll("tr")
 	if len(table_row)>0:
@@ -80,7 +84,7 @@ def get_all_fiches(content):
 			print('all_txt: ', all_txt)
 			mysql_req = "insert into rcs_data(immatriculation, link, data_txt, "
 			mysql_req += "type_assujetti, greffe_rcs) values ('"+immatriculation+"', '"+url_total.replace("'", "\\'")+"', '"+all_txt.replace("'", "\\'")+"','"
-			mysql_req += type_assujetti +"', '" + greffe + "')"
+			mysql_req += req['TypeSociete'] +"', '" + req['Greffe'] + "')"
 			print('mysql_req: ', mysql_req)
 			# input()
 			try:
@@ -109,6 +113,61 @@ tld = 'http://www.rcsmada.mg/'
 url = 'http://www.rcsmada.mg/index.php?pgdown=liste2'
 headers = {'User-Agent': 'Mozilla/5.0'}
 
+
+list_type_assujetti = [
+	'A'  	# Personne physique
+	, 'B'	# B-Personne morale
+	, 'C'	# C-Groupement d'intêrét économique
+	, 'D'	# D-Personne morale autre qu'un GIE
+	, 'E'	# E-Institution de microfinance
+]
+
+list_greffe_rcs = [
+	'1'		# Ambositra
+	, '10' 	# Antananarivo
+	, '11' 	# Antsirabe
+	, '12' 	# Antsiranana
+	, '13' 	# Arivonimamo
+	, '14' 	# Betroka
+	, '15' 	# Farafangana
+	, '16' 	# ...
+	, '17' 	# 
+	, '18' 	# 
+	, '19' 	# 
+	, '2' 	# 
+	, '20' 	# 
+	, '21' 	# 
+	, '22' 	# 
+	, '23' 	# 
+	, '24' 	# 
+	, '25' 	# 
+	, '26' 	# 
+	, '27' 	# 
+	, '28' 	# 
+	, '29' 	# 
+	, '3' 	# 
+	, '30' 	# 
+	, '31' 	# 
+	, '32' 	# 
+	, '33' 	# 
+	, '34' 	# 
+	, '35' 	# 
+	, '36' 	# 
+	, '37' 	# 
+	, '38' 	# 
+	, '39' 	# 
+	, '4' 	# 
+	, '40' 	# 
+	, '41' 	# 
+	, '5' 	# 
+	, '6' 	# 
+	, '7' 	# 
+	, '8' 	# 
+	, '9' 	# 
+]
+
+
+
 req = {
 	'TypeSociete':'B'
 	# A = Personne physique # tested
@@ -126,60 +185,91 @@ req = {
 	, 'FormeJuridiq':'Null'
 }
 
-if (req['TypeSociete'] == 'A'):
-	type_assujetti = 'personne_physique'
-	pass
-elif (req['TypeSociete'] == 'B'):
-	type_assujetti = 'personne_morale'
-	pass
-elif (req['TypeSociete'] == 'C'):
-	type_assujetti = 'groupement_interet_personnelle'
-	pass
-else:
-	print('Encore pas prise en charge')
-	print("req['TypeSociete']: ", req['TypeSociete'])
-	input("")
-	pass
+# if (req['TypeSociete'] == 'A'):
+	# type_assujetti = 'personne_physique'
+	# pass
+# elif (req['TypeSociete'] == 'B'):
+	# type_assujetti = 'personne_morale'
+	# pass
+# elif (req['TypeSociete'] == 'C'):
+	# type_assujetti = 'groupement_interet_personnelle'
+	# pass
+# else:
+	# print('Encore pas prise en charge')
+	# print("req['TypeSociete']: ", req['TypeSociete'])
+	# input("")
+	# pass
+# 
+# if (req['Greffe'] == '1'):
+	# greffe = 'ambositra'
+	# pass
+# elif (req['Greffe'] == '11'):
+	# greffe = 'tana'
+# elif (req['Greffe'] == '11'):
+	# greffe = 'antsirabe'
+# else:
+	# print("Greffe pas encore pris en charge")
+	# print("Greffe = ", req["Greffe"])
+	# input()
 
-if (req['Greffe'] == '1'):
-	greffe = 'ambositra'
-	pass
-elif (req['Greffe'] == '11'):
-	greffe = 'tana'
-elif (req['Greffe'] == '11'):
-	greffe = 'antsirabe'
-else:
-	print("Greffe pas encore pris en charge")
-	print("Greffe = ", req["Greffe"])
+
+
+
+
+
+def general_rcs001(req = None):
+	print ('req002: ', req)
 	input()
+	requete = requests.post(
+		url
+		, headers=headers
+		,data=req
+	)
+	page = requete.content
+	# # b'<!DOCTYPE htm.. refa tafiditra ilay data_post dia maaz page
+	# # # ito dia misy ilay resultat voloo SY ireo list_nombre_page
+	get_all_fiches(
+		page
+		, req = req
+	)
+
+	soup = BeautifulSoup(page)
+	# apdirn ao anaty bs4 loo mten we hatao ilay page_html
+	# pagination : <span class="butons">
+
+	# ireto ambany ireto dia ilay resultat_traitement_bs4
+	span_list  =soup.findAll("span", {"class": "butons"})
+	page_list  = [elt.a['href'] for elt in span_list]
+
+	print("req005555: ", req)
+	input()
+	if len(page_list) > 0:
+
+		for page in page_list[1:]:
+			r = requests.get(tld+page)
+			
+			get_all_fiches(
+				r.content
+				, req = req
+			)
+
+
+# general_rcs001(req = req)
 
 
 
 
-
-
-
-requete = requests.post(url, headers=headers,data=req)
-page = requete.content
-# # b'<!DOCTYPE htm.. refa tafiditra ilay data_post dia maaz page
-# # # ito dia misy ilay resultat voloo SY ireo list_nombre_page
-get_all_fiches(page)
-
-soup = BeautifulSoup(page)
-# apdirn ao anaty bs4 loo mten we hatao ilay page_html
-# pagination : <span class="butons">
-
-# ireto ambany ireto dia ilay resultat_traitement_bs4
-span_list  =soup.findAll("span", {"class": "butons"})
-page_list  = [elt.a['href'] for elt in span_list]
-
-
-if len(page_list) > 0:
-
-	for page in page_list[1:]:
-		r = requests.get(tld+page)
-		
-		get_all_fiches(r.content)
-
-
-
+for type_assujetti001 in list_type_assujetti:
+	for greffe_rcs001 in list_greffe_rcs:
+		req001 = {
+			'TypeSociete': type_assujetti001
+			, 'Greffe': greffe_rcs001
+			
+			
+			, 'DateInscrit': ''
+			, 'FormeJuridiq': 'Null'
+		}
+		print("req001: ", req001)
+		input()
+		general_rcs001(req = req001)
+		pass
