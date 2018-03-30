@@ -78,7 +78,9 @@ def get_all_fiches(content):
 			print("immatriculation: ", immatriculation)
 			print("url_total: ", url_total)
 			print('all_txt: ', all_txt)
-			mysql_req = "insert into rcs_data(immatriculation, link, data_txt) values ('"+immatriculation+"', '"+url_total.replace("'", "\\'")+"', '"+all_txt.replace("'", "\\'")+"')"
+			mysql_req = "insert into rcs_data(immatriculation, link, data_txt, "
+			mysql_req += "type_assujetti, greffe_rcs) values ('"+immatriculation+"', '"+url_total.replace("'", "\\'")+"', '"+all_txt.replace("'", "\\'")+"','"
+			mysql_req += type_assujetti +"', '" + greffe + "')"
 			print('mysql_req: ', mysql_req)
 			# input()
 			try:
@@ -108,10 +110,11 @@ url = 'http://www.rcsmada.mg/index.php?pgdown=liste2'
 headers = {'User-Agent': 'Mozilla/5.0'}
 
 req = {
-	'TypeSociete':'A'
-	# A = Personne physique
-	# B = Personne morale
+	'TypeSociete':'B'
+	# A = Personne physique # tested
+	# B = Personne morale   # tested
 	# C = Groupement d'interet personnelle
+	# ...
 	
 	,'Greffe':'1' 
 	# 1  = Ambositra
@@ -122,6 +125,37 @@ req = {
 	, 'DateInscrit':''
 	, 'FormeJuridiq':'Null'
 }
+
+if (req['TypeSociete'] == 'A'):
+	type_assujetti = 'personne_physique'
+	pass
+elif (req['TypeSociete'] == 'B'):
+	type_assujetti = 'personne_morale'
+	pass
+elif (req['TypeSociete'] == 'C'):
+	type_assujetti = 'groupement_interet_personnelle'
+	pass
+else:
+	print('Encore pas prise en charge')
+	print("req['TypeSociete']: ", req['TypeSociete'])
+	input("")
+	pass
+
+if (req['Greffe'] == '1'):
+	greffe = 'ambositra'
+	pass
+elif (req['Greffe'] == '11'):
+	greffe = 'tana'
+elif (req['Greffe'] == '11'):
+	greffe = 'antsirabe'
+else:
+	print("Greffe pas encore pris en charge")
+	print("Greffe = ", req["Greffe"])
+	input()
+
+
+
+
 
 
 
