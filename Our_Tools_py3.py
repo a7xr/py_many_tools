@@ -665,6 +665,89 @@ def main():
         Our_Tools_py3.usage()
         sys.exit(0)
 
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'replace_in_text')
+    ): 
+        basic_code = '''
+def function001(param001 = val001):
+    print("value of param001 is: ", param001)
+    pass
+        '''
+
+        
+        
+        pass
+
+    elif (
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'replace_in_text')
+    ): 
+        Tools_File.replace_in_text()
+        pass
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'run_file')
+    ): 
+        Tools_System.run_file(
+            file_to_run = "file002.py"
+        )
+        pass
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'code002')
+    ): 
+        Tools_File.print_code_to_file(
+            file_to_write = "file001.py"
+        )
+        Tools_System.run_file(
+            file_to_run = "file001.py"
+        )
+        pass
+
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'code001')
+    ): 
+        spaces = 4
+        code = '''
+def function001():
+    print("this is going to be written to a file")
+        '''
+
+        code_splitted = code.split('\n')
+        for s in code_splitted:
+            for a in range(spaces):
+                print(' ', end = '')
+            print(s)
+
+        # print(
+        #     code
+        #     , file = open('test001.txt', 'a')
+        # )
+    elif (        
+        (len (sys.argv) == 3) 
+        and (sys.argv[1] in ("-T", "--all_test"))
+        and (sys.argv[2] == 'time001')
+    ): 
+        time_start = time.time()
+        # print("type(time_start): ", type(time_start))
+        # # <class 'float'>
+        a = 4 + 5
+        time_stop = time.time()
+        print('between_time: ', (time_stop - time_start))
+
+        # print("this is a super test")
+
+        pass
+
     elif (        
         (len (sys.argv) == 3) 
         and (sys.argv[1] in ("-T", "--all_test"))
@@ -747,11 +830,13 @@ def main():
     ): 
         path_pdf = r'C:\Users\windows010\Downloads\Documents\babypips\elementary'
         list_pdf = [
-            r'E:\sync_google_drive\babypips\babypips_com_preschool.pdf'
-            , r'C:\Users\windows010\Downloads\Documents\babypips\preschool_pics\pic_preschool.pdf'
+            r'C:\Users\windows010\Desktop\wordpress2345643.pdf'
+            , r'C:\Users\windows010\Desktop\wp-hierarchy.pdf'
         ]
+
+       
         Tools_PDF.merge_pdf(
-            merged_pdf = "babypips_com_preschool_with_pics.pdf"
+            merged_pdf = "wp_hierarkey.pdf"
             , list_pdf = list_pdf
         )
 

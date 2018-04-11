@@ -10,6 +10,21 @@ class Tools_System:
         pass
 
     @staticmethod
+    def run_file(
+        file_to_run = "../file001.py"
+    ):
+        # there are multiple ways to run a python_script
+        # # at this time, this is going to use "os.system(...) Only"
+        if (os.path.exists(file_to_run)):
+            os.system(
+                file_to_run
+            )
+        else:
+            input(file_to_run + " is Missing")
+        # input(str(file_to_run) + " has run")
+        pass
+
+    @staticmethod
     def create_file(
         path_system = "E:\DEV\python\ted_transcript\file001.txt"
     ):
